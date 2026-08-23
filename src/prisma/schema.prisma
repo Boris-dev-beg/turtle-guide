@@ -1,13 +1,303 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  output   = "../generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum ProcedureDomain {
+  CIVIL_STATUS
+  ACADEMIC
+  IDENTITY
+  JUSTICE
+  VISA
+}
+
+enum FolderStatus {
+  INITIATED
+  CLOSED
+  ABANDONED
+}
+
+enum OrderStatus {
+  DRAFT
+  CUSTOMIZED
+  PENDING_PAYMENT
+  FAILED
+  PAID
+  GENERATED
+  DOWNLOADED
+  CANCELLED
+}
+
+enum TransactionStatus {
+  PENDING
+  CONFIRMED
+  FAILED
+}
+
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+
+  folders       Folder[]
+  orders        Order[]
+  donations     Donation[]
+  administrator Administrator?
+  requests      Request[]
+
+  @@map("users")
+}
+
+model Administrator {
+  id             String @id @default(cuid())
+  accessLevel    String
+  name           String
+  email          String
+  hashedPassword String
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  @@map("administrators")
+}
+
+model Donation {
+  id     String   @id @default(cuid())
+  amount Decimal
+  date   DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  @@map("donations")
+}
+
+model Request {
+  id          String   @id @default(cuid())
+  title       String
+  description String
+  startDate   DateTime @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  questions Question[] @relation("RequestQuestions")
+
+  rootQuestionId String?   @unique
+  rootQuestion   Question? @relation("RequestRootQuestion", fields: [rootQuestionId], references: [id])
+
+  folder       Folder?       @relation("RequestFolder")
+  progressions Progression[]
+
+  @@map("requests")
+}
+
+model Procedure {
+  id          String          @id @default(cuid())
+  title       String
+  domain      ProcedureDomain
+  legalBasis  String
+  description String
+
+  questions Question[]
+  steps     Step[]
+  folders   Folder[]
+
+  identifyingOptions AnswerOption[]
+
+  @@map("procedures")
+}
+
+model Question {
+  id    String @id @default(cuid())
+  label String
+  order Int
+
+  requestId String?
+  request   Request? @relation("RequestQuestions", fields: [requestId], references: [id])
+
+  procedureId String?
+  procedure   Procedure? @relation(fields: [procedureId], references: [id])
+
+  rootOfRequest Request? @relation("RequestRootQuestion")
+
+  options             AnswerOption[] @relation("optionBelongsToQuestion")
+  optionsPointingHere AnswerOption[] @relation("optionLeadsToQuestion")
+  progressions        Progression[]
+
+  @@map("questions")
+}
+
+model AnswerOption {
+  id    String @id @default(cuid())
+  label String
+
+  questionId String
+  question   Question @relation("optionBelongsToQuestion", fields: [questionId], references: [id])
+
+  nextQuestionId String?
+  nextQuestion   Question? @relation("optionLeadsToQuestion", fields: [nextQuestionId], references: [id])
+
+  identifiedProcedureId String?
+  identifiedProcedure   Procedure? @relation(fields: [identifiedProcedureId], references: [id])
+
+  progressions Progression[]
+
+  @@map("answer_options")
+}
+
+model Folder {
+  id           String       @id @default(cuid())
+  status       FolderStatus @default(INITIATED)
+  creationDate DateTime     @default(now())
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  procedureId String
+  procedure   Procedure @relation(fields: [procedureId], references: [id])
+
+  requestId String?  @unique
+  request   Request? @relation("RequestFolder", fields: [requestId], references: [id])
+
+  orders       Order[]
+  progressions Progression[]
+
+  @@map("folders")
+}
+
+model Progression {
+  id         String   @id @default(cuid())
+  answeredAt DateTime @default(now())
+
+  requestId String?
+  request   Request? @relation(fields: [requestId], references: [id])
+
+  folderId String?
+  folder   Folder? @relation(fields: [folderId], references: [id])
+
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id])
+
+  selectedOptionId String
+  selectedOption   AnswerOption @relation(fields: [selectedOptionId], references: [id])
+
+  @@map("progressions")
+}
+
+model Step {
+  id            String   @id @default(cuid())
+  title String
+  order         Int
+  description   String
+  estimatedFees Decimal?
+
+  procedureId String
+  procedure   Procedure @relation(fields: [procedureId], references: [id])
+
+  administrativeBodyId String
+  administrativeBody   AdministrativeBody @relation(fields: [administrativeBodyId], references: [id])
+
+  documentId String?
+  document   Document? @relation(fields: [documentId], references: [id])
+
+  orders      Order[]
+  fraudAlerts FraudAlert[]
+
+  @@map("steps")
+}
+
+model Document {
+  id                  String   @id @default(cuid())
+  name                String
+  price               Decimal
+  isCustomizable      Boolean  @default(false)
+  customizationFields String[]
+  legalWarning        String
+
+  steps  Step[]
+  orders Order[]
+
+  @@map("documents")
+}
+
+model Order {
+  id                String      @id @default(cuid())
+  status            OrderStatus @default(DRAFT)
+  creationDate      DateTime    @default(now())
+  updateDate        DateTime    @updatedAt
+  customizationData Json?
+
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  folderId String
+  folder   Folder @relation(fields: [folderId], references: [id])
+
+  stepId String
+  step   Step   @relation(fields: [stepId], references: [id])
+
+  documentId String
+  document   Document @relation(fields: [documentId], references: [id])
+
+  transactions Transaction[]
+
+  @@map("orders")
+}
+
+model Transaction {
+  id              String            @id @default(cuid())
+  reference       String            @unique
+  amount          Decimal
+  paymentMethod   String?
+  status          TransactionStatus @default(PENDING)
+  transactionDate DateTime          @default(now())
+
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  @@map("transactions")
+}
+
+model AdministrativeBody {
+  id      String  @id @default(cuid())
+  name    String
+  type    String
+  contact String?
+
+  locationId String
+  location   Location @relation(fields: [locationId], references: [id])
+
+  steps Step[]
+
+  @@map("administrative_bodies")
+}
+
+model Location {
+  id         String @id @default(cuid())
+  region     String
+  department String
+  district   String
+  city       String
+
+  administrativeBodies AdministrativeBody[]
+
+  @@map("locations")
+}
+
+model FraudAlert {
+  id              String   @id @default(cuid())
+  title           String
+  description     String
+  publicationDate DateTime @default(now())
+
+  stepId String?
+  step   Step?   @relation(fields: [stepId], references: [id])
+
+  @@map("fraud_alerts")
 }
