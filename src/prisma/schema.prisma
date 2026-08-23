@@ -192,7 +192,7 @@ model Progression {
 
 model Step {
   id            String   @id @default(cuid())
-  title String
+  title         String
   order         Int
   description   String
   estimatedFees Decimal?

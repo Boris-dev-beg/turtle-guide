@@ -1,19 +1,11 @@
+import { prisma } from "@/lib/prisma";
 import {
-  PrismaClient,
   Prisma,
   ProcedureDomain,
   FolderStatus,
   OrderStatus,
   TransactionStatus,
 } from "../generated/prisma/client";
-
-import { PrismaPg } from "@prisma/adapter-pg";
-
-const adapter = new PrismaPg({
-  connectionString: process.env.DATABASE_URL!,
-});
-
-const prisma = new PrismaClient({ adapter });
 
 const money = (value: number) => new Prisma.Decimal(value);
 
@@ -85,25 +77,23 @@ async function main() {
   // 3. ADMINISTRATIVE BODIES
   // ============================================================
 
-  const centreEtatCivilYaounde =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Centre d'état civil de Yaoundé",
-        type: "CENTRE_ETAT_CIVIL",
-        contact: "+237 222 20 00 00",
-        locationId: yaounde.id,
-      },
-    });
+  const centreEtatCivilYaounde = await prisma.administrativeBody.create({
+    data: {
+      name: "Centre d'état civil de Yaoundé",
+      type: "CENTRE_ETAT_CIVIL",
+      contact: "+237 222 20 00 00",
+      locationId: yaounde.id,
+    },
+  });
 
-  const centreEtatCivilDouala =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Centre d'état civil de Douala",
-        type: "CENTRE_ETAT_CIVIL",
-        contact: "+237 233 40 00 00",
-        locationId: douala.id,
-      },
-    });
+  const centreEtatCivilDouala = await prisma.administrativeBody.create({
+    data: {
+      name: "Centre d'état civil de Douala",
+      type: "CENTRE_ETAT_CIVIL",
+      contact: "+237 233 40 00 00",
+      locationId: douala.id,
+    },
+  });
 
   const tribunalPremiereInstanceYaounde =
     await prisma.administrativeBody.create({
@@ -115,55 +105,50 @@ async function main() {
       },
     });
 
-  const universiteYaounde =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Université de Yaoundé I — service compétent",
-        type: "ETABLISSEMENT_ACADEMIQUE",
-        contact: "+237 222 23 44 66",
-        locationId: yaounde.id,
-      },
-    });
+  const universiteYaounde = await prisma.administrativeBody.create({
+    data: {
+      name: "Université de Yaoundé I — service compétent",
+      type: "ETABLISSEMENT_ACADEMIQUE",
+      contact: "+237 222 23 44 66",
+      locationId: yaounde.id,
+    },
+  });
 
-  const delegationMinesup =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Délégation compétente du MINESUP",
-        type: "ADMINISTRATION_ACADEMIQUE",
-        contact: "+237 222 22 91 51",
-        locationId: yaounde.id,
-      },
-    });
+  const delegationMinesup = await prisma.administrativeBody.create({
+    data: {
+      name: "Délégation compétente du MINESUP",
+      type: "ADMINISTRATION_ACADEMIQUE",
+      contact: "+237 222 22 91 51",
+      locationId: yaounde.id,
+    },
+  });
 
-  const idcam =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Service d'identification — pré-enrôlement CNI",
-        type: "IDENTITE",
-        contact: null,
-        locationId: yaounde.id,
-      },
-    });
+  const idcam = await prisma.administrativeBody.create({
+    data: {
+      name: "Service d'identification — pré-enrôlement CNI",
+      type: "IDENTITE",
+      contact: null,
+      locationId: yaounde.id,
+    },
+  });
 
-  const centreEtatCivilBafoussam =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Centre d'état civil de Bafoussam",
-        type: "CENTRE_ETAT_CIVIL",
-        contact: null,
-        locationId: bafoussam.id,
-      },
-    });
+  const centreEtatCivilBafoussam = await prisma.administrativeBody.create({
+    data: {
+      name: "Centre d'état civil de Bafoussam",
+      type: "CENTRE_ETAT_CIVIL",
+      contact: null,
+      locationId: bafoussam.id,
+    },
+  });
 
-  const centreEtatCivilDschang =
-    await prisma.administrativeBody.create({
-      data: {
-        name: "Centre d'état civil de Dschang",
-        type: "CENTRE_ETAT_CIVIL",
-        contact: null,
-        locationId: dschang.id,
-      },
-    });
+  const centreEtatCivilDschang = await prisma.administrativeBody.create({
+    data: {
+      name: "Centre d'état civil de Dschang",
+      type: "CENTRE_ETAT_CIVIL",
+      contact: null,
+      locationId: dschang.id,
+    },
+  });
 
   // ============================================================
   // 4. DOCUMENTS VENDUS PAR TURTLEGUIDE
@@ -173,126 +158,118 @@ async function main() {
   // price = prix du document TurtleGuide.
   // Ce n'est PAS un frais administratif.
 
-  const modeleRequeteJugementNaissance =
-    await prisma.document.create({
-      data: {
-        name: "Requête aux fins de jugement supplétif d'acte de naissance",
-        price: money(500),
-        isCustomizable: true,
-        customizationFields: [
-          "nom",
-          "prenoms",
-          "dateNaissance",
-          "lieuNaissance",
-          "nomsParents",
-          "residence",
-        ],
-        legalWarning:
-          "Ce document est un modèle préparé à partir des informations fournies par l'utilisateur. Il ne constitue pas une décision judiciaire et ne garantit pas l'issue de la procédure.",
-      },
-    });
+  const modeleRequeteJugementNaissance = await prisma.document.create({
+    data: {
+      name: "Requête aux fins de jugement supplétif d'acte de naissance",
+      price: money(500),
+      isCustomizable: true,
+      customizationFields: [
+        "nom",
+        "prenoms",
+        "dateNaissance",
+        "lieuNaissance",
+        "nomsParents",
+        "residence",
+      ],
+      legalWarning:
+        "Ce document est un modèle préparé à partir des informations fournies par l'utilisateur. Il ne constitue pas une décision judiciaire et ne garantit pas l'issue de la procédure.",
+    },
+  });
 
-  const modeleDeclarationDeces =
-    await prisma.document.create({
-      data: {
-        name: "Modèle de déclaration de décès",
-        price: money(300),
-        isCustomizable: true,
-        customizationFields: [
-          "nomDefunt",
-          "prenomsDefunt",
-          "dateDeces",
-          "lieuDeces",
-          "nomDeclarant",
-          "lienAvecDefunt",
-        ],
-        legalWarning:
-          "Ce document facilite la préparation de la démarche. Il ne constitue pas un acte de décès officiel.",
-      },
-    });
+  const modeleDeclarationDeces = await prisma.document.create({
+    data: {
+      name: "Modèle de déclaration de décès",
+      price: money(300),
+      isCustomizable: true,
+      customizationFields: [
+        "nomDefunt",
+        "prenomsDefunt",
+        "dateDeces",
+        "lieuDeces",
+        "nomDeclarant",
+        "lienAvecDefunt",
+      ],
+      legalWarning:
+        "Ce document facilite la préparation de la démarche. Il ne constitue pas un acte de décès officiel.",
+    },
+  });
 
-  const formulaireAcademique =
-    await prisma.document.create({
-      data: {
-        name: "Dossier de demande de certification académique",
-        price: money(500),
-        isCustomizable: true,
-        customizationFields: [
-          "nom",
-          "prenoms",
-          "matricule",
-          "etablissement",
-          "diplome",
-          "anneeObtention",
-        ],
-        legalWarning:
-          "Ce document facilite la préparation de la demande. La certification est effectuée par l'autorité académique compétente.",
-      },
-    });
+  const formulaireAcademique = await prisma.document.create({
+    data: {
+      name: "Dossier de demande de certification académique",
+      price: money(500),
+      isCustomizable: true,
+      customizationFields: [
+        "nom",
+        "prenoms",
+        "matricule",
+        "etablissement",
+        "diplome",
+        "anneeObtention",
+      ],
+      legalWarning:
+        "Ce document facilite la préparation de la demande. La certification est effectuée par l'autorité académique compétente.",
+    },
+  });
 
   // ============================================================
   // 5. PROCEDURES
   // ============================================================
 
-  const naissanceCertification =
-    await prisma.procedure.create({
-      data: {
-        title: "Faire certifier un acte de naissance",
-        domain: ProcedureDomain.CIVIL_STATUS,
-        legalBasis:
-          "Loi n°2024/016 du 23 décembre 2024 portant organisation du système d'enregistrement des faits d'état civil au Cameroun",
-        description:
-          "Parcours d'orientation pour une personne qui possède déjà un acte de naissance et souhaite effectuer une démarche de certification.",
-      },
-    });
+  const naissanceCertification = await prisma.procedure.create({
+    data: {
+      title: "Faire certifier un acte de naissance",
+      domain: ProcedureDomain.CIVIL_STATUS,
+      legalBasis:
+        "Loi n°2024/016 du 23 décembre 2024 portant organisation du système d'enregistrement des faits d'état civil au Cameroun",
+      description:
+        "Parcours d'orientation pour une personne qui possède déjà un acte de naissance et souhaite effectuer une démarche de certification.",
+    },
+  });
 
-  const jugementSuppletifNaissance =
-    await prisma.procedure.create({
-      data: {
-        title: "Obtenir un jugement supplétif d'acte de naissance",
-        domain: ProcedureDomain.JUSTICE,
-        legalBasis:
-          "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à la reconstitution des actes d'état civil",
-        description:
-          "Parcours destiné aux personnes dont la naissance n'a pas été régulièrement enregistrée et qui doivent identifier la procédure judiciaire appropriée.",
-      },
-    });
+  const jugementSuppletifNaissance = await prisma.procedure.create({
+    data: {
+      title: "Obtenir un jugement supplétif d'acte de naissance",
+      domain: ProcedureDomain.JUSTICE,
+      legalBasis:
+        "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à la reconstitution des actes d'état civil",
+      description:
+        "Parcours destiné aux personnes dont la naissance n'a pas été régulièrement enregistrée et qui doivent identifier la procédure judiciaire appropriée.",
+    },
+  });
 
-  const certificationAcademique =
-    await prisma.procedure.create({
-      data: {
-        title: "Faire certifier un diplôme ou un relevé de notes",
-        domain: ProcedureDomain.ACADEMIC,
-        legalBasis:
-          "Procédures internes des établissements et autorités académiques compétentes",
-        description:
-          "Parcours permettant d'identifier l'autorité compétente pour faire certifier un document académique.",
-      },
-    });
+  const certificationAcademique = await prisma.procedure.create({
+    data: {
+      title: "Faire certifier un diplôme ou un relevé de notes",
+      domain: ProcedureDomain.ACADEMIC,
+      legalBasis:
+        "Procédures internes des établissements et autorités académiques compétentes",
+      description:
+        "Parcours permettant d'identifier l'autorité compétente pour faire certifier un document académique.",
+    },
+  });
 
-  const carteIdentite =
-    await prisma.procedure.create({
-      data: {
-        title: "Préparer une demande de Carte Nationale d'Identité",
-        domain: ProcedureDomain.IDENTITY,
-        legalBasis:
-          "Procédure officielle de pré-enrôlement de la Carte Nationale d'Identité",
-        description:
-          "Parcours d'orientation permettant de préparer une démarche de demande ou de renouvellement de CNI.",
-      },
-    });
+  const carteIdentite = await prisma.procedure.create({
+    data: {
+      title: "Préparer une demande de Carte Nationale d'Identité",
+      domain: ProcedureDomain.IDENTITY,
+      legalBasis:
+        "Procédure officielle de pré-enrôlement de la Carte Nationale d'Identité",
+      description:
+        "Parcours d'orientation permettant de préparer une démarche de demande ou de renouvellement de CNI.",
+    },
+  });
 
-  const declarationDeces =
-    await prisma.procedure.create({
-      data: {
-        title: "Déclarer un décès",
-        domain: ProcedureDomain.CIVIL_STATUS,
-        legalBasis:
-          "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à l'enregistrement des décès",
-        description:
-          "Parcours d'orientation pour déclarer un décès et identifier le centre d'état civil compétent selon les circonstances.",
-      },
-    });
+  const declarationDeces = await prisma.procedure.create({
+    data: {
+      title: "Déclarer un décès",
+      domain: ProcedureDomain.CIVIL_STATUS,
+      legalBasis:
+        "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à l'enregistrement des décès",
+      description:
+        "Parcours d'orientation pour déclarer un décès et identifier le centre d'état civil compétent selon les circonstances.",
+    },
+  });
 
   // ============================================================
   // 6. STEPS — NAISSANCE / CERTIFICATION
@@ -321,8 +298,7 @@ async function main() {
       {
         title: "Récupérer l'acte certifié",
         order: 3,
-        description:
-          "Récupérer le document après traitement de la demande.",
+        description: "Récupérer le document après traitement de la demande.",
         estimatedFees: null,
         procedureId: naissanceCertification.id,
         administrativeBodyId: centreEtatCivilYaounde.id,
@@ -422,8 +398,7 @@ async function main() {
       {
         title: "Récupérer le document certifié",
         order: 4,
-        description:
-          "Récupérer le document après traitement de la demande.",
+        description: "Récupérer le document après traitement de la demande.",
         estimatedFees: null,
         procedureId: certificationAcademique.id,
         administrativeBodyId: universiteYaounde.id,
@@ -604,7 +579,8 @@ async function main() {
 
   const qJS2 = await prisma.question.create({
     data: {
-      label: "Avez-vous un document ou une preuve permettant d'établir la naissance ?",
+      label:
+        "Avez-vous un document ou une preuve permettant d'établir la naissance ?",
       order: 2,
       procedureId: jugementSuppletifNaissance.id,
     },
@@ -1000,55 +976,50 @@ async function main() {
   // 18. RELOAD STEPS TO GET IDS
   // ============================================================
 
-  const stepsNaissance =
-    await prisma.step.findMany({
-      where: {
-        procedureId: naissanceCertification.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+  const stepsNaissance = await prisma.step.findMany({
+    where: {
+      procedureId: naissanceCertification.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
-  const stepsJugement =
-    await prisma.step.findMany({
-      where: {
-        procedureId: jugementSuppletifNaissance.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+  const stepsJugement = await prisma.step.findMany({
+    where: {
+      procedureId: jugementSuppletifNaissance.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
-  const stepsAcademique =
-    await prisma.step.findMany({
-      where: {
-        procedureId: certificationAcademique.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+  const stepsAcademique = await prisma.step.findMany({
+    where: {
+      procedureId: certificationAcademique.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
-  const stepsCNI =
-    await prisma.step.findMany({
-      where: {
-        procedureId: carteIdentite.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+  const stepsCNI = await prisma.step.findMany({
+    where: {
+      procedureId: carteIdentite.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
-  const stepsDeces =
-    await prisma.step.findMany({
-      where: {
-        procedureId: declarationDeces.id,
-      },
-      orderBy: {
-        order: "asc",
-      },
-    });
+  const stepsDeces = await prisma.step.findMany({
+    where: {
+      procedureId: declarationDeces.id,
+    },
+    orderBy: {
+      order: "asc",
+    },
+  });
 
   // ============================================================
   // 19. TEST USER
@@ -1084,8 +1055,7 @@ async function main() {
       accessLevel: "SUPER_ADMIN",
       name: "Administrateur TurtleGuide",
       email: "admin@turtleguide.local",
-      hashedPassword:
-        "$2b$12$example-hash-to-replace-before-production",
+      hashedPassword: "$2b$12$example-hash-to-replace-before-production",
       userId: adminUser.id,
     },
   });
@@ -1094,15 +1064,14 @@ async function main() {
   // 21. FOLDER TEST — PARCOURS TERMINE
   // ============================================================
 
-  const folderCompleted =
-    await prisma.folder.create({
-      data: {
-        status: FolderStatus.CLOSED,
-        userId: testUser.id,
-        procedureId: jugementSuppletifNaissance.id,
-        requestId: requestJugement.id,
-      },
-    });
+  const folderCompleted = await prisma.folder.create({
+    data: {
+      status: FolderStatus.CLOSED,
+      userId: testUser.id,
+      procedureId: jugementSuppletifNaissance.id,
+      requestId: requestJugement.id,
+    },
+  });
 
   // Progressions du diagnostic
   await prisma.progression.create({
@@ -1110,15 +1079,14 @@ async function main() {
       requestId: requestJugement.id,
       folderId: folderCompleted.id,
       questionId: qJS1.id,
-      selectedOptionId:
-        (
-          await prisma.answerOption.findFirstOrThrow({
-            where: {
-              questionId: qJS1.id,
-              label: "Non",
-            },
-          })
-        ).id,
+      selectedOptionId: (
+        await prisma.answerOption.findFirstOrThrow({
+          where: {
+            questionId: qJS1.id,
+            label: "Non",
+          },
+        })
+      ).id,
     },
   });
 
@@ -1127,15 +1095,11 @@ async function main() {
   // ============================================================
 
   const stepDocument = stepsJugement.find(
-    (step) =>
-      step.documentId ===
-      modeleRequeteJugementNaissance.id,
+    (step) => step.documentId === modeleRequeteJugementNaissance.id,
   );
 
   if (!stepDocument) {
-    throw new Error(
-      "Step du document jugement supplétif introuvable",
-    );
+    throw new Error("Step du document jugement supplétif introuvable");
   }
 
   const paidOrder = await prisma.order.create({
@@ -1170,20 +1134,19 @@ async function main() {
   // 23. ORDER FAILED
   // ============================================================
 
-  const failedOrder =
-    await prisma.order.create({
-      data: {
-        status: OrderStatus.FAILED,
-        userId: testUser.id,
-        folderId: folderCompleted.id,
-        stepId: stepDocument.id,
-        documentId: modeleRequeteJugementNaissance.id,
-        customizationData: {
-          nom: "Tchoumi",
-          prenoms: "Jean",
-        },
+  const failedOrder = await prisma.order.create({
+    data: {
+      status: OrderStatus.FAILED,
+      userId: testUser.id,
+      folderId: folderCompleted.id,
+      stepId: stepDocument.id,
+      documentId: modeleRequeteJugementNaissance.id,
+      customizationData: {
+        nom: "Tchoumi",
+        prenoms: "Jean",
       },
-    });
+    },
+  });
 
   await prisma.transaction.create({
     data: {
@@ -1199,23 +1162,21 @@ async function main() {
   // 24. FOLDER IN PROGRESS — REPRISE
   // ============================================================
 
-  const folderInProgress =
-    await prisma.folder.create({
-      data: {
-        status: FolderStatus.INITIATED,
-        userId: testUser2.id,
-        procedureId: certificationAcademique.id,
-        requestId: requestAcademique.id,
-      },
-    });
+  const folderInProgress = await prisma.folder.create({
+    data: {
+      status: FolderStatus.INITIATED,
+      userId: testUser2.id,
+      procedureId: certificationAcademique.id,
+      requestId: requestAcademique.id,
+    },
+  });
 
-  const academicOption =
-    await prisma.answerOption.findFirstOrThrow({
-      where: {
-        questionId: qAC1.id,
-        label: "Diplôme",
-      },
-    });
+  const academicOption = await prisma.answerOption.findFirstOrThrow({
+    where: {
+      questionId: qAC1.id,
+      label: "Diplôme",
+    },
+  });
 
   await prisma.progression.create({
     data: {
@@ -1230,23 +1191,21 @@ async function main() {
   // 25. FOLDER DECES
   // ============================================================
 
-  const deathFolder =
-    await prisma.folder.create({
-      data: {
-        status: FolderStatus.INITIATED,
-        userId: testUser2.id,
-        procedureId: declarationDeces.id,
-        requestId: requestDeces.id,
-      },
-    });
+  const deathFolder = await prisma.folder.create({
+    data: {
+      status: FolderStatus.INITIATED,
+      userId: testUser2.id,
+      procedureId: declarationDeces.id,
+      requestId: requestDeces.id,
+    },
+  });
 
-  const deathOption =
-    await prisma.answerOption.findFirstOrThrow({
-      where: {
-        questionId: qD1.id,
-        label: "Dans un établissement hospitalier",
-      },
-    });
+  const deathOption = await prisma.answerOption.findFirstOrThrow({
+    where: {
+      questionId: qD1.id,
+      label: "Dans un établissement hospitalier",
+    },
+  });
 
   await prisma.progression.create({
     data: {
@@ -1261,11 +1220,9 @@ async function main() {
   // 26. FRAUD ALERTS
   // ============================================================
 
-  const deathStep =
-    stepsDeces.find((step) => step.order === 3);
+  const deathStep = stepsDeces.find((step) => step.order === 3);
 
-  const cniStep =
-    stepsCNI.find((step) => step.order === 2);
+  const cniStep = stepsCNI.find((step) => step.order === 2);
 
   if (deathStep) {
     await prisma.fraudAlert.create({
@@ -1282,8 +1239,7 @@ async function main() {
   if (cniStep) {
     await prisma.fraudAlert.create({
       data: {
-        title:
-          "Attention aux faux services de pré-enrôlement",
+        title: "Attention aux faux services de pré-enrôlement",
         description:
           "Utilisez uniquement les canaux officiels pour les opérations liées à la Carte Nationale d'Identité.",
         stepId: cniStep.id,

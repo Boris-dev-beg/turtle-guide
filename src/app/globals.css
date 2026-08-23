@@ -4,16 +4,58 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@font-face {
+  font-family: "Inter";
+  src: url("/inter.ttf") format("TrueType");
+  font-display: swap;
+}
+@font-face {
+  font-family: "PlexMono";
+  src: url("/IBMPlexMono.ttf") format("TrueType");
+  font-display: swap;
+}
+@font-face {
+  font-family: "SpaceGrotesk";
+  src: url("/SpaceGrotesk.ttf") format("TrueType");
+  font-display: swap;
+}
+
 @theme inline {
+  --color-turtle-primary: var(--turtle-primary);
+  --color-turtle-primary-hover: var(--turtle-primary-hover);
+  --color-turtle-primary-light: var(--turtle-primary-light);
+  --color-turtle-primary-border: var(--turtle-primary-border);
+
+  --color-turtle-accent: var(--turtle-accent);
+  --color-turtle-accent-hover: var(--turtle-accent-hover);
+
+  --color-turtle-warning-bg: var(--turtle-warning-bg);
+  --color-turtle-warning-border: var(--turtle-warning-border);
+
+  --color-turtle-text-main: var(--turtle-text-main);
+  --color-turtle-text-muted: var(--turtle-text-muted);
+
+  --color-turtle-bg: var(--turtle-bg);
+  --color-turtle-card-bg: var(--turtle-card-bg);
+  --color-turtle-border: var(--turtle-border);
+
+  --color-turtle-ink: var(--turtle-ink);
+  --color-turtle-laterite: var(--turtle-laterite);
+  --color-turtle-route: var(--turtle-route);
+  --color-turtle-alert: var(--turtle-alert);
+
+  --color-turtle-paper: var(--turtle-paper);
+  --color-turtle-slate: var(--turtle-slate);
+
+  --color-turtle-laterite-bg: var(--turtle-laterite-bg);
+  --color-turtle-route-bg: var(--turtle-route-bg);
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
 
-  --font-body: var(--font-inter);
-  --font-heading: var(--font-space-grotesk);
-  --font-data: var(--font-plex-mono);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
+  --font-body: "Inter";
+  --font-heading: "SpaceGrotesk";
+  --font-data: "PlexMono";
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -67,6 +109,29 @@
   --turtle-laterite-bg: #faece7;
   --turtle-route-bg: #e9f3ed;
 
+  /* ! Marque / Brand */
+  --turtle-primary: #124a2f;
+  --turtle-primary-hover: #0d3823;
+  --turtle-primary-light: #e8f3ee; /* ? Fond vert clair des alertes et radios */
+  --turtle-primary-border: #b2d3c2;
+
+  /* ! Accentuation */
+  --turtle-accent: #f5a524; /* ? Le bouton et texte jaune/orange */
+  --turtle-accent-hover: #d98f1d;
+
+  /* ! Alertes */
+  --turtle-warning-bg: #fff8e6;
+  --turtle-warning-border: #fee7a0;
+
+  /* ! Textes */
+  --turtle-text-main: #1a1a1a;
+  --turtle-text-muted: #666666;
+
+  /* ! Structure */
+  --turtle-bg: #fafafa;
+  --turtle-card-bg: #ffffff;
+  --turtle-border: #e5e7eb;
+
   /* ! =========== 
      ! GLOBAL 
      ! =========== */
@@ -85,22 +150,12 @@
   --destructive: #b23a2f;
 
   --border: #d8d6cc;
-  /* --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0); */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  /* --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0); */
-  /* --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0); */
-  /* --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0); */
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
-  /* --destructive: oklch(0.577 0.245 27.325); */
-  /* --border: oklch(0.922 0 0); */
   --input: oklch(0.922 0 0);
   --ring: oklch(0.708 0 0);
   --chart-1: oklch(0.87 0 0);
@@ -158,9 +213,84 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-turtle-bg font-body text-foreground;
   }
-  html {
-    @apply font-sans;
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* ! -- Boutons -- */
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2.5 text-sm font-semibold rounded-lg transition-colors cursor-pointer active:outline-none active:ring-1 active:ring-offset-2 active:scale-[98%];
+  }
+
+  .btn-primary {
+    @apply bg-turtle-primary text-white hover:bg-turtle-primary-hover active:ring-turtle-primary shadow-inner shadow-turtle-accent;
+  }
+
+  .btn-accent {
+    @apply bg-turtle-accent text-turtle-text-main hover:bg-turtle-accent-hover active:ring-turtle-accent;
+  }
+
+  .btn-outline {
+    @apply border border-turtle-border bg-turtle-card-bg text-turtle-text-main hover:bg-turtle-bg active:ring-turtle-border;
+  }
+
+  /* -- Cartes et Sections -- */
+  .turtle-card {
+    @apply bg-turtle-card-bg border border-turtle-border rounded-xl shadow-sm p-6;
+  }
+
+  .turtle-card-sm {
+    @apply bg-turtle-card-bg border border-turtle-border rounded-lg shadow-sm p-4;
+  }
+
+  /* -- Éléments de formulaire (Radio Cards) -- */
+  .turtle-radio {
+    @apply flex items-center p-4 border border-turtle-border rounded-lg cursor-pointer transition-colors bg-turtle-card-bg hover:bg-turtle-bg;
+  }
+
+  .turtle-radio-active {
+    @apply border-turtle-primary bg-turtle-primary-light;
+  }
+
+  /* -- Alertes / Bannières d'information -- */
+  .turtle-alert-warning {
+    @apply flex items-start gap-3 p-4 bg-turtle-warning-bg rounded-lg text-sm text-turtle-text-main;
+  }
+
+  .turtle-alert-success {
+    @apply flex items-start gap-3 p-4 bg-turtle-primary-light rounded-lg text-sm text-turtle-primary;
+  }
+
+  /* -- Indicateurs et Progression -- */
+  .turtle-step {
+    @apply flex items-center justify-center w-7 h-7 rounded-full text-xs font-semibold shrink-0;
+  }
+
+  .turtle-step-active {
+    @apply bg-turtle-primary text-white;
+  }
+
+  .turtle-step-inactive {
+    @apply bg-turtle-bg text-turtle-text-muted border border-turtle-border;
+  }
+
+  .turtle-progress-track {
+    @apply w-full bg-turtle-border h-1.5 rounded-full overflow-hidden;
+  }
+
+  .turtle-progress-fill {
+    @apply bg-turtle-primary h-full rounded-full transition-all duration-300 ease-out;
+  }
+  .wrapper {
+    @apply max-w-7xl md:w-full md:mx-10 max-[500px]:mx-2 mx-auto;
   }
 }
