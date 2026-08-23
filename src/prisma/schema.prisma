@@ -97,12 +97,28 @@ model Request {
   @@map("requests")
 }
 
+model Category {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String
+  order       Int      @default(0)
+
+  procedures  Procedure[]
+
+  @@map("categories")
+}
+
+
 model Procedure {
   id          String          @id @default(cuid())
   title       String
   domain      ProcedureDomain
   legalBasis  String
   description String
+
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
 
   questions Question[]
   steps     Step[]

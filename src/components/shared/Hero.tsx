@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import hero_img from "../../assets/images/hero.png";
+import Link from "next/link";
 
 export default function Hero() {
   return (
@@ -29,9 +30,12 @@ export default function Hero() {
               TurtleGuide vous accompagne pas à pas pour comprendre vos
               démarches et éviter les anarques.
             </p>
-            <button className="btn btn-accent w-40 gap-3 text-base">
+            <Link
+              href="/requests"
+              className="btn btn-accent w-40 gap-3 text-base"
+            >
               Commencer <ArrowRight className="size-5" />
-            </button>
+            </Link>
           </div>
           {/* Image */}
           <div className="relative w-full h-100">
@@ -100,7 +104,9 @@ const Card_ = ({
       <Icon
         className={`size-10 ${icon_class ? icon_class : "text-turtle-primary"}`}
       />
-      <span className={` ${icon_class? "max-md:items-center max-md:*:text-center" : ""} flex flex-col`}>
+      <span
+        className={` ${icon_class ? "max-md:items-center max-md:*:text-center" : ""} flex flex-col`}
+      >
         <h3 className="font-semibold text-base">{title}</h3>
         <p className="text-turtle-text-muted text-sm">{description}</p>
       </span>
