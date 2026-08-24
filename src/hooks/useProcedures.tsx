@@ -2,7 +2,19 @@
 import { useEffect, useState } from "react";
 
 export function useProcedures() {
+  // ! States
+  // ? All Procedures
   const [procedures, setProcedures] = useState<
+    {
+      title: string;
+      description: string;
+      category: {
+        name: string;
+      };
+    }[]
+  >([]);
+// ? Popular procedures
+  const [Popularprocedures, setPopularProcedures] = useState<
     {
       title: string;
       description: string;
@@ -13,10 +25,12 @@ export function useProcedures() {
   >([]);
   const [loading, setLoading] = useState(true);
 
+  // ! Functions
   useEffect(() => {
     async function fetchPosts() {
       try {
         const response = await fetch("/api/procedures");
+        const response_popular =await fetch("api/procedures/populars")
 
         const data: {
           title: string;
@@ -26,7 +40,16 @@ export function useProcedures() {
           };
         }[] = await response.json();
 
+        const data_popular: {
+          title: string;
+          description: string;
+          category: {
+            name: string;
+          };
+        }[] = await response_popular.json();
+
         setProcedures(data);
+        setPopularProcedures(data_popular)
       } catch (err) {
         console.error("Erreur lors de la récupération des Procedures:", err);
       } finally {
@@ -37,8 +60,11 @@ export function useProcedures() {
     fetchPosts();
   }, []);
 
+  // ! Render
   return {
     procedures,
+    Popularprocedures,
+
     loading,
   };
 }

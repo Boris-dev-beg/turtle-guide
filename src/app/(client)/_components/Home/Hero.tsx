@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
-import hero_img from "../../assets/images/hero.png";
+import hero_img from "../../../../assets/images/hero.png";
 import Link from "next/link";
 import HowDoesItWork from "./HowDoesItWork";
 import { Hero_infos } from "@/data/GlobalData";
