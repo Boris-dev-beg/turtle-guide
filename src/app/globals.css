@@ -232,7 +232,7 @@
   }
 
   .btn-primary {
-    @apply bg-turtle-primary text-white hover:bg-turtle-primary-hover active:ring-turtle-primary shadow-inner shadow-turtle-accent;
+    @apply bg-turtle-primary text-white hover:bg-turtle-primary-hover active:ring-turtle-primary shadow shadow-turtle-primary-light;
   }
 
   .btn-accent {

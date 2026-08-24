@@ -47,9 +47,11 @@ export function SelectDemo() {
   );
 }
 
-export function InputDemo() {
+export function InputDemo({ className }: { className?: string }) {
   return (
-    <InputGroup className="py-5 focus-within:ring-turtle-primary-border! focus-within:border-none!">
+    <InputGroup
+      className={`${className ? className : ""} py-5 focus-within:ring-turtle-primary-border! focus-within:border-none!`}
+    >
       <InputGroupAddon>
         <Search className="size-5" />
       </InputGroupAddon>

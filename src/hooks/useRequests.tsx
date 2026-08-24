@@ -11,9 +11,6 @@ export function useRequests() {
       try {
         const response = await fetch("/api/requests");
 
-        // if (!response.ok) {
-        //   throw new Error("Erreur lors de la récupération des Requetes");
-        // }
         console.log("response in the fetch function:", response)
 
         const data: Request[] = await response.json();

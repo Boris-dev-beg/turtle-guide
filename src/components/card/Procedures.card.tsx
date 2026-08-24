@@ -1,5 +1,23 @@
-import { Baby, BriefcaseBusinessIcon, ChevronRight, FileText, GraduationCap, HandHeart, Home, Hospital, IdCard, Unlink2 } from "lucide-react";
-import { Card, CardDescription, CardFooter, CardHeader, CardTitle } from "../ui/card";
+"use client";
+import {
+  Baby,
+  BriefcaseBusinessIcon,
+  ChevronRight,
+  FileText,
+  GraduationCap,
+  HandHeart,
+  Home,
+  Hospital,
+  IdCard,
+  Unlink2,
+} from "lucide-react";
+import {
+  Card,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 
 const icons = {
   documents: IdCard,
@@ -13,16 +31,19 @@ const icons = {
 };
 
 export const Procedure_card = ({
-  title,
-  description,
-  category,
+  procedure,
 }: {
-  title: string;
-  category: string;
-  description: string;
+  procedure: {
+    title: string;
+    description: string;
+    category: {
+      name: string;
+    };
+  };
 }) => {
-  const cat = category.toLocaleLowerCase();
-  const lowTitle = title.toLocaleLowerCase();
+  // ! States
+  const cat = procedure.category?.name?.toLocaleLowerCase() || "Bonjour";
+  const lowTitle = procedure.title.toLocaleLowerCase();
   const Icon = cat.includes("documents")
     ? icons["documents"]
     : cat.includes("civil") && lowTitle.includes("naissance")
@@ -40,18 +61,23 @@ export const Procedure_card = ({
                 : cat.includes("emploi")
                   ? icons["emploi"]
                   : Unlink2;
+
+  console.log("Categorie:", procedure.category?.name);
+  // ! Render
   return (
     <Card className="group hover:shadow-md hover:shadow-turtle-primary-light cursor-pointer">
       <CardHeader className="flex items-center gap-2">
-        <Icon className="size-12 p-2 rounded-md bg-turtle-primary-light text-turtle-primary" />
-        <CardTitle className="font-semibold text-lg">{title}</CardTitle>
+        <Icon className="size-12 min-w-12 p-2 rounded-md bg-turtle-primary-light text-turtle-primary" />
+        <CardTitle className="font-semibold text-lg">
+          {procedure.title}
+        </CardTitle>
       </CardHeader>
       <CardDescription className="px-4 line-clamp-2">
-        {description}
+        {procedure.description}
       </CardDescription>
-      <CardFooter className="flex h-20 mt-auto">
-        <p className="bg-turtle-primary-light py-2 px-3 rounded-full text-turtle-primary border-turtle-primary-border border font-semibold">
-          {category}
+      <CardFooter className="flex h-15 mt-auto">
+        <p className="bg-turtle-primary-light py-1 px-3 rounded-full text-turtle-primary border-turtle-primary-border border font-semibold">
+          {procedure.category?.name}
         </p>
         <ChevronRight className="ml-auto group-hover:translate-x-1" />
       </CardFooter>

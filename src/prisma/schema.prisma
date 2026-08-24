@@ -100,9 +100,6 @@ model Request {
 model Category {
   id          String   @id @default(cuid())
   name        String
-  slug        String   @unique
-  description String
-  order       Int      @default(0)
 
   procedures  Procedure[]
 
@@ -117,8 +114,9 @@ model Procedure {
   legalBasis  String
   description String
 
-  categoryId  String
-  category    Category @relation(fields: [categoryId], references: [id])
+  // Keep nullable for the first migration so existing rows can be backfilled safely.
+  categoryId  String?
+  category    Category? @relation(fields: [categoryId], references: [id])
 
   questions Question[]
   steps     Step[]

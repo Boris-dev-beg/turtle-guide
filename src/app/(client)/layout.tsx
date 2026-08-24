@@ -6,7 +6,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <section className="flex flex-col max-w-screen">
       <Header />
-      <main className="mb-15 max-[500px]:px-5 max-w-[90vw] mx-auto" >
+      <main className="mb-15 max-[500px]:px-5 max-w-[90vw] mx-auto lg:mx-20 flex" >
         {children}
       </main>
       <BottomNav />

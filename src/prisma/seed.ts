@@ -28,6 +28,7 @@ async function main() {
   await prisma.request.deleteMany();
   await prisma.administrativeBody.deleteMany();
   await prisma.location.deleteMany();
+  await prisma.category.deleteMany();
   await prisma.procedure.deleteMany();
   await prisma.donation.deleteMany();
   await prisma.administrator.deleteMany();
@@ -213,7 +214,34 @@ async function main() {
   });
 
   // ============================================================
-  // 5. PROCEDURES
+  // 5. CATEGORIES
+  // ============================================================
+
+  const categoryNames = [
+    "Toutes les procédures",
+    "État civil",
+    "Documents d'identité",
+    "Famille",
+    "Logement",
+    "Travail & Emploi",
+    "Éducation",
+    "Justice",
+    "Santé",
+    "Transports",
+    "Autres",
+  ];
+
+  await prisma.Category.createMany({
+    data: categoryNames.map((name) => ({ name })),
+  });
+
+  const categories = await prisma.category.findMany();
+  const categoryMap = Object.fromEntries(
+    categories.map((category) => [category.name, category.id]),
+  );
+
+  // ============================================================
+  // 6. PROCEDURES
   // ============================================================
 
   const naissanceCertification = await prisma.procedure.create({
@@ -224,6 +252,7 @@ async function main() {
         "Loi n°2024/016 du 23 décembre 2024 portant organisation du système d'enregistrement des faits d'état civil au Cameroun",
       description:
         "Parcours d'orientation pour une personne qui possède déjà un acte de naissance et souhaite effectuer une démarche de certification.",
+      categoryId: categoryMap["État civil"],
     },
   });
 
@@ -235,6 +264,7 @@ async function main() {
         "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à la reconstitution des actes d'état civil",
       description:
         "Parcours destiné aux personnes dont la naissance n'a pas été régulièrement enregistrée et qui doivent identifier la procédure judiciaire appropriée.",
+      categoryId: categoryMap["Justice"],
     },
   });
 
@@ -246,6 +276,7 @@ async function main() {
         "Procédures internes des établissements et autorités académiques compétentes",
       description:
         "Parcours permettant d'identifier l'autorité compétente pour faire certifier un document académique.",
+      categoryId: categoryMap["Éducation"],
     },
   });
 
@@ -257,6 +288,7 @@ async function main() {
         "Procédure officielle de pré-enrôlement de la Carte Nationale d'Identité",
       description:
         "Parcours d'orientation permettant de préparer une démarche de demande ou de renouvellement de CNI.",
+      categoryId: categoryMap["Documents d'identité"],
     },
   });
 
@@ -268,6 +300,7 @@ async function main() {
         "Loi n°2024/016 du 23 décembre 2024 et dispositions relatives à l'enregistrement des décès",
       description:
         "Parcours d'orientation pour déclarer un décès et identifier le centre d'état civil compétent selon les circonstances.",
+      categoryId: categoryMap["État civil"],
     },
   });
 
