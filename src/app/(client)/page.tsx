@@ -1,6 +1,7 @@
 import Hero from "@/app/(client)/_components/Home/Hero";
 import OurEngagements from "./_components/Home/Engagements";
 import PopularProcedures from "./_components/Home/PopularProcedures";
+import Contact from "./_components/Home/Contact";
 
 export default function Home() {
   return (
@@ -10,6 +11,10 @@ export default function Home() {
       <OurEngagements />
       {/* Popular Procedures */}
       <PopularProcedures />
+      {/* Contact */}
+      <Contact />
+      {/* Footer */}
+
     </section>
   );
 }

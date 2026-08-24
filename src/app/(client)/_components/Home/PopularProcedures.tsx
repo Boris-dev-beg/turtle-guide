@@ -36,10 +36,10 @@ export default function PopularProcedures() {
             <Card_loader />
           </>
         ) : (
-          Popularprocedures.map((proc) => (
+          Popularprocedures.map((proc, index) => (
             <>
               <Card_
-                key={proc.description}
+                key={index}
                 title={proc.title}
                 categoryName={proc.category.name}
               />
@@ -64,7 +64,7 @@ const Card_ = ({
         <IdCardLanyard className="size-10" />
       </span>
       <CardHeader className="w-full">
-        <CardTitle className="line-clamp-2">{title}</CardTitle>
+        <CardTitle className="line-clamp-2 font-semibold">{title}</CardTitle>
         <CardDescription className="flex items-center">
           <p>{categoryName}</p>
           <ChevronRight className="ml-auto group-hover:translate-x-1" />

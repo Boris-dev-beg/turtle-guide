@@ -92,14 +92,6 @@ export const Procedures_infos = {
 export const Contact_infos = {
     title: "Besion d'aide pour votre démarche ?",
     description: "Consultez nos guides détaillés ou contactez notre support. Nous sommes là pour vous aider.",
-    buttons: [
-        {
-            href: "Consulter les guides"
-        },
-        {
-            href: "Contacter le support"
-        }
-    ]
 }
 
 // ! News Letter

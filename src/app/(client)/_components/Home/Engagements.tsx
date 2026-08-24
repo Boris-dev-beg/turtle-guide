@@ -35,7 +35,7 @@ const Card_ = ({
       <span className="p-4 rounded-full bg-turtle-primary-light text-turtle-primary">
       <Icon className="size-10 md:size-14" />
       </span>
-      <CardTitle className="text-xl">{title}</CardTitle>
+      <CardTitle className="text-xl font-semibold">{title}</CardTitle>
       <CardDescription className="text-center line-clamp-3">
         {description}
       </CardDescription>
