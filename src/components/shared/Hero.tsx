@@ -31,7 +31,7 @@ export default function Hero() {
               démarches et éviter les anarques.
             </p>
             <Link
-              href="/requests"
+              href="/procedures"
               className="btn btn-accent w-40 gap-3 text-base"
             >
               Commencer <ArrowRight className="size-5" />

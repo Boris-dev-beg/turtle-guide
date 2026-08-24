@@ -291,6 +291,6 @@
     @apply bg-turtle-primary h-full rounded-full transition-all duration-300 ease-out;
   }
   .wrapper {
-    @apply max-w-7xl md:w-full md:mx-10 max-[500px]:mx-2 mx-auto;
+    @apply max-w-7xl md:w-full md:mx-10 mx-2;
   }
 }
