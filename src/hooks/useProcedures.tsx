@@ -13,7 +13,7 @@ export function useProcedures() {
       };
     }[]
   >([]);
-// ? Popular procedures
+  // ? Popular procedures
   const [Popularprocedures, setPopularProcedures] = useState<
     {
       title: string;
@@ -30,7 +30,7 @@ export function useProcedures() {
     async function fetchPosts() {
       try {
         const response = await fetch("/api/procedures");
-        const response_popular =await fetch("api/procedures/populars")
+        const response_popular = await fetch("api/procedures/populars");
 
         const data: {
           title: string;
@@ -49,7 +49,7 @@ export function useProcedures() {
         }[] = await response_popular.json();
 
         setProcedures(data);
-        setPopularProcedures(data_popular)
+        setPopularProcedures(data_popular);
       } catch (err) {
         console.error("Erreur lors de la récupération des Procedures:", err);
       } finally {
@@ -59,7 +59,7 @@ export function useProcedures() {
 
     fetchPosts();
   }, []);
-
+  
   // ! Render
   return {
     procedures,

@@ -1,30 +1,117 @@
 "use client";
-import { Procedure_card } from "@/components/card/Procedures.card";
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Procedure_card } from "@/app/(client)/_components/Procedures/Procedures.card";
 import { useProcedures } from "@/hooks/useProcedures";
-import { useProceducesStore } from "@/store/categories.store";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import {
+  CardLoading,
+  FoundedProceduces,
+} from "../_components/Procedures/Cards";
+import { FilterForm } from "../_components/Procedures/Form";
+import { Categories } from "./Categories";
+import { useCategories } from "@/hooks/useCategories";
 
-export function Procedures() {
+// ? Normalize the value
+const deleteAccent = (text: string) => {
+  return text
+    .toLocaleLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+};
+
+export function Procedures_Zone() {
   // ! States
+  const { categories, loading: categoryLoading } = useCategories();
   const { procedures, loading } = useProcedures();
-  const { setLoading, setLength } = useProceducesStore();
+  const [proceduresToShow, setProceduresToShow] = useState(procedures);
+  const [procedureNotFound, setProcedureNotFound] = useState(false);
 
   // ! Functions
-  // if (!loading) {
-  //   setLoading(false);
-  //   setLength(procedures.length);
-  // }
-
+  // ? Update Procedure To Show
   useEffect(() => {
-    const handleChange = () => {
-      setLoading(false);
-      setLength(procedures.length);
+    const updateProcedureToShow = () => {
+      setProceduresToShow(procedures);
     };
-    handleChange();
-  }, [loading, procedures, setLength, setLoading]);
-  console.log("Procedures:", procedures);
+    updateProcedureToShow();
+  }, [procedures]);
+
+  // ? Filter Procedures
+  const filter = (searchElt: string) => {
+    if (searchElt.trim() === "" || searchElt.trim().includes("toutes")) {
+      setProceduresToShow(procedures);
+      setProcedureNotFound(false);
+      return;
+    }
+
+    // ? Normalization of the user's Entry
+    const search = deleteAccent(searchElt.trim());
+
+    const FilteredProcedures = procedures.filter((procedure) => {
+      // ? Normalization of the fields I need
+      const safeTitle = deleteAccent(procedure.title);
+      const safeCategoryName = deleteAccent(procedure.category.name);
+
+      if (safeTitle.includes(search) || safeCategoryName.includes(search)) {
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    if (FilteredProcedures.length === 0) {
+      setProcedureNotFound(true);
+      return;
+    } else {
+      setProcedureNotFound(false);
+      setProceduresToShow(FilteredProcedures);
+      return;
+    }
+  };
+
+  // ! Render
+  return (
+    <div className="h-full flex flex-col py-5 gap-5">
+      {/* HEADER */}
+      <div className="flex flex-col gap-4">
+        <h1 className="text-4xl font-bold text-turtle-primary max-w-xl lg:max-w-2xl">
+          Quelle démarche souhaitez-vous effectuer ?
+        </h1>
+        <FilterForm filter={(elt) => filter(elt)} />
+      </div>
+      {/* BODY */}
+      <main className="flex gap-3 border-t border-turtle-border pt-4">
+        {/* Category filter */}
+        <Categories
+          OnClick={(elt) => filter(elt)}
+          categories={categories}
+          loading={categoryLoading}
+        />
+        {/* Cards */}
+        <div className="flex flex-col gap-4 w-full">
+          <FoundedProceduces loading={loading} length={procedures.length} />
+          {procedureNotFound ? (
+            <ProceduresNotFound />
+          ) : (
+            <Procedures loading={loading} procedures={proceduresToShow} />
+          )}
+        </div>
+      </main>
+    </div>
+  );
+}
+
+export function Procedures({
+  procedures,
+  loading,
+}: {
+  procedures: {
+    title: string;
+    description: string;
+    category: {
+      name: string;
+    };
+  }[];
+  loading: boolean;
+}) {
 
   // ! Render
   return (
@@ -47,38 +134,13 @@ export function Procedures() {
   );
 }
 
-// ! Skeleton
-const CardLoading = () => {
+const ProceduresNotFound = () => {
   return (
-    <Card className="w-full gap-2">
-      <CardHeader className="flex items-center gap-2">
-        <Skeleton className="size-12 min-w-12 p-2 rounded-md" />
-        <Skeleton className="h-6 w-full" />
-      </CardHeader>
-      <CardDescription className="px-4">
-        <Skeleton className="h-12 w-full" />
-      </CardDescription>
-      <div className="flex items-center px-4 h-10 mt-auto">
-        <Skeleton className=" h-6 w-25 bg-turtle-primary-light py-1 px-3 rounded-full" />
-        <Skeleton className="ml-auto h-6 w-8" />
-      </div>
-    </Card>
-  );
-};
-
-// ! Categorie Length
-
-export const FoundedProceduces = () => {
-  const { loading, length } = useProceducesStore();
-  return (
-    <>
-      {loading ? (
-        <Skeleton className="h-6 w-30" />
-      ) : (
-        <p className="text-turtle-text-muted text-sm ml-4 hidden lg:block">
-          {length} procédures disponibles
-        </p>
-      )}
-    </>
+    <div className="flex flex-col gap-3 justify-center items-center w-full h-full">
+      <h1 className="font-semibold text-2xl">Oops, Procedure non trouvée</h1>
+      <p className="text-turtle-text-muted">
+        Désoler votre procedure n&apos;a pas étè trouvée
+      </p>
+    </div>
   );
 };

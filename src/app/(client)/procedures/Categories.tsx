@@ -1,23 +1,18 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useCategories } from "@/hooks/useCategories";
-import {
-  Blocks,
-  BriefcaseBusiness,
-  CarFront,
-  GraduationCap,
-  HeartHandshake,
-  HeartPulse,
-  Home,
-  IdCard,
-  MoreHorizontal,
-  Scale,
-  Users,
-} from "lucide-react";
+import { RightIcon } from "./icons";
+import { useState } from "react";
 
-export function Categories() {
-  const { categories, loading } = useCategories();
-  console.log("Categories: ", categories);
+export function Categories({
+  categories,
+  loading,
+  OnClick,
+}: {
+  categories: { name: string }[];
+  loading: boolean;
+  OnClick: (val: string) => void;
+}) {
+  const [activeCategory, setActiveCategory] = useState("toutes");
   return (
     <>
       <div className="border-r border-turtle-border min-w-52 hidden lg:flex flex-col gap-2 pr-1">
@@ -25,7 +20,13 @@ export function Categories() {
           <CategoriesSkeletons />
         ) : (
           categories.map((Cat, index) => (
-            <Category_link key={index} label={Cat.name} />
+            <Category_link
+              activeCategory={activeCategory}
+              setActiveCategory={setActiveCategory}
+              OnClick={OnClick}
+              key={index}
+              label={Cat.name}
+            />
           ))
         )}
       </div>
@@ -33,34 +34,34 @@ export function Categories() {
   );
 }
 
-const Category_link = ({ label }: { label: string }) => {
+const Category_link = ({
+  label,
+  OnClick,
+  setActiveCategory,
+  activeCategory,
+}: {
+  label: string;
+  OnClick: (val: string) => void;
+  setActiveCategory: (val: string) => void;
+  activeCategory: string;
+}) => {
+  // ! States
   const lowLabel = label.toLocaleLowerCase();
-  const Icon = lowLabel.includes("toutes")
-    ? Blocks
-    : lowLabel.includes("civil")
-      ? Users
-      : lowLabel.includes("documents")
-        ? IdCard
-        : lowLabel.includes("famille")
-          ? HeartHandshake
-          : lowLabel.includes("logement")
-            ? Home
-            : lowLabel.includes("travail")
-              ? BriefcaseBusiness
-              : lowLabel.includes("éducation")
-                ? GraduationCap
-                : lowLabel.includes("justice")
-                  ? Scale
-                  : lowLabel.includes("santé")
-                    ? HeartPulse
-                    : lowLabel.includes("transport")
-                      ? CarFront
-                      : MoreHorizontal;
+  const LabelToCompare = lowLabel.split(" ")[0];
+
+  // ! Functions
+  const handleClick = () => {
+    OnClick(lowLabel);
+    setActiveCategory(LabelToCompare);
+  };
+
+  // ! Render
   return (
     <button
-      className={`w-full p-2 ${Icon == Blocks ? "bg-turtle-primary-light font-medium rounded-sm text-turtle-primary shadow shadow-accent border-b border-turtle-border" : "hover:bg-turtle-primary-light hover:font-medium hover:text-turtle-primary text-turtle-text-muted hover:border-b border-turtle-border"} flex gap-2 items-center text-sm cursor-pointer `}
+      onClick={handleClick}
+      className={`w-full p-2 ${activeCategory === LabelToCompare ? "bg-turtle-primary-light font-medium rounded-xs text-turtle-primary shadow shadow-accent border-b border-turtle-border" : "hover:bg-turtle-primary-light hover:font-medium hover:text-turtle-primary text-turtle-text-muted hover:border-b border-turtle-border"} flex gap-2 items-center text-sm cursor-pointer `}
     >
-      <Icon className="size-5" />
+      <RightIcon category={lowLabel} className="size-5" />
       {label}
     </button>
   );

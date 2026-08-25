@@ -1,8 +1,20 @@
 import {
   AlertTriangle,
+  Baby,
+  BriefcaseBusiness,
+  CarFront,
+  FileText,
+  Flower2,
   FolderCheck,
+  GraduationCap,
+  HandHeart,
+  HeartHandshake,
+  HeartPulse,
+  Home,
+  IdCard,
   LockKeyhole,
   MessagesSquare,
+  Scale,
   Shield,
   ShieldCheck,
   Timer,
@@ -99,3 +111,20 @@ export const NewLetter_infos = {
     title: "Restez informé",
     description: "Abonnew-vous à notre newsletter pour recevoir les derniéres informations et nouveautés."
 }
+
+
+// ! ICONS
+export const icons = {
+  documents: IdCard,
+  civil: Baby,
+  logement: Home,
+  santé: HeartPulse,
+  éducation: GraduationCap,
+  emploi: BriefcaseBusiness,
+  mariage: HandHeart,
+  nationalité: FileText,
+  famille: HeartHandshake,
+  justice: Scale,
+  transport: CarFront,
+  deces: Flower2
+};

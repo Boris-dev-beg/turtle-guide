@@ -1,3 +1,4 @@
+"use client";
 import { Search } from "lucide-react";
 import {
   InputGroup,
@@ -13,6 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { useState } from "react";
 
 const items = [
   { label: "Toutes les categories", value: null },
@@ -47,15 +49,33 @@ export function SelectDemo() {
   );
 }
 
-export function InputDemo({ className }: { className?: string }) {
+export function InputDemo({
+  className,
+  filter,
+}: {
+  className?: string;
+  filter: (searchElt: string) => void;
+}) {
+  // ! States
+  const [searchValue, setSearchValue] = useState("");
+
+  // ! Functions
+  const handleChange = (value: string) => {
+    setSearchValue(value);
+    filter(value);
+  };
+  // ! Render
   return (
     <InputGroup
-      className={`${className ? className : ""} py-5 focus-within:ring-turtle-primary-border! focus-within:border-none!`}
+      className={`${className ? className : ""} py-5 focus-within:ring-turtle-primary-border! focus-within:border-none! rounded-sm`}
     >
       <InputGroupAddon>
         <Search className="size-5" />
       </InputGroupAddon>
       <InputGroupInput
+      type="search"
+        value={searchValue}
+        onChange={(e) => handleChange(e.target.value)}
         placeholder="Rechercher une procedure..."
         className="turtle-radio"
       />

@@ -8,8 +8,9 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Procedures_infos } from "@/data/GlobalData";
 import { useProcedures } from "@/hooks/useProcedures";
-import { ArrowRight, ChevronRight, IdCardLanyard, User } from "lucide-react";
+import { ArrowRight, ChevronRight, User } from "lucide-react";
 import Link from "next/link";
+import { RightIcon } from "../../procedures/icons";
 
 export default function PopularProcedures() {
   const { Popularprocedures, loading } = useProcedures();
@@ -61,7 +62,7 @@ const Card_ = ({
   return (
     <Card className="flex-row items-start gap-2 px-4 group">
       <span className="p-4 rounded-full bg-turtle-primary-light text-turtle-primary">
-        <IdCardLanyard className="size-10" />
+        <RightIcon category={categoryName} title={title} className="size-8" />
       </span>
       <CardHeader className="w-full">
         <CardTitle className="line-clamp-2 font-semibold">{title}</CardTitle>
