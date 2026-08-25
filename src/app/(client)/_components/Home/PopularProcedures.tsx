@@ -37,14 +37,12 @@ export default function PopularProcedures() {
             <Card_loader />
           </>
         ) : (
-          Popularprocedures.map((proc, index) => (
-            <>
-              <Card_
-                key={index}
-                title={proc.title}
-                categoryName={proc.category.name}
-              />
-            </>
+          Popularprocedures.map((proc) => (
+            <Card_
+              key={proc.id}
+              title={proc.title}
+              categoryName={proc.category.name}
+            />
           ))
         )}
       </div>

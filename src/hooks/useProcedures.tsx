@@ -16,6 +16,7 @@ export function useProcedures() {
   // ? Popular procedures
   const [Popularprocedures, setPopularProcedures] = useState<
     {
+      id: string;
       title: string;
       description: string;
       category: {
@@ -41,6 +42,7 @@ export function useProcedures() {
         }[] = await response.json();
 
         const data_popular: {
+          id: string;
           title: string;
           description: string;
           category: {

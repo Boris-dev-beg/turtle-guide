@@ -36,7 +36,7 @@ export function Procedures_Zone() {
 
   // ? Filter Procedures
   const filter = (searchElt: string) => {
-    if (searchElt.trim() === "" || searchElt.trim().includes("toutes")) {
+    if (searchElt.trim() === "" || searchElt.trim().includes("toutes") || searchElt.trim().includes("Autres")) {
       setProceduresToShow(procedures);
       setProcedureNotFound(false);
       return;
@@ -136,8 +136,8 @@ export function Procedures({
 
 const ProceduresNotFound = () => {
   return (
-    <div className="flex flex-col gap-3 justify-center items-center w-full h-full">
-      <h1 className="font-semibold text-2xl">Oops, Procedure non trouvée</h1>
+    <div className="flex flex-col gap-3 justify-center items-center w-full h-full min-h-50">
+      <h1 className="font-semibold text-2xl">Oops, Procédure non trouvée</h1>
       <p className="text-turtle-text-muted">
         Désoler votre procedure n&apos;a pas étè trouvée
       </p>

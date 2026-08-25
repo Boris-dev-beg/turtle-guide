@@ -15,32 +15,43 @@ import {
   SelectValue,
 } from "../ui/select";
 import { useState } from "react";
+import { useCategories } from "@/hooks/useCategories";
 
-const items = [
-  { label: "Toutes les categories", value: null },
-  { label: "Apple", value: "apple" },
-  { label: "Banana", value: "banana" },
-  { label: "Blueberry", value: "blueberry" },
-  { label: "Grapes", value: "grapes" },
-  { label: "Pineapple", value: "pineapple" },
-];
+export function SelectDemo({
+  filter,
+}: {
+  filter: (searchElt: string) => void;
+}) {
+  const { categories } = useCategories();
+  const defaultCategory = "Toutes les procédures";
+  const filteredCategories = categories.filter(
+    (cat) => cat.name !== "Toutes les procédures",
+  );
 
-export function SelectDemo() {
   return (
-    <Select items={items}>
+    <Select defaultValue={defaultCategory}>
       <SelectTrigger className="w-full max-w-48 border-none!">
         <SelectValue />
       </SelectTrigger>
       <SelectContent className="p-3 w-60 shadow-sm shadow-turtle-card-bg">
         <SelectGroup>
           <SelectLabel>Categories</SelectLabel>
-          {items.map((item) => (
+
+          <SelectItem
+            value="Toutes les procédures"
+            className="cursor-pointer hover:bg-turtle-primary-light px-2 py-1.5"
+          >
+            Toutes les procédures
+          </SelectItem>
+
+          {filteredCategories.map((cat) => (
             <SelectItem
-              key={item.value}
-              value={item.value}
+              onClick={() => filter(cat.name)}
+              key={cat.id}
+              value={cat.name}
               className="cursor-pointer hover:bg-turtle-primary-light px-2 py-1.5"
             >
-              {item.label}
+              {cat.name}
             </SelectItem>
           ))}
         </SelectGroup>
@@ -73,7 +84,7 @@ export function InputDemo({
         <Search className="size-5" />
       </InputGroupAddon>
       <InputGroupInput
-      type="search"
+        type="search"
         value={searchValue}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Rechercher une procedure..."

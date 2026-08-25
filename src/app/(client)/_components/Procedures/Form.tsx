@@ -19,7 +19,7 @@ export function FilterForm({
         <InputGroupAddon>
           <ListFilter className="size-5" />
         </InputGroupAddon>
-        <SelectDemo />
+        <SelectDemo filter={filter} />
       </InputGroup>
     </div>
   );

@@ -1,5 +1,5 @@
 import { HowDoesItWork_infos } from "@/data/GlobalData";
-import { LucideIcon } from "lucide-react";
+import { AlertTriangle, LucideIcon } from "lucide-react";
 
 export default function HowDoesItWork() {
   return (
@@ -17,12 +17,17 @@ export default function HowDoesItWork() {
         ))}
       </div>
       <div className="turtle-alert-warning max-md:*:flex-col *:items-center flex gap-2 justify-center">
-        <Card_
-          icon={HowDoesItWork_infos.alert.icon}
-          icon_class="text-turtle-accent"
-          title={HowDoesItWork_infos.alert.title}
-          description={HowDoesItWork_infos.alert.description}
-        />
+        <span className="flex flex-col items-center gap-2.5">
+          <AlertTriangle className={`size-10 text-turtle-accent`} />
+          <span className="flex flex-col items-center max-md:*:text-center">
+            <h3 className="font-semibold text-lg">
+              {HowDoesItWork_infos.alert.title}
+            </h3>
+            <p className="text-turtle-text-muted text-sm">
+              {HowDoesItWork_infos.alert.description}
+            </p>
+          </span>
+        </span>
       </div>
     </div>
   );

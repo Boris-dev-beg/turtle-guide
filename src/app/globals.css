@@ -95,42 +95,72 @@
 }
 
 :root {
-  /* ! =========== 
-     ! BRAND
-     ! =========== */
-  --turtle-ink: #16233f;
-  --turtle-laterite: #c1502e;
-  --turtle-route: #2f8f5b;
+  /* =========================================
+     60% — COULEUR PRIMAIRE / ENVIRONNEMENT
+     ========================================= */
+
+  --turtle-paper: #fbfaf7;
+  --turtle-card-bg: #ffffff;
+
+
+  /* =========================================
+     30% — COULEUR SECONDAIRE / STRUCTURE
+     ========================================= */
+
+  --turtle-ink: #24487d;
+  --turtle-ink-hover: #1c3a66;
+
+  --turtle-primary: var(--turtle-ink);
+  --turtle-primary-hover: var(--turtle-ink-hover);
+
+  --turtle-primary-light: #eef3f9;
+  --turtle-primary-border: #d3e0ec;
+
+  --turtle-slate: #737f8d;
+
+  --turtle-text-main: var(--turtle-ink);
+  --turtle-text-muted: var(--turtle-slate);
+
+  --turtle-border: #e2ded4;
+
+
+  /* =========================================
+     10% — ACCENTS
+     ========================================= */
+
+  --turtle-accent: #e3ac5c;
+  --turtle-accent-hover: #cc9548;
+
+
+  /* =========================================
+     ACCENT — PAIEMENT
+     ========================================= */
+
+  --turtle-laterite: #cc6a48;
+  --turtle-laterite-bg: #fbeee8;
+
+
+  /* =========================================
+     ACCENT — GRATUIT / TERMINÉ
+     ========================================= */
+
+  --turtle-route: #429b6c;
+  --turtle-route-bg: #ecf5f0;
+
+
+  /* =========================================
+     ACCENT — FRAUDE UNIQUEMENT
+     ========================================= */
+
   --turtle-alert: #b23a2f;
 
-  --turtle-paper: #faf8f4;
-  --turtle-slate: #5b6472;
 
-  --turtle-laterite-bg: #faece7;
-  --turtle-route-bg: #e9f3ed;
+  /* =========================================
+     COMPATIBILITÉ
+     ========================================= */
 
-  /* ! Marque / Brand */
-  --turtle-primary: #124a2f;
-  --turtle-primary-hover: #0d3823;
-  --turtle-primary-light: #e8f3ee; /* ? Fond vert clair des alertes et radios */
-  --turtle-primary-border: #b2d3c2;
-
-  /* ! Accentuation */
-  --turtle-accent: #f5a524; /* ? Le bouton et texte jaune/orange */
-  --turtle-accent-hover: #d98f1d;
-
-  /* ! Alertes */
-  --turtle-warning-bg: #fff8e6;
-  --turtle-warning-border: #fee7a0;
-
-  /* ! Textes */
-  --turtle-text-main: #1a1a1a;
-  --turtle-text-muted: #666666;
-
-  /* ! Structure */
-  --turtle-bg: #fafafa;
-  --turtle-card-bg: #ffffff;
-  --turtle-border: #e5e7eb;
+  --turtle-warning-bg: #fff6ea;
+  --turtle-warning-border: #f2ce9c;
 
   /* ! =========== 
      ! GLOBAL 
@@ -236,7 +266,7 @@
   }
 
   .btn-accent {
-    @apply bg-turtle-accent text-turtle-text-main hover:bg-turtle-accent-hover active:ring-turtle-accent;
+    @apply bg-turtle-accent hover:bg-turtle-accent-hover active:ring-turtle-accent;
   }
 
   .btn-outline {
@@ -263,7 +293,7 @@
 
   /* -- Alertes / Bannières d'information -- */
   .turtle-alert-warning {
-    @apply flex items-start gap-3 p-4 bg-turtle-warning-bg rounded-lg text-sm text-turtle-text-main;
+    @apply flex items-start gap-3 p-4 bg-turtle-warning-bg rounded-lg text-sm text-primary;
   }
 
   .turtle-alert-success {

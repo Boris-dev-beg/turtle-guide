@@ -1,5 +1,4 @@
 import {
-  AlertTriangle,
   Baby,
   BriefcaseBusiness,
   CarFront,
@@ -54,7 +53,6 @@ export const HowDoesItWork_infos = {
     },
   ],
   alert: {
-    icon: AlertTriangle,
     title: "Attention aux faux agents !",
     description:
       "TurtleGuide ne délivre aucun document officiel. Méfiez-vous des intermediaires.",
