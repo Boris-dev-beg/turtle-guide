@@ -61,6 +61,42 @@ export function useProcedures() {
 
     fetchPosts();
   }, []);
+
+  // ? Getting one
+  const getone = (id: string) => {
+    async function fetchPost() {
+      try {
+        const response = await fetch("/api/procedures");
+        const response_popular = await fetch("api/procedures/populars");
+
+        const data: {
+          title: string;
+          description: string;
+          category: {
+            name: string;
+          };
+        }[] = await response.json();
+
+        const data_popular: {
+          id: string;
+          title: string;
+          description: string;
+          category: {
+            name: string;
+          };
+        }[] = await response_popular.json();
+
+        setProcedures(data);
+        setPopularProcedures(data_popular);
+      } catch (err) {
+        console.error("Erreur lors de la récupération de la Procedure:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchPost();
+  }
   
   // ! Render
   return {

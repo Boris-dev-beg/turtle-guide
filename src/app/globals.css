@@ -95,72 +95,89 @@
 }
 
 :root {
-  /* =========================================
-     60% — COULEUR PRIMAIRE / ENVIRONNEMENT
-     ========================================= */
+/* =========================================
+   60% — COULEUR PRIMAIRE / ENVIRONNEMENT
+   ========================================= */
 
-  --turtle-paper: #fbfaf7;
+  /* Un gris très clair (slate-50) au lieu d'un blanc cassé jauni, 
+     pour un rendu plus propre et moins fatigant pour les yeux des seniors */
+  --turtle-paper: #f8fafc;
   --turtle-card-bg: #ffffff;
 
 
-  /* =========================================
-     30% — COULEUR SECONDAIRE / STRUCTURE
-     ========================================= */
+/* =========================================
+   30% — COULEUR SECONDAIRE / STRUCTURE
+   ========================================= */
 
-  --turtle-ink: #24487d;
-  --turtle-ink-hover: #1c3a66;
+  /* Le Bleu Institutionnel (blue-900). Autorité, sérieux et excellente lisibilité */
+  --turtle-ink: #1e3a8a;
+  --turtle-ink-hover: #1e40af; /* (blue-800) */
 
   --turtle-primary: var(--turtle-ink);
   --turtle-primary-hover: var(--turtle-ink-hover);
 
-  --turtle-primary-light: #eef3f9;
-  --turtle-primary-border: #d3e0ec;
+  /* Des teintes de bleu très douces pour les fonds actifs et les bordures */
+  --turtle-primary-light: #eff6ff; /* (blue-50) */
+  --turtle-primary-border: #bfdbfe; /* (blue-200) */
 
-  --turtle-slate: #737f8d;
+  /* Un gris ardoise (slate-600) pour le texte secondaire, assez contrasté pour être lisible */
+  --turtle-slate: #475569;
 
+  /* Le texte principal prend la couleur de l'encre (bleu très sombre), 
+     beaucoup plus doux à lire que du noir pur (#000000) */
   --turtle-text-main: var(--turtle-ink);
   --turtle-text-muted: var(--turtle-slate);
 
-  --turtle-border: #e2ded4;
+  /* Une bordure neutre et claire (slate-200) */
+  --turtle-border: #e2e8f0;
 
 
-  /* =========================================
-     10% — ACCENTS
-     ========================================= */
+/* =========================================
+   10% — ACCENTS
+   ========================================= */
 
-  --turtle-accent: #e3ac5c;
-  --turtle-accent-hover: #cc9548;
-
-
-  /* =========================================
-     ACCENT — PAIEMENT
-     ========================================= */
-
-  --turtle-laterite: #cc6a48;
-  --turtle-laterite-bg: #fbeee8;
+  /* Un ambre (amber-500) pour attirer l'attention ou guider 
+     sans utiliser le rouge qui génère de l'anxiété */
+  --turtle-accent: #f59e0b;
+  --turtle-accent-hover: #d97706;
 
 
-  /* =========================================
-     ACCENT — GRATUIT / TERMINÉ
-     ========================================= */
+/* =========================================
+   ACCENT — PAIEMENT
+   ========================================= */
 
-  --turtle-route: #429b6c;
-  --turtle-route-bg: #ecf5f0;
-
-
-  /* =========================================
-     ACCENT — FRAUDE UNIQUEMENT
-     ========================================= */
-
-  --turtle-alert: #b23a2f;
+  /* Bien que le nom soit "laterite" (souvent rouge/orange), pour un paiement 
+     administratif, on utilise un Vert Émeraude (emerald-600) qui inspire 
+     la validation, le succès et la sécurité financière. */
+  --turtle-laterite: #059669;
+  --turtle-laterite-bg: #ecfdf5; /* (emerald-50) */
 
 
-  /* =========================================
-     COMPATIBILITÉ
-     ========================================= */
+/* =========================================
+   ACCENT — GRATUIT / TERMINÉ
+   ========================================= */
 
-  --turtle-warning-bg: #fff6ea;
-  --turtle-warning-border: #f2ce9c;
+  /* Un bleu ciel/cyan (sky-600) pour indiquer un chemin accompli ou une 
+     étape gratuite, ce qui le distingue bien du vert de paiement */
+  --turtle-route: #0284c7;
+  --turtle-route-bg: #f0f9ff; /* (sky-50) */
+
+
+/* =========================================
+   ACCENT — FRAUDE UNIQUEMENT
+   ========================================= */
+
+  /* Un rouge standard (red-600) uniquement réservé aux erreurs critiques */
+  --turtle-alert: #dc2626;
+
+
+/* =========================================
+   COMPATIBILITÉ
+   ========================================= */
+
+  /* Des teintes ambre très douces pour les avertissements mineurs */
+  --turtle-warning-bg: #fffbeb; /* (amber-50) */
+  --turtle-warning-border: #fcd34d; /* (amber-300) */
 
   /* ! =========== 
      ! GLOBAL 
