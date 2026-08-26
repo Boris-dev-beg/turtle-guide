@@ -8,8 +8,8 @@ export const NavBar = () => {
   const pathName = usePathname();
 
   return (
-    <div className="flex gap-4 items-center">
-      <nav className="hidden md:flex items-center gap-5 px-5 *:hover:font-semibold">
+    <div className="flex gap-2 lg:gap-4 items-center">
+      <nav className="hidden md:flex items-center gap-2 md:gap-5 lg:px-5 *:hover:font-semibold">
         {links.map((link, index) => (
           <Link_
             key={index}
@@ -40,9 +40,9 @@ const Link_ = ({
   return (
     <Link
       href={href}
-      className={`${pathName === href? "border-b font-semibold" : "hover:border-b"} flex gap-1 items-center px-3 py-2 transition-all duration-300`}
+      className={`${pathName === href? "border-b font-semibold" : "hover:border-b"} flex gap-1 items-center px-2 lg:px-3 py-2 transition-all duration-300 sm:text-sm text-nowrap`}
     >
-      <Icon className="size-5" />
+      <Icon className="size-5 sm:size-4" />
       {label}
     </Link>
   );

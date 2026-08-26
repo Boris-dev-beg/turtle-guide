@@ -11,11 +11,11 @@ export default function Header() {
         {/* Logo */}
         <Link
           href="/"
-          className="flex gap-2 items-center font-heading"
+          className="flex gap-1 lg:gap-2 items-center font-heading"
         >
-          <Image src={Turtle} alt="Logo TurtleGuide" className="w-12 h-11" />
-          <span className="flex flex-col leading-5">
-            <h1 className="text-[26px] font-bold">TurtleGuide</h1>
+          <Image src={Turtle} alt="Logo TurtleGuide" className="w-8 lg:w-12 h-7 lg:h-11" />
+          <span className="flex flex-col leading-5 text-xs lg:text-sm">
+            <h1 className="text-xl md:text-[20px] lg:text-[26px] font-bold">TurtleGuide</h1>
             <p className="text-sm">Votre guide pour chaque demarche</p>
           </span>
         </Link>

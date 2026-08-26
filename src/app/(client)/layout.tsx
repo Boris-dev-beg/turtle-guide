@@ -9,8 +9,8 @@ export default function layout({ children }: { children: React.ReactNode }) {
       <Header />
       <main className="wrapper flex flex-col h-full flex-1 w-full">
         {children}
-        <Footer />
       </main>
+        <Footer />
       <BottomNav />
     </section>
   );
