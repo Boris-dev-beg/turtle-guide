@@ -1,41 +1,28 @@
-import { Turtle } from "lucide-react";
 import Link from "next/link";
+
+import Turtle from "../../assets/images/logo.png";
+import Image from "next/image";
+import { NavBar } from "../shared/NavBar";
 
 export default function Header() {
   return (
-    <header className="w-full flex p-4 border border-turtle-border sticky top-0 z-50 bg-turtle-bg/70 backdrop-blur-md">
+    <header className="w-full flex p-4 sticky top-0 z-50 bg-primary backdrop-blur-md max-h-18 overflow-hidden text-muted">
       <div className="wrapper w-full flex justify-between">
         {/* Logo */}
         <Link
           href="/"
-          className="flex gap-1 items-center text-turtle-primary text-[26px] font-bold"
+          className="flex gap-2 items-center font-heading"
         >
-          <Turtle className="size-9" />
-          <span className="flex *:font-body">
-            <h1>Turtle</h1>
-            <h1 className="text-turtle-accent">Guide</h1>
+          <Image src={Turtle} alt="Logo TurtleGuide" className="w-12 h-11" />
+          <span className="flex flex-col leading-5">
+            <h1 className="text-[26px] font-bold">TurtleGuide</h1>
+            <p className="text-sm">Votre guide pour chaque demarche</p>
           </span>
         </Link>
 
         {/* Nav bar */}
-        <div className="flex gap-4 items-center">
-          <nav className="hidden md:flex items-center gap-5 px-5 *:hover:text-turtle-accent-hover text-primary">
-            <Link_ href="/" label="Mes dossiers" />
-            <Link_ href="/" label="Alertes" />
-            <Link_ href="/" label="À propos" />
-          </nav>
-
-          <button className="btn btn-primary">Se connecter</button>
-        </div>
+        <NavBar />
       </div>
     </header>
   );
 }
-
-const Link_ = ({ href, label }: { href: string; label: string }) => {
-  return (
-    <Link href={href} className="font-semibold">
-      {label}
-    </Link>
-  );
-};

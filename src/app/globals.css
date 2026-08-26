@@ -171,7 +171,7 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-turtle-bg font-body text-foreground;
+    @apply bg-background font-body text-foreground;
   }
   h1,
   h2,

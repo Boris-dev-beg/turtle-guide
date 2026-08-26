@@ -1,15 +1,18 @@
 import {
+  AlertCircle,
   Baby,
   BriefcaseBusiness,
   CarFront,
   FileText,
   Flower2,
   FolderCheck,
+  Folders,
   GraduationCap,
   HandHeart,
   HeartHandshake,
   HeartPulse,
   Home,
+  HomeIcon,
   IdCard,
   LockKeyhole,
   MessagesSquare,
@@ -100,16 +103,17 @@ export const Procedures_infos = {
 
 // ! Contact
 export const Contact_infos = {
-    title: "Besion d'aide pour votre démarche ?",
-    description: "Consultez nos guides détaillés ou contactez notre support. Nous sommes là pour vous aider.",
-}
+  title: "Besion d'aide pour votre démarche ?",
+  description:
+    "Consultez nos guides détaillés ou contactez notre support. Nous sommes là pour vous aider.",
+};
 
 // ! News Letter
 export const NewLetter_infos = {
-    title: "Restez informé",
-    description: "Abonnew-vous à notre newsletter pour recevoir les derniéres informations et nouveautés."
-}
-
+  title: "Restez informé",
+  description:
+    "Abonnew-vous à notre newsletter pour recevoir les derniéres informations et nouveautés.",
+};
 
 // ! ICONS
 export const icons = {
@@ -124,5 +128,23 @@ export const icons = {
   famille: HeartHandshake,
   justice: Scale,
   transport: CarFront,
-  deces: Flower2
+  deces: Flower2,
 };
+
+export const links = [
+  {
+    icon: HomeIcon,
+    href: "/",
+    label: "Accueil",
+  },
+  {
+    icon: Folders,
+    href: "/folders",
+    label: "Mes dossiers",
+  },
+  {
+    icon: AlertCircle,
+    href: "/about",
+    label: "À propos",
+  },
+];
