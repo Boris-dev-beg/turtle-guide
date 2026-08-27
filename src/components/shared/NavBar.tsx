@@ -21,7 +21,7 @@ export const NavBar = () => {
         ))}
       </nav>
 
-      <button className="btn btn-outline">Se connecter</button>
+      <button className="btn btn-outline py-2 px-3 sm:px-4 459678">Se connecter</button>
     </div>
   );
 };
@@ -42,7 +42,7 @@ const Link_ = ({
       href={href}
       className={`${pathName === href? "border-b font-semibold" : "hover:border-b"} flex gap-1 items-center px-2 lg:px-3 py-2 transition-all duration-300 sm:text-sm text-nowrap`}
     >
-      <Icon className="size-5 sm:size-4" />
+      <Icon className="md:size-5 size-4" />
       {label}
     </Link>
   );

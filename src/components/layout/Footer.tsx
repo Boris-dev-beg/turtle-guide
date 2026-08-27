@@ -2,8 +2,8 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="flex justify-center py-4 md:mb-0 mb-5 mt-auto border-t border-turtle-border bg-secondary">
-      <div className="wrapper flex gap-2 flex-col justify-between items-center text-turtle-text-muted text-xs text-nowrap">
+    <footer className="flex justify-center py-4 md:mb-0 mb-17 mt-auto border-t border-turtle-border bg-secondary">
+      <div className="wrapper flex gap-2 flex-col justify-between items-center text-turtle-text-muted text-xs">
         <p>
           TurtleGuide. vous guide pour chaque démarche administrative au
           cameroun.

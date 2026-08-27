@@ -1,48 +1,23 @@
 "use client";
-import { BellRing, Folder, Home, Info, LucideIcon } from "lucide-react";
+import { links } from "@/data/GlobalData";
+import { LucideIcon } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-
-const datas = [
-  {
-    icon: Home,
-    label: "Accueil",
-    href: "/",
-  },
-  {
-    icon: Folder,
-    label: "Dossiers",
-    href: "/",
-  },
-  {
-    icon: BellRing,
-    label: "Alertes",
-    href: "/",
-  },
-  {
-    icon: Info,
-    label: "À propos",
-    href: "/",
-  },
-];
+import { usePathname } from "next/navigation";
 
 export default function BottomNav() {
   // ! States
-  const [isActive, setIsActive] = useState("Accueil");
+  const pathName = usePathname();
   return (
-    <footer className="fixed md:hidden bottom-0 inset-x-0 bg-turtle-bg border border-turtle-border pt-2 h-15 flex">
-      <div className="wrapper grid grid-cols-4 max-md:w-full gap-2 px-2">
-        {datas.map((link, index) => (
+    <footer className="fixed md:hidden bottom-0 w-full bg-secondary h-18 wrapper grid grid-cols-3 min-[500px]:gap-2 place-items-center">
+        {links.map((link, index) => (
           <Link_
             key={index}
             href={link.href}
             label={link.label}
             icon={link.icon}
-            isActive={isActive}
-            onClick={(car) => setIsActive(car)}
+            pathName={pathName}
           />
         ))}
-      </div>
     </footer>
   );
 }
@@ -51,23 +26,20 @@ const Link_ = ({
   href,
   label,
   icon: Icon,
-  isActive,
-  onClick,
+  pathName,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
-  isActive: string;
-  onClick: (car: string) => void;
+  pathName: string;
 }) => {
   return (
     <Link
-      onClick={() => onClick(label)}
       href={href}
-      className={`${isActive === label ? "bg-turtle-primary/80 text-white -translate-y-6 pb-3 font-bold rounded-t-4xl p-2" : ""} flex flex-col items-center transition-transform duration-300 ease-in-out`}
+      className={`${pathName === href ? "text-primary *:fill-primary border-t-2 border-primary py-2 font-bold" : "hover:text-primary hover:*:fill-primary hover:border-t-2 border-primary py-2 font-bold"} transition-all duration-300 flex flex-col items-center ease-in-out`}
     >
       <Icon className={`size-7`} />
-      <h3>{label}</h3>
+      <p>{label}</p>
     </Link>
   );
 };

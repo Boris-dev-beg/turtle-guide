@@ -6,7 +6,7 @@ import Contact from "./_components/Home/Contact";
 export default function Home() {
   return (
     <section className="flex  flex-col gap-6">
-      {/* <Hero /> */}
+      <Hero />
       {/* Our engaments */}
       {/* <OurEngagements /> */}
       {/* Popular Procedures */}
