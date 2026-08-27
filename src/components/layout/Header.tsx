@@ -1,26 +1,39 @@
 import Link from "next/link";
+import Image from "next/image";
 
 import Turtle from "../../assets/images/logo.png";
-import Image from "next/image";
 import { NavBar } from "../shared/NavBar";
 
 export default function Header() {
   return (
-    <header className="w-full flex py-4 sticky top-0 z-50 bg-primary backdrop-blur-md max-h-18 overflow-hidden text-muted">
-      <div className="wrapper w-full flex justify-between">
+    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-primary/95 text-primary-foreground shadow-sm backdrop-blur-xl">
+      <div className="wrapper flex h-16 w-full items-center justify-between">
         {/* Logo */}
         <Link
           href="/"
-          className="flex gap-1 lg:gap-2 items-center font-heading"
+          className="group flex items-center gap-2 transition-opacity hover:opacity-90"
         >
-          <Image src={Turtle} alt="Logo TurtleGuide" className="w-10 lg:w-12 h-9 lg:h-11" />
-          <span className="flex flex-col leading-5 text-xs lg:text-sm">
-            <h1 className="text-xl md:text-[20px] lg:text-[26px] font-bold">TurtleGuide</h1>
-            <p className="text-xs sm:text-sm">Votre guide pour chaque demarche</p>
-          </span>
+          <div className="flex size-10 items-center justify-center rounded-xl bg-white/20 p-1.5 shadow-sm sm:size-11">
+            <Image
+              src={Turtle}
+              alt="Logo TurtleGuide"
+              className="size-full object-contain"
+              priority
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <span className="text-xl font-bold tracking-tight sm:text-2xl">
+              TurtleGuide
+            </span>
+
+            <span className="mt-1 hidden text-[12px] font-medium text-primary-foreground/90 sm:block sm:text-sm">
+              Votre guide administratif
+            </span>
+          </div>
         </Link>
 
-        {/* Nav bar */}
+        {/* Navigation */}
         <NavBar />
       </div>
     </header>

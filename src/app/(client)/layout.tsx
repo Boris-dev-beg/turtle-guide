@@ -7,7 +7,7 @@ export default function layout({ children }: { children: React.ReactNode }) {
   return (
     <section className="flex flex-col max-[500px]:w-screen max-w-screen min-h-screen w-full">
       <Header />
-      <main className="flex flex-col h-full flex-1 w-full">
+      <main className="flex flex-col h-full flex-1 w-full mb-4">
         {children}
       </main>
         <Footer />

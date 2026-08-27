@@ -2,31 +2,51 @@ import Link from "next/link";
 
 export default function Footer() {
   return (
-    <footer className="flex justify-center py-4 md:mb-0 mb-17 mt-auto border-t border-turtle-border bg-secondary">
-      <div className="wrapper flex gap-2 flex-col justify-between items-center text-turtle-text-muted text-center text-xs">
-        <p>
-          TurtleGuide. vous guide pour chaque démarche administrative au
-          cameroun.
-        </p>
-        <div className="flex gap-2 flex-col sm:flex-row justify-between items-center">
-          <p>&copy; 2026 TurtleGuide. Tous droits réservés.</p>
-          <span className="flex justify-between md:justify-center items-center *:hover:underline w-full md:w-1/2">
+    <footer className="mt-auto border-t border-border/60 bg-secondary md:mb-0 mb-17">
+      <div className="wrapper flex flex-col gap-6 py-8 text-sm text-muted-foreground">
+        {/* top */}
+        <div className="flex flex-col gap-2">
+          <Link
+            href="/"
+            className="w-fit text-xl font-bold tracking-tight text-foreground transition-colors hover:text-primary"
+          >
+            TurtleGuide
+          </Link>
+
+          <p className="max-w-md text-sm leading-5 sm:text-base">
+            Votre guide pour comprendre et effectuer plus facilement vos
+            démarches administratives au Cameroun.
+          </p>
+        </div>
+
+        {/* Bottom */}
+        <div className="flex flex-col gap-3 border-t border-border/50 pt-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-muted-foreground">
+            © 2026 TurtleGuide. Tous droits réservés.
+          </p>
+
+          <nav className="flex flex-wrap gap-x-4 gap-y-2">
             <Link
               href="/"
-              className="border-r md:border-r-0 max-[500px]:border-r-0  border-muted-foreground px-2"
+              className="transition-colors hover:text-foreground hover:underline"
             >
               Mentions légales
             </Link>
+
             <Link
               href="/"
-              className="border-r max-[500px]:border-r-0 md:border-r-0 border-muted-foreground px-2"
+              className="transition-colors hover:text-foreground hover:underline"
             >
               Politique de confidentialité
             </Link>
-            <Link href="/" className="pl-2">
+
+            <Link
+              href="/"
+              className="transition-colors hover:text-foreground hover:underline"
+            >
               Conditions d&apos;utilisation
             </Link>
-          </span>
+          </nav>
         </div>
       </div>
     </footer>

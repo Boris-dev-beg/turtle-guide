@@ -1,15 +1,16 @@
 "use client";
+
 import { links } from "@/data/GlobalData";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+
 export const NavBar = () => {
-  // ! States
   const pathName = usePathname();
 
   return (
-    <div className="flex gap-2 lg:gap-4 items-center">
-      <nav className="hidden md:flex items-center gap-2 md:gap-5 lg:px-5 *:hover:font-semibold">
+    <div className="flex items-center gap-2">
+      <nav className="hidden items-center gap-1 md:flex lg:gap-2">
         {links.map((link, index) => (
           <Link_
             key={index}
@@ -21,7 +22,9 @@ export const NavBar = () => {
         ))}
       </nav>
 
-      <button className="btn btn-outline py-2 px-3 sm:px-4 459678">Se connecter</button>
+      <button className="ml-1 rounded-lg border-2 border-white/30 bg-white/10 px-3 py-2 font-semibold text-primary-foreground backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-primary sm:px-4">
+        Se connecter
+      </button>
     </div>
   );
 };
@@ -30,20 +33,31 @@ const Link_ = ({
   href,
   label,
   icon: Icon,
-  pathName
+  pathName,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
-  pathName: string
+  pathName: string;
 }) => {
+  const isActive =
+    pathName === href || (href !== "/" && pathName.startsWith(href));
+
   return (
     <Link
       href={href}
-      className={`${pathName === href? "border-b font-semibold" : "hover:border-b"} flex gap-1 items-center px-2 lg:px-3 py-2 transition-all duration-300 sm:text-sm text-nowrap`}
+      className={`relative flex items-center gap-1.5 px-2.5 py-1 font-semibold whitespace-nowrap transition-all duration-200 lg:px-3 ${isActive ? "text-white" : "text-primary-foreground/90  hover:text-white"}`}
     >
-      <Icon className="md:size-5 size-4" />
-      {label}
+      <Icon
+        className={`size-5 transition-transform duration-200 ${isActive ? "scale-105" : ""}`}
+        strokeWidth={isActive ? 2.5 : 2}
+      />
+
+      <span>{label}</span>
+
+      {isActive && (
+        <span className="absolute inset-x-2 -bottom-1 h-0.5 rounded-full bg-white" />
+      )}
     </Link>
   );
 };
