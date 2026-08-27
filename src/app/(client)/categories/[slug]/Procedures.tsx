@@ -1,4 +1,5 @@
 "use client";
+import { SearchX } from "lucide-react";
 import { Procedure_card } from "@/app/(client)/_components/Procedures/Procedures.card";
 import { useProcedures } from "@/hooks/useProcedures";
 import { useEffect, useState } from "react";
@@ -17,15 +18,17 @@ const deleteAccent = (text: string) => {
     .replace(/[\u0300-\u036f]/g, "");
 };
 
-export function Procedures_Zone({title}: {title:string}) {
+export function Procedures_Zone({ title }: { title: string }) {
   // ! States
   const { proceduresByCategory, getByCategory, loading } = useProcedures();
-  const [proceduresToShow, setProceduresToShow] = useState<NeededProcedure[]>([]);
+  const [proceduresToShow, setProceduresToShow] = useState<NeededProcedure[]>(
+    [],
+  );
   const [procedureNotFound, setProcedureNotFound] = useState(false);
 
   // ! Functions
   // ? Update Procedure To Show
-    useEffect(() => {
+  useEffect(() => {
     getByCategory(title);
   }, [title, getByCategory]);
 
@@ -38,9 +41,7 @@ export function Procedures_Zone({title}: {title:string}) {
 
   // ? Filter Procedures
   const filter = (searchElt: string) => {
-    if (
-      searchElt.trim() === ""
-    ) {
+    if (searchElt.trim() === "") {
       setProceduresToShow(proceduresByCategory);
       setProcedureNotFound(false);
       return;
@@ -79,15 +80,11 @@ export function Procedures_Zone({title}: {title:string}) {
       </div>
       {/* BODY */}
       <main className="flex gap-3 border-t border-turtle-border pt-4">
-        {/* Category filter */}
-        {/* <Categories
-          OnClick={(elt) => filter(elt)}
-          categories={categories}
-          loading={categoryLoading}
-        /> */}
-        {/* Cards */}
         <div className="flex flex-col gap-4 w-full">
-          <FoundedProceduces loading={loading} length={proceduresByCategory.length} />
+          <FoundedProceduces
+            loading={loading}
+            length={proceduresByCategory.length}
+          />
           {procedureNotFound ? (
             <ProceduresNotFound />
           ) : (
@@ -103,15 +100,10 @@ export function Procedures({
   procedures,
   loading,
 }: {
-  procedures: {
-    title: string;
-    description: string;
-    category: {
-      name: string;
-    };
-  }[];
+  procedures: NeededProcedure[];
   loading: boolean;
 }) {
+  console.log("Procedures:", procedures);
   // ! Render
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-md:w-full gap-4">
@@ -135,10 +127,18 @@ export function Procedures({
 
 const ProceduresNotFound = () => {
   return (
-    <div className="flex flex-col gap-3 justify-center items-center w-full h-full min-h-50">
-      <h1 className="font-semibold text-2xl">Oops, Procédure non trouvée</h1>
-      <p className="text-turtle-text-muted">
-        Désoler votre procedure n&apos;a pas étè trouvée
+    <div className="flex min-h-70 w-full flex-col items-center justify-center px-6 text-center">
+      <div className="mb-5 flex size-14 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+        <SearchX className="size-7" />
+      </div>
+
+      <h2 className="text-xl font-bold tracking-tight sm:text-2xl">
+        Aucune procédure trouvée
+      </h2>
+
+      <p className="mt-2 max-w-md text-base leading-6 text-muted-foreground">
+        Nous n&apos;avons trouvé aucune procédure correspondant à votre
+        recherche. Essayez avec un autre terme ou modifiez vos filtres.
       </p>
     </div>
   );

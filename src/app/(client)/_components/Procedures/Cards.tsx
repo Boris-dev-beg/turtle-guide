@@ -2,37 +2,41 @@
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
-// ! Skeleton
 export const CardLoading = () => {
   return (
-    <Card className="w-full gap-2 rounded-sm">
-      <CardHeader className="flex items-center gap-2">
-        <Skeleton className="size-12 min-w-12 p-2 rounded-md" />
-        <Skeleton className="h-6 w-full" />
+    <Card className="flex min-h-53 w-full flex-col overflow-hidden rounded-2xl border-border/60 bg-card p-5 shadow-sm">
+      <CardHeader className="flex items-center gap-3 p-0">
+        <Skeleton className="size-12 shrink-0 rounded-xl" />
+        <Skeleton className="h-5 w-3/4 rounded-md" />
       </CardHeader>
-      <CardDescription className="px-4">
-        <Skeleton className="h-12 w-full" />
+
+      <CardDescription className="mt-5 space-y-2 p-0">
+        <Skeleton className="h-4 w-full rounded-md" />
+        <Skeleton className="h-4 w-5/6 rounded-md" />
+        <Skeleton className="h-4 w-2/3 rounded-md" />
       </CardDescription>
-      <div className="flex items-center px-4 h-10 mt-auto">
-        <Skeleton className=" h-6 w-25 bg-turtle-primary-light py-1 px-3 rounded-full" />
-        <Skeleton className="ml-auto h-6 w-8" />
+
+      <div className="mt-auto flex items-center justify-between pt-5">
+        <Skeleton className="h-7 w-24 rounded-full" />
+        <Skeleton className="size-8 rounded-full" />
       </div>
     </Card>
   );
 };
 
-// ! Categorie Length
-
-export const FoundedProceduces = ({loading, length}: {loading: boolean, length: number}) => {
-  return (
-    <>
-      {loading ? (
-        <Skeleton className="h-6 w-30" />
-      ) : (
-        <p className="text-turtle-text-muted text-sm ml-4 hidden lg:block">
-          {length} procédures disponibles
-        </p>
-      )}
-    </>
+export const FoundedProceduces = ({
+  loading,
+  length,
+}: {
+  loading: boolean;
+  length: number;
+}) => {
+  return loading ? (
+    <Skeleton className="ml-4 h-5 w-36 rounded-md" />
+  ) : (
+    <div className="flex items-center gap-2 text-muted-foreground">
+      <span className="font-semibold text-foreground">{length}</span>
+      <span>{length > 1 ? "procédures disponibles" : "procédure disponible"}</span>
+    </div>
   );
 };

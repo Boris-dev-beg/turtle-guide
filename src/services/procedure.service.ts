@@ -21,6 +21,9 @@ export const proceduresServices = {
           name: name,
         },
       },
+      include: {
+        category: true,
+      },
     });
   },
 

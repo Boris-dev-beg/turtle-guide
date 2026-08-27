@@ -1,7 +1,6 @@
 "use client";
 
-import { InputDemo, SelectDemo } from "@/components/shared/inputs";
-import { InputGroup } from "@/components/ui/input-group";
+import { InputDemo } from "@/components/shared/inputs";
 import { RightIcon } from "./icons";
 import Link from "next/link";
 
@@ -21,11 +20,6 @@ export function FilterForm({
           filter={filter}
           className="w-full lg:w-100"
         />
-
-        <InputGroup className="flex h-11 w-fit rounded-lg border-border/60 bg-background shadow-none transition-colors focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10 lg:hidden">
-
-          <SelectDemo filter={filter} />
-        </InputGroup>
       </div>
     </div>
   );
