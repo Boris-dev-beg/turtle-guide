@@ -5,7 +5,7 @@ import React from "react";
 
 export default function layout({ children }: { children: React.ReactNode }) {
   return (
-    <section className="flex flex-col min-w-screen min-h-screen w-full ">
+    <section className="flex flex-col max-[500px]:w-screen max-w-screen min-h-screen w-full">
       <Header />
       <main className="flex flex-col h-full flex-1 w-full">
         {children}

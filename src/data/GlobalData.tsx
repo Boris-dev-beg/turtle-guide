@@ -5,7 +5,6 @@ import {
   CarFront,
   FileText,
   Flower2,
-  FolderCheck,
   Folders,
   GraduationCap,
   HandHeart,
@@ -15,10 +14,8 @@ import {
   HomeIcon,
   IdCard,
   LockKeyhole,
-  MessagesSquare,
   Scale,
   Shield,
-  ShieldCheck,
   Timer,
   UserCircle,
 } from "lucide-react";
@@ -37,22 +34,24 @@ export const Hero_infos = {
 
 // ! How it work
 export const HowDoesItWork_infos = {
-  title: "Comment ça marche ?",
+  title: "Comment ça fonctionne ?",
   element: [
     {
-      icon: MessagesSquare,
-      title: "1. Répondez à quelques questions",
-      description: "Nous comprenons votre situation",
+      id: 1,
+      title: "Décrivez votre situation",
+      description: "Répondez à quelques questions simples.",
     },
     {
-      icon: FolderCheck,
-      title: "2. Recevez votre parcours personnalisé",
-      description: "Étapes, lieux et documents utiles",
+      id: 2,
+      title: "Identifiez votre démarche",
+      description:
+        "TurtuleGuide vous indique la procédure et le service comptétent.",
     },
     {
-      icon: ShieldCheck,
-      title: "3. Évitez les arnaques",
-      description: "Nos alertes vous protégent",
+      id: 3,
+      title: "Suivez les étapes",
+      description:
+        "Consultez les piéces nécessaires, l'antenne compétente et les documents disponibles.",
     },
   ],
   alert: {
