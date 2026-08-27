@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../../../components/ui/card";
-import { RightIcon } from "../../procedures/icons";
+import { RightIcon } from "./icons";
 
 export const Procedure_card = ({
   procedure,

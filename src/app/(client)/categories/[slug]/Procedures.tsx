@@ -5,9 +5,9 @@ import { useEffect, useState } from "react";
 import {
   CardLoading,
   FoundedProceduces,
-} from "../_components/Procedures/Cards";
-import { FilterForm } from "../_components/Procedures/Form";
-import { Categories } from "./Categories";
+} from "../../_components/Procedures/Cards";
+import { FilterForm } from "../../_components/Procedures/Form";
+import { Categories } from "../Categories";
 import { useCategories } from "@/hooks/useCategories";
 
 // ? Normalize the value
@@ -36,7 +36,11 @@ export function Procedures_Zone() {
 
   // ? Filter Procedures
   const filter = (searchElt: string) => {
-    if (searchElt.trim() === "" || searchElt.trim().includes("toutes") || searchElt.trim().includes("Autres")) {
+    if (
+      searchElt.trim() === "" ||
+      searchElt.trim().includes("toutes") ||
+      searchElt.trim().includes("Autres")
+    ) {
       setProceduresToShow(procedures);
       setProcedureNotFound(false);
       return;
@@ -112,7 +116,6 @@ export function Procedures({
   }[];
   loading: boolean;
 }) {
-
   // ! Render
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-md:w-full gap-4">

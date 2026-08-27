@@ -6,7 +6,7 @@ export default function OurEngagements() {
   return (
     <section className="wrapper flex flex-col gap-6">
       {/* Header */}
-      <h2 className="text-2xl sm:text-3xl font-semibold uppercase tracking-wider text-brand-green-text">
+      <h2 className="text-2xl font-semibold uppercase tracking-wider text-brand-green-text">
         {OurEngagements_infos.title}
       </h2>
 

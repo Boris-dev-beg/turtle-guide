@@ -1,4 +1,5 @@
 "use client";
+
 import {
   Card,
   CardDescription,
@@ -8,43 +9,51 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Procedures_infos } from "@/data/GlobalData";
 import { useProcedures } from "@/hooks/useProcedures";
-import { ArrowRight, ChevronRight, User } from "lucide-react";
+import { ArrowRight, ChevronRight } from "lucide-react";
 import Link from "next/link";
-import { RightIcon } from "../../procedures/icons";
 
 export default function PopularProcedures() {
   const { Popularprocedures, loading } = useProcedures();
+
   return (
-    <section className="flex flex-col gap-4">
-      {/* Header */}
-      <div className="w-full flex justify-between md:items-center">
-        <h2 className="font-semibold text-2xl">{Procedures_infos.title}</h2>
-        <Link
-          href={Procedures_infos.link.href}
-          className="text-turtle-primary font-semibold flex gap-1 items-center text-sm hover:underline"
-        >
-          <p className="hidden sm:flex">{Procedures_infos.link.label}</p>
-          <ArrowRight />
-        </Link>
-      </div>
-      {/* Body */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-5">
-        {loading ? (
-          <>
-            <Card_loader />
-            <Card_loader />
-            <Card_loader />
-            <Card_loader />
-          </>
-        ) : (
-          Popularprocedures.map((proc) => (
-            <Card_
-              key={proc.id}
-              title={proc.title}
-              categoryName={proc.category.name}
-            />
-          ))
-        )}
+    <section className="py-10">
+      <div className="wrapper flex flex-col gap-6">
+        {/* Header */}
+        <div className="flex w-full items-end justify-between gap-4">
+          <h2 className="uppercase tracking-wider text-brand-green-text text-2xl font-bold">
+            {Procedures_infos.title}
+          </h2>
+
+          <Link
+            href={Procedures_infos.link.href}
+            className="group flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-2 text-sm font-semibold text-primary transition-colors hover:underline"
+          >
+            <span className="hidden sm:inline">
+              {Procedures_infos.link.label}
+            </span>
+            <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+          </Link>
+        </div>
+
+        {/* Body */}
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {loading ? (
+            <>
+              <Card_loader />
+              <Card_loader />
+              <Card_loader />
+              <Card_loader />
+            </>
+          ) : (
+            Popularprocedures.map((proc) => (
+              <Card_
+                key={proc.id}
+                title={proc.title}
+                categoryName={proc.category.name}
+              />
+            ))
+          )}
+        </div>
       </div>
     </section>
   );
@@ -58,33 +67,32 @@ const Card_ = ({
   categoryName: string;
 }) => {
   return (
-    <Card className="flex-row items-start gap-2 px-4 group">
-      <span className="p-4 rounded-full bg-turtle-primary-light text-turtle-primary">
-        <RightIcon category={categoryName} title={title} className="size-8" />
-      </span>
-      <CardHeader className="w-full">
-        <CardTitle className="line-clamp-2 font-semibold">{title}</CardTitle>
-        <CardDescription className="flex items-center">
-          <p>{categoryName}</p>
-          <ChevronRight className="ml-auto group-hover:translate-x-1" />
+    <Card className="group flex min-h-30 items-center gap-4 rounded-xl border-border/60 bg-card p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md">
+      {/* Content */}
+        <CardTitle className="line-clamp-2 text-lg font-semibold leading-snug w-full">
+          {title}
+        </CardTitle>
+
+        <CardDescription className="flex items-center mt-auto gap-1 text-base w-full">
+          <span className="truncate font-semibold">{categoryName}</span>
+
+          <ChevronRight className="ml-auto size-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
         </CardDescription>
-      </CardHeader>
     </Card>
   );
 };
 
 const Card_loader = () => {
   return (
-    <Card className="flex-row gap-2 px-4">
-      <Skeleton className="p-4 rounded-full bg-turtle-primary-light text-turtle-primary">
-        <User className="size-10" />
-      </Skeleton>
-      <CardHeader className="w-full">
-        <Skeleton className="h-6 w-full" />
-        <CardDescription className="flex items-center">
-          <Skeleton className="h-6 w-1/2" />
-          <Skeleton className="h-6 w-6 ml-auto" />
-        </CardDescription>
+    <Card className="flex min-h-30 flex-row items-center gap-4 rounded-xl border-border/60 p-4">
+
+      <CardHeader className="w-full space-y-2 p-0">
+        <Skeleton className="h-5 w-4/5" />
+
+        <div className="flex items-center justify-between">
+          <Skeleton className="h-4 w-1/2" />
+          <Skeleton className="size-4 rounded-full" />
+        </div>
       </CardHeader>
     </Card>
   );

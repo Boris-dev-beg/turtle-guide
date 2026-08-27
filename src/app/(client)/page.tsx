@@ -13,10 +13,9 @@ export default function Home() {
       {/* How does it work? */}
       <HowDoesItWork />
       {/* Popular Procedures */}
-      {/* <PopularProcedures /> */}
+      <PopularProcedures />
       {/* Contact */}
-      {/* <Contact /> */}
-      {/* Footer */}
+      <Contact />
 
     </section>
   );

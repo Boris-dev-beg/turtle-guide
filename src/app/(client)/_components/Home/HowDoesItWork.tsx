@@ -5,7 +5,7 @@ import { AlertTriangle } from "lucide-react";
 export default function HowDoesItWork() {
   return (
     <section className="wrapper flex flex-col gap-4 relative">
-      <h2 className="text-2xl sm:text-3xl font-semibold uppercase tracking-wider text-brand-green-text">
+      <h2 className="text-2xl font-bold uppercase tracking-wider text-brand-green-text">
         {HowDoesItWork_infos.title}
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -44,7 +44,7 @@ const Card_ = ({
 }) => {
   return (
     <Card className="flex flex-row items-start gap-3 px-4">
-      <span className="py-2 px-3 bg-brand-green-text rounded-full text-primary-foreground text-xl">
+      <span className="py-2 px-3 bg-brand-green-text rounded-full text-primary-foreground text-xl font-black">
         0{id}
       </span>
       <span className="flex flex-col">
