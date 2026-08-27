@@ -28,7 +28,7 @@ export const Hero_infos = {
     "TurtleGuide vous accompagne pas à pas pour comprendre vos démarches et éviter les anarques.",
   link: {
     label: "Commencer",
-    href: "/procedures",
+    href: "/categories",
   },
 };
 

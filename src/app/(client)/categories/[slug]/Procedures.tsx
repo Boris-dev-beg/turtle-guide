@@ -7,8 +7,7 @@ import {
   FoundedProceduces,
 } from "../../_components/Procedures/Cards";
 import { FilterForm } from "../../_components/Procedures/Form";
-import { Categories } from "../Categories";
-import { useCategories } from "@/hooks/useCategories";
+import { NeededProcedure } from "@/app/api/procedures/_types/type";
 
 // ? Normalize the value
 const deleteAccent = (text: string) => {
@@ -18,30 +17,31 @@ const deleteAccent = (text: string) => {
     .replace(/[\u0300-\u036f]/g, "");
 };
 
-export function Procedures_Zone() {
+export function Procedures_Zone({title}: {title:string}) {
   // ! States
-  const { categories, loading: categoryLoading } = useCategories();
-  const { procedures, loading } = useProcedures();
-  const [proceduresToShow, setProceduresToShow] = useState(procedures);
+  const { proceduresByCategory, getByCategory, loading } = useProcedures();
+  const [proceduresToShow, setProceduresToShow] = useState<NeededProcedure[]>([]);
   const [procedureNotFound, setProcedureNotFound] = useState(false);
 
   // ! Functions
   // ? Update Procedure To Show
+    useEffect(() => {
+    getByCategory(title);
+  }, [title, getByCategory]);
+
   useEffect(() => {
     const updateProcedureToShow = () => {
-      setProceduresToShow(procedures);
+      setProceduresToShow(proceduresByCategory);
     };
     updateProcedureToShow();
-  }, [procedures]);
+  }, [proceduresByCategory]);
 
   // ? Filter Procedures
   const filter = (searchElt: string) => {
     if (
-      searchElt.trim() === "" ||
-      searchElt.trim().includes("toutes") ||
-      searchElt.trim().includes("Autres")
+      searchElt.trim() === ""
     ) {
-      setProceduresToShow(procedures);
+      setProceduresToShow(proceduresByCategory);
       setProcedureNotFound(false);
       return;
     }
@@ -49,12 +49,11 @@ export function Procedures_Zone() {
     // ? Normalization of the user's Entry
     const search = deleteAccent(searchElt.trim());
 
-    const FilteredProcedures = procedures.filter((procedure) => {
+    const FilteredProcedures = proceduresByCategory.filter((procedure) => {
       // ? Normalization of the fields I need
       const safeTitle = deleteAccent(procedure.title);
-      const safeCategoryName = deleteAccent(procedure.category.name);
 
-      if (safeTitle.includes(search) || safeCategoryName.includes(search)) {
+      if (safeTitle.includes(search)) {
         return true;
       } else {
         return false;
@@ -76,22 +75,19 @@ export function Procedures_Zone() {
     <div className="h-full flex flex-col py-5 gap-5">
       {/* HEADER */}
       <div className="flex flex-col gap-4">
-        <h1 className="text-4xl font-bold text-turtle-primary max-w-xl lg:max-w-2xl">
-          Quelle démarche souhaitez-vous effectuer ?
-        </h1>
-        <FilterForm filter={(elt) => filter(elt)} />
+        <FilterForm title={title} filter={(elt) => filter(elt)} />
       </div>
       {/* BODY */}
       <main className="flex gap-3 border-t border-turtle-border pt-4">
         {/* Category filter */}
-        <Categories
+        {/* <Categories
           OnClick={(elt) => filter(elt)}
           categories={categories}
           loading={categoryLoading}
-        />
+        /> */}
         {/* Cards */}
         <div className="flex flex-col gap-4 w-full">
-          <FoundedProceduces loading={loading} length={procedures.length} />
+          <FoundedProceduces loading={loading} length={proceduresByCategory.length} />
           {procedureNotFound ? (
             <ProceduresNotFound />
           ) : (

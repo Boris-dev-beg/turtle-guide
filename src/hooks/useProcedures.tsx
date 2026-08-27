@@ -1,28 +1,18 @@
 "use client";
-import { useEffect, useState } from "react";
+import { NeededProcedure } from "@/app/api/procedures/_types/type";
+import { useCallback, useEffect, useState } from "react";
 
 export function useProcedures() {
   // ! States
   // ? All Procedures
-  const [procedures, setProcedures] = useState<
-    {
-      title: string;
-      description: string;
-      category: {
-        name: string;
-      };
-    }[]
-  >([]);
+  const [procedures, setProcedures] = useState<NeededProcedure[]>([]);
   // ? Popular procedures
-  const [Popularprocedures, setPopularProcedures] = useState<
-    {
-      id: string;
-      title: string;
-      description: string;
-      category: {
-        name: string;
-      };
-    }[]
+  const [Popularprocedures, setPopularProcedures] = useState<NeededProcedure[]>(
+    [],
+  );
+  // ? All Procedures
+  const [proceduresByCategory, setProceduresByCategory] = useState<
+    NeededProcedure[]
   >([]);
   const [loading, setLoading] = useState(true);
 
@@ -31,24 +21,11 @@ export function useProcedures() {
     async function fetchPosts() {
       try {
         const response = await fetch("/api/procedures");
-        const response_popular = await fetch("api/procedures/populars");
+        const response_popular = await fetch("/api/procedures/populars");
 
-        const data: {
-          title: string;
-          description: string;
-          category: {
-            name: string;
-          };
-        }[] = await response.json();
+        const data: NeededProcedure[] = await response.json();
 
-        const data_popular: {
-          id: string;
-          title: string;
-          description: string;
-          category: {
-            name: string;
-          };
-        }[] = await response_popular.json();
+        const data_popular: NeededProcedure[] = await response_popular.json();
 
         setProcedures(data);
         setPopularProcedures(data_popular);
@@ -62,47 +39,40 @@ export function useProcedures() {
     fetchPosts();
   }, []);
 
-  // ? Getting one
-  const getone = (id: string) => {
-    async function fetchPost() {
-      try {
-        const response = await fetch("/api/procedures");
-        const response_popular = await fetch("api/procedures/populars");
+  // ? Getting By Category
+  const getByCategory = useCallback(async (category: string) => {
+  setLoading(true);
 
-        const data: {
-          title: string;
-          description: string;
-          category: {
-            name: string;
-          };
-        }[] = await response.json();
+  try {
+    const response = await fetch(
+      `/api/procedures/${encodeURIComponent(category)}`
+    );
 
-        const data_popular: {
-          id: string;
-          title: string;
-          description: string;
-          category: {
-            name: string;
-          };
-        }[] = await response_popular.json();
-
-        setProcedures(data);
-        setPopularProcedures(data_popular);
-      } catch (err) {
-        console.error("Erreur lors de la récupération de la Procedure:", err);
-      } finally {
-        setLoading(false);
-      }
+    if (!response.ok) {
+      throw new Error("Erreur lors de la récupération des procédures");
     }
 
-    fetchPost();
+    const data: NeededProcedure[] = await response.json();
+
+    setProceduresByCategory(data);
+  } catch (err) {
+    console.error(
+      "Erreur lors de la récupération des procédures par catégorie:",
+      err
+    );
+  } finally {
+    setLoading(false);
   }
-  
+}, []);
+
   // ! Render
   return {
     procedures,
     Popularprocedures,
+    proceduresByCategory,
 
     loading,
+
+    getByCategory,
   };
 }

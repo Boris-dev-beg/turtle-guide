@@ -1,14 +1,23 @@
-export default function Header({title, description}:{title: string, description: string}) {
+export default function Header({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
-    <div className="flex h-40 lg:h-30 items-center w-full border-b border-border">
-      <div className="flex flex-col gap-2 w-full">
-        <h1 className="text-[26px] md:text-3xl font-bold leading-8">
-          {title}
-        </h1>
-        <p className="md:text-lg leading-5 font-medium">
-          {description}
-        </p>
+    <header className="w-full border-b border-border/60 bg-secondary/40">
+      <div className="wrapper flex min-h-32 items-center py-8 sm:min-h-36 lg:min-h-28">
+        <div className="max-w-3xl space-y-2">
+          <h1 className="text-3xl font-bold leading-tight tracking-tight sm:text-4xl">
+            {title}
+          </h1>
+
+          <p className="text-sm leading-6 text-muted-foreground sm:text-base lg:text-lg">
+            {description}
+          </p>
+        </div>
       </div>
-    </div>
+    </header>
   );
 }

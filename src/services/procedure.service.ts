@@ -13,6 +13,17 @@ export const proceduresServices = {
     });
   },
 
+  // ! Get Procedure By Category
+  async getByCategory(name: string) {
+    return await prisma.procedure.findMany({
+      where: {
+        category: {
+          name: name,
+        },
+      },
+    });
+  },
+
   // ! Get few
   async getFew() {
     return await prisma.procedure.findMany({

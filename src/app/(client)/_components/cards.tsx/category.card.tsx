@@ -1,3 +1,4 @@
+"use client";
 import {
   Card,
   CardDescription,
@@ -7,7 +8,8 @@ import {
 import { ChevronRight } from "lucide-react";
 import { RightIcon } from "../Procedures/icons";
 import { Skeleton } from "@/components/ui/skeleton";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useProcedures } from "@/hooks/useProcedures";
 
 export function Category_card({
   title,
@@ -16,35 +18,46 @@ export function Category_card({
   title: string;
   description: string;
 }) {
+  // ! States
+  const router = useRouter();
+  const { getByCategory } = useProcedures();
+
+  // ! Functions
+  const handleClick = () => {
+    getByCategory(title);
+
+    router.push(`/categories/${title}`);
+  };
   return (
-    <Link href={`/categories/${title}`}>
-      <Card className="group relative flex min-h-45 flex-col justify-between overflow-hidden rounded-2xl border-border/60 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
-        <div className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-primary/5 transition-transform duration-500 group-hover:scale-150" />
+    <Card
+      onClick={handleClick}
+      className="group relative flex min-h-45 flex-col justify-between overflow-hidden rounded-2xl border-border/60 cursor-pointer bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+    >
+      <div className="pointer-events-none absolute -right-8 -top-8 size-24 rounded-full bg-primary/5 transition-transform duration-500 group-hover:scale-150" />
 
-        <span className="relative flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-          <RightIcon
-            category={title}
-            className="size-7 transition-transform duration-300 group-hover:scale-110"
-          />
+      <span className="relative flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
+        <RightIcon
+          category={title}
+          className="size-7 transition-transform duration-300 group-hover:scale-110"
+        />
+      </span>
+
+      <div className="flex items-end gap-3 pt-4">
+        <CardHeader className="min-w-0 flex-1 space-y-1 p-0">
+          <CardTitle className="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
+            {title}
+          </CardTitle>
+
+          <CardDescription className="line-clamp-2 text-base ms:text-lg leading-5">
+            {description}
+          </CardDescription>
+        </CardHeader>
+
+        <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-all duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
+          <ChevronRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5" />
         </span>
-
-        <div className="flex items-end gap-3 pt-4">
-          <CardHeader className="min-w-0 flex-1 space-y-1 p-0">
-            <CardTitle className="text-2xl font-bold leading-tight text-foreground transition-colors group-hover:text-primary">
-              {title}
-            </CardTitle>
-
-            <CardDescription className="line-clamp-2 text-base ms:text-lg leading-5">
-              {description}
-            </CardDescription>
-          </CardHeader>
-
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-all duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
-            <ChevronRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5" />
-          </span>
-        </div>
-      </Card>
-    </Link>
+      </div>
+    </Card>
   );
 }
 

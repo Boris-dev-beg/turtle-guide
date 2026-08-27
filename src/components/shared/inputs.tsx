@@ -1,5 +1,6 @@
 "use client";
-import { Search } from "lucide-react";
+
+import { Search, SlidersHorizontal } from "lucide-react";
 import {
   InputGroup,
   InputGroupAddon,
@@ -23,33 +24,46 @@ export function SelectDemo({
   filter: (searchElt: string) => void;
 }) {
   const { categories } = useCategories();
+
   const defaultCategory = "Toutes les procédures";
+
   const filteredCategories = categories.filter(
-    (cat) => cat.name !== "Toutes les procédures",
+    (cat) => cat.name !== defaultCategory,
   );
 
+  // ! Render
   return (
-    <Select defaultValue={defaultCategory}>
-      <SelectTrigger className="w-full max-w-48 border-none!">
-        <SelectValue />
+    <Select
+      defaultValue={defaultCategory}
+      onValueChange={(value) => {
+        filter(value ?? "");
+      }}
+    >
+      <SelectTrigger className="h-11 w-full border-0 bg-transparent px-3 shadow-none focus:ring-0">
+        <div className="flex items-center gap-2">
+          <SlidersHorizontal className="size-5 text-muted-foreground" />
+          <SelectValue placeholder="Choisir une catégorie" />
+        </div>
       </SelectTrigger>
-      <SelectContent className="p-3 w-60 shadow-sm shadow-turtle-card-bg">
+
+      <SelectContent className="w-64 rounded-xs border-border/60 p-1.5 shadow-lg">
         <SelectGroup>
-          <SelectLabel>Categories</SelectLabel>
+          <SelectLabel className="px-2 py-2 text-sm font-semibold uppercase tracking-wider text-muted-foreground">
+            Filtrer par catégorie
+          </SelectLabel>
 
           <SelectItem
-            value="Toutes les procédures"
-            className="cursor-pointer hover:bg-turtle-primary-light px-2 py-1.5"
+            value={defaultCategory}
+            className="text-lg! cursor-pointer rounded-xs px-3 py-2.5"
           >
             Toutes les procédures
           </SelectItem>
 
           {filteredCategories.map((cat) => (
             <SelectItem
-              onClick={() => filter(cat.name)}
               key={cat.id}
               value={cat.name}
-              className="cursor-pointer hover:bg-turtle-primary-light px-2 py-1.5"
+              className="cursor-pointer rounded-xs px-3 py-2.5"
             >
               {cat.name}
             </SelectItem>
@@ -67,6 +81,7 @@ export function InputDemo({
   className?: string;
   filter: (searchElt: string) => void;
 }) {
+
   // ! States
   const [searchValue, setSearchValue] = useState("");
 
@@ -75,20 +90,28 @@ export function InputDemo({
     setSearchValue(value);
     filter(value);
   };
+
   // ! Render
   return (
     <InputGroup
-      className={`${className ? className : ""} py-5 focus-within:ring-turtle-primary-border! focus-within:border-none! rounded-sm`}
+      className={`
+        ${className ?? ""}
+        h-11 rounded-sm border-border/60 bg-card shadow-sm
+        transition-all duration-200
+        focus-within:border-primary/20!
+        focus-within:ring-primary/40!
+      `}
     >
-      <InputGroupAddon>
+      <InputGroupAddon className="px-3 text-muted-foreground">
         <Search className="size-5" />
       </InputGroupAddon>
+
       <InputGroupInput
         type="search"
         value={searchValue}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder="Rechercher une procedure..."
-        className="turtle-radio"
+        placeholder="Rechercher une procédure..."
+        className="h-full placeholder:text-muted-foreground/70 focus-visible:ring-0"
       />
     </InputGroup>
   );
