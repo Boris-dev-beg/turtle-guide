@@ -1,48 +1,88 @@
-"use client"
-import { Eye, LockKeyhole, Mail, Phone, User2, UserPlus2 } from "lucide-react";
+"use client";
+import { Eye, LockKeyhole, Mail, User2, UserPlus2 } from "lucide-react";
 import { EntryZone } from "../shared/entry";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { Controller, useForm } from "react-hook-form";
+import { signupSchema, SignUpType } from "../../_schema/signup.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export default function SingUpForm() {
+  const {
+    handleSubmit,
+    formState: { isSubmitting },
+    control,
+  } = useForm<SignUpType>({
+    resolver: zodResolver(signupSchema),
+  });
+
+  const onSubmit = async (data: SignUpType) => {
+    // Handle submission
+    console.log(data);
+  };
   return (
-    <form action="/" className="flex flex-col gap-4">
-      <EntryZone
-        type="text"
-        icon={User2}
-        placeholder="Entrez votre nom complet"
-        label="Nom complet"
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <Controller
+        name="name"
+        control={control}
+        render={({ field, fieldState }) => (
+          <EntryZone
+            type="text"
+            icon={User2}
+            fieldState={fieldState}
+            field={field}
+            placeholder="Entrez votre nom complet"
+            label="Nom complet"
+          />
+        )}
       />
 
-      <EntryZone
-        type="email"
-        icon={Mail}
-        placeholder="Entrez votre email"
-        label="Email"
+      <Controller
+        name="email"
+        control={control}
+        render={({ field, fieldState }) => (
+          <EntryZone
+            type="email"
+            fieldState={fieldState}
+            field={field}
+            icon={Mail}
+            placeholder="exemple@email.com"
+            label="Email"
+          />
+        )}
       />
 
-      <EntryZone
-        type="tel"
-        icon={Phone}
-        placeholder="Ex : 6XX XXX XXX"
-        label="Téléphone"
+      <Controller
+        name="password"
+        control={control}
+        render={({ field, fieldState }) => (
+          <EntryZone
+            type="password"
+            icon={LockKeyhole}
+            placeholder="Créer un mot de passe"
+            label="Mot de passe"
+            fieldState={fieldState}
+            field={field}
+            icon2={Eye}
+          />
+        )}
       />
 
-      <EntryZone
-        type="password"
-        icon={LockKeyhole}
-        placeholder="Créer un mot de passe"
-        label="Mot de passe"
-        icon2={Eye}
-      />
-
-      <EntryZone
-        type="password"
-        icon={LockKeyhole}
-        placeholder="Confirmez votre mot de passe"
-        label="Confirmer le mot de passe"
-        icon2={Eye}
+      <Controller
+        name="confirmPassword"
+        control={control}
+        render={({ field, fieldState }) => (
+          <EntryZone
+            type="password"
+            icon={LockKeyhole}
+            placeholder="Confirmez votre mot de passe"
+            label="Confirmer le mot de passe"
+            fieldState={fieldState}
+            field={field}
+            icon2={Eye}
+          />
+        )}
       />
 
       <div className="space-y-4 pt-1">
@@ -58,31 +98,32 @@ export default function SingUpForm() {
             className="cursor-pointer text-base font-normal leading-5 text-muted-foreground flex gap-1"
           >
             <p>
-                J&apos;accepte les{" "}
-            <Link
-              href="/"
-              className="font-medium text-primary hover:underline"
-            >
-              conditions d&apos;utilisation
-            </Link>{" "}
-            et la{" "}
-            <Link
-              href="/"
-              className="font-medium text-primary hover:underline"
-            >
-              politique de confidentialité
-            </Link>
-            .
+              J&apos;accepte les{" "}
+              <Link
+                href="/"
+                className="font-medium text-primary hover:underline"
+              >
+                conditions d&apos;utilisation
+              </Link>{" "}
+              et la{" "}
+              <Link
+                href="/"
+                className="font-medium text-primary hover:underline"
+              >
+                politique de confidentialité
+              </Link>
+              .
             </p>
           </Label>
         </div>
 
         <button
           type="submit"
+          disabled={isSubmitting}
           className="btn btn-primary flex h-12 w-full items-center justify-center gap-2"
         >
           <UserPlus2 className="size-5" />
-          Créer mon compte
+          {isSubmitting ? "Creeation..." : "Créer mon compte"}
         </button>
       </div>
     </form>

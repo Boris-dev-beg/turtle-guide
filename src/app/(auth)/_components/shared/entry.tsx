@@ -1,5 +1,5 @@
 "use client";
-import { Field, FieldLabel } from "@/components/ui/field";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
 import {
   InputGroup,
   InputGroupAddon,
@@ -13,31 +13,52 @@ import {
 } from "@/components/ui/input-otp";
 import { REGEXP_ONLY_DIGITS } from "input-otp";
 import { LucideIcon } from "lucide-react";
+import {
+  ControllerFieldState,
+  ControllerRenderProps,
+  FieldPath,
+  FieldValues,
+} from "react-hook-form";
 
-export function EntryZone({
+interface GenericInputProps<T extends FieldValues, N extends FieldPath<T>> {
+  field: ControllerRenderProps<T, N>;
+  label?: string;
+  placeholder?: string;
+}
+
+export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
   label,
   placeholder,
   icon: Icon,
   type = "text",
   icon2: Icon2,
-}: {
+  fieldState,
+  field,
+}: GenericInputProps<T, N> & {
   label: string;
   placeholder: string;
   icon: LucideIcon;
   type?: string;
   icon2?: LucideIcon;
+  fieldState: ControllerFieldState;
 }) {
   return (
-    <Field className="gap-1.5">
+    <Field data-invalid={fieldState.invalid} className="gap-1.5">
       <FieldLabel
-        htmlFor={label}
+        htmlFor={field.name}
         className="text-base font-semibold text-foreground"
       >
         {label}
       </FieldLabel>
 
-      <InputGroup className="h-11 rounded-lg border-border/70 bg-background transition-all focus-within:border-primary/50! focus-within:ring-4 focus-within:ring-primary/50!">
-        <InputGroupAddon className="px-3 text-muted-foreground">
+      <InputGroup
+        {...field}
+        aria-invalid={fieldState.invalid}
+        className={`${fieldState.invalid ? "border-destructive focus-within:border-destructive focus-within:ring-destructive/20" : "border-border/70 focus-within:border-primary/50 focus-within:ring-primary/50 focus-within:ring-4"} h-11 rounded-lg  bg-background transition-all`}
+      >
+        <InputGroupAddon
+          className={`${fieldState.invalid ? "text-destructive" : " text-muted-foreground"} px-3`}
+        >
           <Icon className="size-5" />
         </InputGroupAddon>
 
@@ -51,12 +72,13 @@ export function EntryZone({
         {Icon2 && (
           <InputGroupAddon
             align="inline-end"
-            className="cursor-pointer px-3 text-muted-foreground hover:text-foreground"
+            className={`${fieldState.invalid ? "text-destructive" : " text-muted-foreground hover:text-foreground"} cursor-pointer px-3`}
           >
             <Icon2 className="size-5" />
           </InputGroupAddon>
         )}
       </InputGroup>
+      {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
     </Field>
   );
 }
