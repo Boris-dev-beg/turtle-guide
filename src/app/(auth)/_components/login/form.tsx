@@ -1,3 +1,4 @@
+"use client"
 import { Eye, LockKeyhole, LogIn, Mail } from "lucide-react";
 import { EntryZone } from "../shared/entry";
 import { Input } from "@/components/ui/input";
@@ -38,7 +39,10 @@ export default function LoginForm() {
               Se souvenir de moi
             </Label>
           </div>
-          <Link href="/" className="font-medium text-primary hover:underline">
+          <Link
+            href="/forgotPassword"
+            className="font-medium text-primary hover:underline"
+          >
             Mot de passe oublié ?
           </Link>
         </div>

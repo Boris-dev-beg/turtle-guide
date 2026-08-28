@@ -1,3 +1,4 @@
+"use client"
 import { Eye, LockKeyhole, Mail, Phone, User2, UserPlus2 } from "lucide-react";
 import { EntryZone } from "../shared/entry";
 import { Input } from "@/components/ui/input";

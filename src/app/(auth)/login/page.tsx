@@ -8,11 +8,11 @@ export default function page() {
       {/* Header */}
       <div className="space-y-2">
         <div>
-          <h1 className="text-4xl font-bold tracking-tight sm:text-3xl">
-            Bon retour parmis nous !
+          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl text-center">
+            Connexion
           </h1>
 
-          <p className="mt-1 text-base leading-6 text-muted-foreground">
+          <p className="mt-1 text-[17px] leading-6 text-muted-foreground">
             Connectez-vous pour accéder à votre espace personnel.
           </p>
         </div>
