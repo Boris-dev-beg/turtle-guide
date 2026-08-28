@@ -7,11 +7,14 @@ import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { signupSchema, SignUpType } from "../../_schema/signup.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function SingUpForm() {
+  const router = useRouter()
+  const {signup} = useAuth()
   const {
     handleSubmit,
-    formState: { isSubmitting },
     control,
   } = useForm<SignUpType>({
     resolver: zodResolver(signupSchema),
@@ -19,8 +22,13 @@ export default function SingUpForm() {
   });
 
   const onSubmit = async (data: SignUpType) => {
-    // Handle submission
-    console.log(data);
+    try {
+    await signup.mutateAsync(data);
+
+    router.push("/");
+  } catch (error) {
+    console.error("Erreur lors de l'inscription :", error);
+  }
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
@@ -120,11 +128,11 @@ export default function SingUpForm() {
 
         <button
           type="submit"
-          disabled={isSubmitting}
+          disabled={signup.isPending}
           className="btn btn-primary flex h-12 w-full items-center justify-center gap-2"
         >
           <UserPlus2 className="size-5" />
-          {isSubmitting ? "Creeation..." : "Créer mon compte"}
+          {signup.isPending ? "Creeation..." : "Créer mon compte"}
         </button>
       </div>
     </form>
