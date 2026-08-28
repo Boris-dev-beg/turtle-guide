@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-export const signupSchema = z
+export const ForgotPasswordSchema = z
   .object({
-    name: z.string().min(2, "Le nom est requis"),
     email: z.email("Adresse email invalide"),
     password: z
       .string()
@@ -14,4 +13,4 @@ export const signupSchema = z
     path: ["confirmPassword"],
   });
 
-export type SignUpType = z.infer<typeof signupSchema>;
+export type ForgotPasswordType = z.infer<typeof ForgotPasswordSchema>;

@@ -15,6 +15,7 @@ export default function SingUpForm() {
     control,
   } = useForm<SignUpType>({
     resolver: zodResolver(signupSchema),
+    mode: "onChange"
   });
 
   const onSubmit = async (data: SignUpType) => {
@@ -22,7 +23,7 @@ export default function SingUpForm() {
     console.log(data);
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
       <Controller
         name="name"
         control={control}
@@ -95,7 +96,7 @@ export default function SingUpForm() {
 
           <Label
             htmlFor="check"
-            className="cursor-pointer text-base font-normal leading-5 text-muted-foreground flex gap-1"
+            className="cursor-pointer text-sm font-normal leading-5 text-muted-foreground flex gap-1"
           >
             <p>
               J&apos;accepte les{" "}

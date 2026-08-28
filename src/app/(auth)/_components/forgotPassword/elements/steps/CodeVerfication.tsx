@@ -3,6 +3,7 @@ import Form_layout from "../components/form_layout";
 import { ChevronLeft, MailCheck, RefreshCcw } from "lucide-react";
 import { EntryOTPZone } from "../../../shared/entry";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export default function CodeVerfication({ OnClick }: { OnClick: () => void }) {
   return (
@@ -45,13 +46,13 @@ export default function CodeVerfication({ OnClick }: { OnClick: () => void }) {
             </Button>
           </span>
         </>
-        <button
-          type="button"
+        <Link
+          href="/login"
           className="btn btn-outline flex h-12 w-full items-center justify-center gap-2"
         >
           <ChevronLeft />
           Retour à la connexion
-        </button>
+        </Link>
       </>
     </Form_layout>
   );

@@ -1,4 +1,5 @@
-import { LucideIcon } from "lucide-react";
+"use client";
+import { LucideIcon } from "lucide-react";;
 
 export default function Form_layout({
   children,
@@ -26,7 +27,9 @@ export default function Form_layout({
       </div>
 
       {/* Formulaire */}
-      <form className="space-y-5">{children}</form>
+      <div className="space-y-5">
+        {children}
+      </div>
     </div>
   );
 }
