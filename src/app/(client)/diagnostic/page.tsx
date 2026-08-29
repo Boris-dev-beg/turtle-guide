@@ -1,8 +1,11 @@
+import { requireSession } from "@/lib/session";
+import Diagnostic from "./_components/layout/Diagnostic";
 
-export default function page() {
+export default async function page() {
+  const session = await requireSession();
   return (
     <div>
-      Diagnostic
+      <Diagnostic user={session.user} />
     </div>
-  )
+  );
 }

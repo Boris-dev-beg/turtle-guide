@@ -5,7 +5,7 @@ import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-export const NavBar = () => {
+export const NavBar = ({ name }: { name?: string }) => {
   const pathName = usePathname();
 
   return (
@@ -22,12 +22,18 @@ export const NavBar = () => {
         ))}
       </nav>
 
-      <Link
-        href="/login"
-        className="ml-1 rounded-lg border-2 border-white/30 bg-white/10 px-3 py-2 font-semibold text-primary-foreground backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-primary sm:px-4"
-      >
-        Se connecter
-      </Link>
+      {name ? (
+        <span className="rounded-full bg-primary/10 text-primary-foreground/70 font-black text-lg p-1 border-2 border-white/30 uppercase">
+          {name[0] + name[1]}
+        </span>
+      ) : (
+        <Link
+          href="/login"
+          className="ml-1 rounded-lg border-2 border-white/30 bg-white/10 px-3 py-2 font-semibold text-primary-foreground backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-primary sm:px-4"
+        >
+          Se connecter
+        </Link>
+      )}
     </div>
   );
 };
