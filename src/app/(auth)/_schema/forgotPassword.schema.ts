@@ -1,8 +1,7 @@
 import { z } from "zod";
 
-export const ForgotPasswordSchema = z
+export const ResetPasswordSchema = z
   .object({
-    email: z.email("Adresse email invalide"),
     password: z
       .string()
       .min(8, "Le mot de passe devrait avoir au moins 8 caractéres"),
@@ -13,4 +12,18 @@ export const ForgotPasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export type ForgotPasswordType = z.infer<typeof ForgotPasswordSchema>;
+export type ResetPasswordSchemaType = z.infer<typeof ResetPasswordSchema>;
+
+export const AccountVerificationSchema = z.object({
+  email: z.email("Adresse email invalide"),
+});
+
+export type AccountVerificationSchemaType = z.infer<
+  typeof AccountVerificationSchema
+>;
+
+export const CodeOTPSchema = z.object({
+  code: z.string().length(6),
+});
+
+export type CodeOTPSchemaType = z.infer<typeof CodeOTPSchema>;

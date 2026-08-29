@@ -2,26 +2,58 @@
 import Form_layout from "../components/form_layout";
 import { ArrowRight, Eye, LockKeyhole } from "lucide-react";
 import { EntryZone } from "../../../shared/entry";
-import { Controller, useFormContext } from "react-hook-form";
-import { ForgotPasswordType } from "@/app/(auth)/_schema/forgotPassword.schema";
+import { Controller, useForm } from "react-hook-form";
+import {
+  ResetPasswordSchema,
+  ResetPasswordSchemaType,
+} from "@/app/(auth)/_schema/forgotPassword.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useAuth } from "@/hooks/useAuth";
+import { useForgotPasswordStore } from "../../store/forgotPassword.store";
 
-export default function NewPassword() {
-  const {
-    control,
-    formState: { isSubmitting },
-    handleSubmit,
-  } = useFormContext<ForgotPasswordType>();
+export default function NewPassword({ OnClick }: { OnClick: () => void }) {
+  // ! States
+  const email = useForgotPasswordStore((state) => state.email);
+  const otp = useForgotPasswordStore((state) => state.otp);
+  const setPassword = useForgotPasswordStore((state) => state.setPassword);
 
-  const submit = handleSubmit(async (data) => {
-    // API reset password
-    console.log("Datas:", data);
+  const form = useForm<ResetPasswordSchemaType>({
+    resolver: zodResolver(ResetPasswordSchema),
+    mode: "onChange",
+    defaultValues: {
+      password: "",
+      confirmPassword: "",
+    },
   });
+
+  // ! Functions
+  const { resetPassword } = useAuth();
+
+  const handleReset = async (data: ResetPasswordSchemaType) => {
+    const password = data.password
+    try {
+      await resetPassword.mutateAsync({
+        email,
+        otp,
+        password,
+      });
+
+      console.log("The new Password:", data.password);
+
+      setPassword(data.password);
+      OnClick();
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ! Render
   return (
     <Form_layout title="Nouveau mot de passe" icon={LockKeyhole}>
-      <>
+      <form onSubmit={form.handleSubmit(handleReset)} className="space-y-5">
         <Controller
           name="password"
-          control={control}
+          control={form.control}
           render={({ field, fieldState }) => (
             <EntryZone
               placeholder="********"
@@ -36,7 +68,7 @@ export default function NewPassword() {
         />
         <Controller
           name="confirmPassword"
-          control={control}
+          control={form.control}
           render={({ field, fieldState }) => (
             <EntryZone
               placeholder="********"
@@ -44,23 +76,22 @@ export default function NewPassword() {
               field={field}
               fieldState={fieldState}
               icon={LockKeyhole}
-              type="passeword"
+              type="password"
               icon2={Eye}
             />
           )}
         />
         <button
-          type="button"
-          onClick={submit}
-          disabled={isSubmitting}
+          type="submit"
+          disabled={resetPassword.isPending}
           className="btn btn-primary flex h-12 w-full items-center justify-center gap-2"
         >
-          {isSubmitting
+          {resetPassword.isPending
             ? "Réinitialisation..."
             : "Réinitialiser le mot de passe"}
           <ArrowRight className="size-5" />
         </button>
-      </>
+      </form>
     </Form_layout>
   );
 }

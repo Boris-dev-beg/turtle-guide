@@ -3,17 +3,45 @@ import Link from "next/link";
 import { EntryZone } from "../../../shared/entry";
 import Form_layout from "../components/form_layout";
 import { ArrowRight, ChevronLeft, Mail } from "lucide-react";
-import { Controller, useFormContext } from "react-hook-form";
-import { ForgotPasswordType } from "@/app/(auth)/_schema/forgotPassword.schema";
+import { Controller, useForm } from "react-hook-form";
+import {
+  AccountVerificationSchema,
+  AccountVerificationSchemaType,
+} from "@/app/(auth)/_schema/forgotPassword.schema";
+import { useAuth } from "@/hooks/useAuth";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForgotPasswordStore } from "../../store/forgotPassword.store";
 
 export default function AccountVerification({
   OnClick,
 }: {
   OnClick: () => void;
 }) {
-  const {
-    control
-  } = useFormContext<ForgotPasswordType>();
+  // ! States
+  const setEmail = useForgotPasswordStore((state) => state.setEmail);
+  const form = useForm<AccountVerificationSchemaType>({
+    resolver: zodResolver(AccountVerificationSchema),
+    mode: "onChange",
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  // ! Functions
+  const { requestPasswordReset } = useAuth();
+
+  const handleSubmit = async (data: AccountVerificationSchemaType) => {
+    try {
+      await requestPasswordReset.mutateAsync(data.email);
+
+      setEmail(data.email);
+      OnClick()
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  // ! Render
   return (
     <Form_layout
       title="Vérification de votre compte"
@@ -21,10 +49,10 @@ export default function AccountVerification({
           de réinitialisation."
       icon={Mail}
     >
-      <>
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5" >
         <Controller
           name="email"
-          control={control}
+          control={form.control}
           render={({ field, fieldState }) => (
             <>
               <EntryZone
@@ -36,12 +64,17 @@ export default function AccountVerification({
                 type="email"
               />
               <button
-                type="button"
-                onClick={OnClick}
-                disabled={!field.value || fieldState.invalid}
+                type="submit"
+                disabled={
+                  !field.value ||
+                  fieldState.invalid ||
+                  requestPasswordReset.isPending
+                }
                 className="btn btn-primary flex h-12 w-full items-center justify-center gap-2 disabled:cursor-not-allowed!"
               >
-                Envoyer le lien de réinitialisation
+                {requestPasswordReset.isPending
+                  ? "Envoie..."
+                  : "Envoyer le lien de réinitialisation"}
                 <ArrowRight className="size-5" />
               </button>
             </>
@@ -54,7 +87,7 @@ export default function AccountVerification({
           <ChevronLeft />
           Retour à la connexion
         </Link>
-      </>
+      </form>
     </Form_layout>
   );
 }

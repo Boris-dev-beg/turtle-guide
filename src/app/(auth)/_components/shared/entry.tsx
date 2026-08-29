@@ -83,12 +83,15 @@ export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
   );
 }
 
-export function EntryOTPZone({
+export function EntryOTPZone<T extends FieldValues, N extends FieldPath<T>>({
   label,
-  Onchange,
-}: {
+  field,
+  onComplete,
+}: GenericInputProps<T, N> & {
   label: string;
-  Onchange: (value: string) => void;
+  fieldState: ControllerFieldState;
+
+  onComplete: () => void;
 }) {
   return (
     <Field className="gap-1.5">
@@ -102,7 +105,8 @@ export function EntryOTPZone({
       <InputOTP
         id={label}
         maxLength={6}
-        onChange={Onchange}
+        {...field}
+        onComplete={onComplete}
         pattern={REGEXP_ONLY_DIGITS}
       >
         <InputOTPGroup className="flex gap-2 w-full items-center px-4">

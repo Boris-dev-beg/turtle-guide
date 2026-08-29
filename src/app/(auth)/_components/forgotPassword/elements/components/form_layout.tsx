@@ -27,9 +27,9 @@ export default function Form_layout({
       </div>
 
       {/* Formulaire */}
-      <div className="space-y-5">
+      <>
         {children}
-      </div>
+      </>
     </div>
   );
 }
