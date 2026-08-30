@@ -10,6 +10,7 @@ import { RightIcon } from "../Procedures/icons";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useRouter } from "next/navigation";
 import { useProcedures } from "@/hooks/useProcedures";
+import { useFolderStore } from "@/store/folder.store";
 
 export function Category_card({
   title,
@@ -21,10 +22,12 @@ export function Category_card({
   // ! States
   const router = useRouter();
   const { getByCategory } = useProcedures();
+  const { setCategory } = useFolderStore();
 
   // ! Functions
   const handleClick = () => {
     getByCategory(title);
+    setCategory(title);
 
     router.push(`/categories/${title}`);
   };

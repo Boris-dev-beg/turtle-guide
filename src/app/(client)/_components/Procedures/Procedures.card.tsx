@@ -11,18 +11,31 @@ import {
 import { RightIcon } from "./icons";
 import { NeededProcedure } from "@/app/api/procedures/_types/type";
 import { useRouter } from "next/navigation";
+import { useFolderStore } from "@/store/folder.store";
 
 export const Procedure_card = ({
   procedure,
 }: {
-  procedure:NeededProcedure;
+  procedure: NeededProcedure;
 }) => {
+  // ! States
   const category = procedure.category?.name?.toLocaleLowerCase() || "";
   const title = procedure.title.toLocaleLowerCase();
-  const  router = useRouter()
+  const router = useRouter();
+  const { setProcedure } = useFolderStore();
 
+  // ! Functions
+  const handleClick = () => {
+    setProcedure(procedure.title);
+    router.push("/diagnostic");
+  };
+
+  // ! Render
   return (
-    <Card onClick={()=> router.push("/diagnostic")} className="group flex min-h-55 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
+    <Card
+      onClick={handleClick}
+      className="group flex min-h-55 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+    >
       {/* Header */}
       <CardHeader className="flex flex-row items-center gap-3 p-5 pb-3">
         <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">

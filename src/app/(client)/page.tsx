@@ -6,7 +6,7 @@ import HowDoesItWork from "./_components/Home/HowDoesItWork";
 
 export default function Home() {
   return (
-    <section className="flex  flex-col gap-6">
+    <section className="flex flex-col gap-6">
       <Hero />
       {/* Our engaments */}
       <OurEngagements />

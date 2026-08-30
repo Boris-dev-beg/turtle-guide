@@ -216,15 +216,15 @@
 
   /* ! ========== PILLS ========== */
   .turtle-step {
-    @apply flex items-center justify-center w-8 h-8 rounded-full text-xs font-bold shrink-0;
+    @apply flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0;
   }
 
   .turtle-step-active {
-    @apply bg-primary text-primary-foreground;
+    @apply border-primary border-6 bg-white text-primary-foreground;
   }
 
   .turtle-step-inactive {
-    @apply bg-muted text-muted-foreground border border-border;
+    @apply bg-muted text-muted-foreground border-2 border-border;
   }
 
   /* ! ========== PROGRESS ========== */
