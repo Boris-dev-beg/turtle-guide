@@ -4,7 +4,7 @@ import { Categories } from "./Categories";
 
 export default function page() {
   return (
-    <div className="flex flex-col">
+    <section className="flex flex-col">
       {/* Header */}
       <BackToHome />
       <Header
@@ -14,6 +14,6 @@ export default function page() {
       />
       {/* Body */}
       <Categories />
-    </div>
+    </section>
   );
 }

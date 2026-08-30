@@ -81,7 +81,6 @@ export function InputDemo({
   className?: string;
   filter: (searchElt: string) => void;
 }) {
-
   // ! States
   const [searchValue, setSearchValue] = useState("");
 
@@ -110,7 +109,7 @@ export function InputDemo({
         type="search"
         value={searchValue}
         onChange={(e) => handleChange(e.target.value)}
-        placeholder="Rechercher une procédure..."
+        placeholder="Rechercher ..."
         className="h-full placeholder:text-muted-foreground/70 focus-visible:ring-0"
       />
     </InputGroup>
