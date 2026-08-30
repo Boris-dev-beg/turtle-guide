@@ -5,7 +5,11 @@ export const FolderServices = {
     return await prisma.folder.findMany({
       where: {
         userId: "user_boris_001",
-      }
+      },
+      include: {
+        procedure: true,
+        location: true,
+      },
     });
   },
 };

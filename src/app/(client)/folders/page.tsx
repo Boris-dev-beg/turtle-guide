@@ -7,8 +7,8 @@ export default async function page() {
   // const userId = session?.user.id || "";
   const folders = await FolderServices.getAll();
   return (
-    <section className="wrapper flex w-full">
-      <Folder folders={folders} />
-    </section>
+    <>
+      <Folder folders={folders } />
+    </>
   );
 }

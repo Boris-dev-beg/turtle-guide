@@ -1,9 +1,12 @@
-import React from 'react'
 
-export default function page() {
+import { FolderServices } from "@/services/folders.service";
+import FolderDetail from "../_components/layout/FolderDetail";
+
+export default async function page() {
+  const folders = await FolderServices.getAll();
   return (
-    <div>
-     Folder 
+    <div className="w-full ">
+      <FolderDetail folder={folders[0]} />
     </div>
-  )
+  );
 }

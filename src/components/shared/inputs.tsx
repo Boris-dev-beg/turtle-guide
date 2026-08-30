@@ -110,7 +110,8 @@ export function InputDemo({
         value={searchValue}
         onChange={(e) => handleChange(e.target.value)}
         placeholder="Rechercher ..."
-        className="h-full placeholder:text-muted-foreground/70 focus-visible:ring-0"
+        className="h-full
+        md:text-xl placeholder:text-muted-foreground/70 focus-visible:ring-0"
       />
     </InputGroup>
   );

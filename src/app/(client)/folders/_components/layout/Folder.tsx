@@ -4,7 +4,8 @@ import { HelpBox } from "@/app/(client)/_components/cards.tsx/HelpBox";
 import { InputDemo } from "@/components/shared/inputs";
 import { BackToHome } from "@/components/shared/links";
 import type { FolderStatus } from "@/generated/prisma/client";
-import { ChevronRight, FileText, MapPin, Plus, PlusCircle } from "lucide-react";
+import { FileText, Plus, PlusCircle } from "lucide-react";
+import FolderCard from "../cards/folderCard";
 // import { useFolderStore } from "@/store/folder.store";
 
 export type Folder = {
@@ -18,12 +19,12 @@ export type Folder = {
 
   procedure: {
     id: string;
-    name: string;
+    title: string;
   };
 
   location: {
     id: string;
-    name: string;
+    city: string | null;
   };
 };
 
@@ -37,12 +38,12 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_001",
-      name: "Déclaration de naissance",
+      title: "Déclaration de naissance",
     },
 
     location: {
       id: "location_001",
-      name: "Mairie de Bafoussam",
+      city: "Mairie de Bafoussam",
     },
   },
 
@@ -55,12 +56,12 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_002",
-      name: "Première demande",
+      title: "Première demande",
     },
 
     location: {
       id: "location_002",
-      name: "Préfecture de Bafoussam",
+      city: "Préfecture de Bafoussam",
     },
   },
 
@@ -73,12 +74,12 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_003",
-      name: "Demande d'attestation",
+      title: "Demande d'attestation",
     },
 
     location: {
       id: "location_001",
-      name: "Mairie de Bafoussam",
+      city: "Mairie de Bafoussam",
     },
   },
 
@@ -91,12 +92,12 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_004",
-      name: "Transcription d'acte de mariage",
+      title: "Transcription d'acte de mariage",
     },
 
     location: {
       id: "location_003",
-      name: "Mairie de Douala",
+      city: "Mairie de Douala",
     },
   },
 
@@ -109,12 +110,12 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_005",
-      name: "Demande de copie intégrale",
+      title: "Demande de copie intégrale",
     },
 
     location: {
       id: "location_001",
-      name: "Mairie de Bafoussam",
+      city: "Mairie de Bafoussam",
     },
   },
 
@@ -127,30 +128,16 @@ export const mockFolders: Folder[] = [
 
     procedure: {
       id: "procedure_006",
-      name: "Première demande",
+      title: "Première demande",
     },
 
     location: {
       id: "location_004",
-      name: "Gouvernorat de l'Ouest",
+      city: "Gouvernorat de l'Ouest",
     },
   },
 ];
-export default function Folder({
-  folders,
-}: {
-  folders: {
-    id: string;
-    name: string;
-    status: FolderStatus;
-    createdAt: Date;
-    updatedAt: Date;
-    userId: string;
-    procedureId: string;
-    processId: string | null;
-    locationId: string;
-  }[];
-}) {
+export default function Folder({ folders }: { folders: Folder[] }) {
   // const { procedure, category } = useFolderStore();
   console.log(folders);
   return (
@@ -236,75 +223,4 @@ const StatusFilter = ({
       </p>
     </span>
   );
-};
-const FolderCard = ({ folder }: { folder: Folder }) => {
-  const status = folder.status;
-  const { label, dateLabel } = getFolderStatus(folder);
-  return (
-    <div className="group flex gap-4 p-2 items-center turtle-radio">
-      <span className="p-2 bg-primary/10 rounded-sm text-primary">
-        <FileText className="size-7" />
-      </span>
-      <span className="w-full">
-        <h1 className="text-lg font-bold">{folder.name}</h1>
-        <p className="text-muted-foreground">{folder.procedure.name}</p>
-        <p className="text-muted-foreground flex gap-1 items-center text-sm">
-          <MapPin className="size-4" />
-          {folder.location.name}
-        </p>
-      </span>
-      <span className="w-fit flex flex-col text-nowrap md:mr-4">
-        <p
-          className={`px-2.5 py-1.5 text-sm rounded-full w-fit ${status === "CREATED" ? "bg-orange-500/10 text-orange-400" : status === "PENDING" ? "bg-brand-blue-bg text-brand-blue" : status === "ENDED" ? "bg-primary/10 text-primary" : "text-gray-500 bg-gray-100"}`}
-        >
-          {label}
-        </p>
-        <p className="text-sm text-muted-foreground">
-          {dateLabel} {" "}
-          {folder.updatedAt.toLocaleDateString("fr-FR", {
-            day: "2-digit",
-            month: "short",
-            year: "numeric",
-          })}
-        </p>
-      </span>
-      <span className="group-hover:bg-muted-foreground/10 text-muted-foreground p-1 rounded-full">
-        <ChevronRight className="sieze-5" />
-      </span>
-    </div>
-  );
-};
-
-const getFolderStatus = (folder: Folder) => {
-  switch (folder.status) {
-    case "CREATED":
-      return {
-        label: "En cours",
-        dateLabel: "Mis à jour le",
-      };
-
-    case "PENDING":
-      return {
-        label: "En attente",
-        dateLabel: "Mis à jour le",
-      };
-
-    case "ENDED":
-      return {
-        label: "Terminé",
-        dateLabel: "Terminé le",
-      };
-
-    case "CLOSED":
-      return {
-        label: "Archivé",
-        dateLabel: "Archivé le",
-      };
-
-    default:
-      return {
-        label: folder.status,
-        dateLabel: "Mis à jour le",
-      };
-  }
 };
