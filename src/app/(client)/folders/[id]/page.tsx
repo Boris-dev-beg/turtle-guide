@@ -1,9 +1,12 @@
 
 import { FolderServices } from "@/services/folders.service";
 import FolderDetail from "../_components/layout/FolderDetail";
+import { getSession } from "@/lib/session";
 
 export default async function page() {
-  const folders = await FolderServices.getAll();
+  const session = await getSession();
+  const userId = session?.user.id || "";
+  const folders = await FolderServices.getAll(userId);
   return (
     <div className="w-full ">
       <FolderDetail folder={folders[0]} />
