@@ -1,6 +1,7 @@
 import { FolderStatus } from '@/generated/prisma/enums';
 import { ChevronRight, FileText, MapPin } from 'lucide-react';
 import Link from 'next/link';
+import { FolderType } from '../../types/types';
 
 type Folder = {
   id: string;
@@ -16,13 +17,13 @@ type Folder = {
     title: string;
   };
 
-  location: {
+  location?: {
     id: string;
     city: string | null;
   };
 };
 
-export default function FolderCard ({ folder }: { folder: Folder }) {
+export default function FolderCard ({ folder }: { folder: FolderType }) {
   const status = folder.status;
   const { label, dateLabel } = getFolderStatus(folder);
   return (
@@ -38,7 +39,7 @@ export default function FolderCard ({ folder }: { folder: Folder }) {
         <p className="text-muted-foreground">{folder.procedure.title}</p>
         <p className="text-muted-foreground flex gap-1 items-center text-sm">
           <MapPin className="size-4" />
-          {folder.location.city}
+          {folder.location?.city}
         </p>
       </span>
       <span className="w-fit flex flex-col text-nowrap md:mr-4">
@@ -64,7 +65,7 @@ export default function FolderCard ({ folder }: { folder: Folder }) {
 };
 
 
-const getFolderStatus = (folder: Folder) => {
+const getFolderStatus = (folder: FolderType) => {
   switch (folder.status) {
     case "CREATED":
       return {

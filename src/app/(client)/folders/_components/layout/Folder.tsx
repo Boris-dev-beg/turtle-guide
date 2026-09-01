@@ -6,6 +6,7 @@ import { BackToHome } from "@/components/shared/links";
 import type { FolderStatus } from "@/generated/prisma/client";
 import { FileText, Plus, PlusCircle } from "lucide-react";
 import FolderCard from "../cards/folderCard";
+import { FolderType } from "../../types/types";
 // import { useFolderStore } from "@/store/folder.store";
 
 export type Folder = {
@@ -22,7 +23,7 @@ export type Folder = {
     title: string;
   };
 
-  location: {
+  location?: {
     id: string;
     city: string | null;
   };
@@ -137,8 +138,7 @@ export const mockFolders: Folder[] = [
     },
   },
 ];
-export default function Folder({ folders }: { folders: Folder[] }) {
-  // const { procedure, category } = useFolderStore();
+export default function Folder({ folders }: { folders: FolderType[] }) {
   console.log(folders);
   return (
     <div className="flex flex-col md:flex-row gap-4 py-2 w-full">
@@ -196,7 +196,7 @@ export default function Folder({ folders }: { folders: Folder[] }) {
           </div>
           {/* Folders Zone */}
           <div className="grid gap-2 w-full py-2 md:px-4">
-            {mockFolders.map((folder) => (
+            {folders.map((folder) => (
               <FolderCard key={folder.id} folder={folder} />
             ))}
           </div>

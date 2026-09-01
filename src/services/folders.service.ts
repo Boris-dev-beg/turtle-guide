@@ -4,7 +4,7 @@ export const FolderServices = {
   async getAll(userId: string) {
     return await prisma.folder.findMany({
       where: {
-        userId: "user_boris_001",
+        userId: userId,
       },
       include: {
         procedure: true,
@@ -12,4 +12,40 @@ export const FolderServices = {
       },
     });
   },
+   async getOne({
+    name,
+    userId,
+  }: {
+    name: string;
+    userId: string;
+  }) {
+    return prisma.folder.findFirst({
+      where: {
+        name,
+        userId,
+      },
+      include: {
+        procedure: true,
+        location: true,
+        progression: true,
+      },
+    });
+  },
+
+
+  async createFolder(data: {
+    userId: string;
+    name: string;
+    procedureId: string;
+  }) {
+    return await prisma.folder.create({
+      data: {
+        userId: data.userId,
+        name: data.name,
+        procedureId: data.procedureId,
+        status: "PENDING",
+      },
+    });
+  },
 };
+

@@ -2,6 +2,9 @@
 
 import { HelpBox } from "@/app/(client)/_components/cards.tsx/HelpBox";
 import { Back } from "@/components/shared/links";
+import { FolderStatus } from "@/generated/prisma/enums";
+// import { CreateFolder } from "@/lib/folder";
+import { createOrGetFolderAction } from "@/lib/folder.action";
 import { useFolderStore } from "@/store/folder.store";
 import {
   ArrowLeft,
@@ -12,6 +15,7 @@ import {
   Link2,
 } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type User = {
   id: string;
@@ -22,6 +26,17 @@ type User = {
   name: string;
   image?: string | null | undefined;
 };
+type Result = {
+    name: string;
+    userId: string;
+    id: string;
+    status: FolderStatus;
+    createdAt: Date;
+    updatedAt: Date;
+    procedureId: string;
+    processId: string | null;
+    locationId: string | null;
+}
 
 const TakenSteps = [
   {
@@ -95,8 +110,40 @@ const CurrentQuestion = {
 };
 
 export default function Diagnostic({ user }: { user: User }) {
-  const { procedure } = useFolderStore();
-  console.log("User:", user);
+  const { procedure, category } = useFolderStore();
+
+  const [folder, setFolder] = useState<Result | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!procedure || !category || !user.id) return;
+
+    const initializeFolder = async () => {
+      try {
+        setLoading(true);
+
+        const result = await createOrGetFolderAction({
+          procedureName: procedure,
+          userId: user.id,
+          category,
+        });
+
+        setFolder(result);
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation du dossier :", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeFolder();
+  }, [procedure, category, user.id]);
+
+  if (loading) {
+    return <div>Chargement du dossier...</div>;
+  }
+
+  console.log("New Folder in diagnostic page:", folder);
   return (
     <>
       {/* First Side */}
@@ -234,7 +281,10 @@ const QuestionsSide = () => {
         <button className="btn btn-outline text-base rounded-lg w-full sm:w-auto">
           <ArrowLeft className="size-5" /> Question précédente
         </button>
-        <Link href="/folders" className="btn btn-primary text-base rounded-lg px-5 w-full sm:w-auto">
+        <Link
+          href="/folders"
+          className="btn btn-primary text-base rounded-lg px-5 w-full sm:w-auto"
+        >
           Voir mon resultat <ArrowRight className="size-5" />
         </Link>
       </div>

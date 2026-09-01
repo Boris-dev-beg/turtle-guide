@@ -152,8 +152,8 @@ model Folder {
   answers     Answer[]
   progression Progression?
 
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  locationId String?
+  location   Location? @relation(fields: [locationId], references: [id])
 
   @@index([userId])
   @@index([procedureId])
