@@ -1,27 +1,8 @@
-import { FolderStatus } from '@/generated/prisma/enums';
+
 import { ChevronRight, FileText, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import { FolderType } from '../../types/types';
 
-type Folder = {
-  id: string;
-  name: string;
-
-  status: FolderStatus;
-
-  createdAt: Date;
-  updatedAt: Date;
-
-  procedure: {
-    id: string;
-    title: string;
-  };
-
-  location?: {
-    id: string;
-    city: string | null;
-  };
-};
 
 export default function FolderCard ({ folder }: { folder: FolderType }) {
   const status = folder.status;

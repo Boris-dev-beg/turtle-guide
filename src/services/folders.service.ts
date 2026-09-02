@@ -12,13 +12,7 @@ export const FolderServices = {
       },
     });
   },
-   async getOne({
-    name,
-    userId,
-  }: {
-    name: string;
-    userId: string;
-  }) {
+  async getOne({ name, userId }: { name: string; userId: string }) {
     return prisma.folder.findFirst({
       where: {
         name,
@@ -31,7 +25,19 @@ export const FolderServices = {
       },
     });
   },
-
+  async getOneFolder(id: string, userId: string) {
+    return await prisma.folder.findUnique({
+      where: {
+        id,
+        userId,
+      },
+      include: {
+        procedure: true,
+        location: true,
+        progression: true,
+      },
+    });
+  },
 
   async createFolder(data: {
     userId: string;
@@ -48,4 +54,3 @@ export const FolderServices = {
     });
   },
 };
-

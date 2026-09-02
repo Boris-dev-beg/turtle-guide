@@ -8,6 +8,7 @@ import {
   Play,
   RefreshCcw,
 } from "lucide-react";
+import { FolderType } from "../../types/types";
 type Folder = {
   id: string;
   name: string;
@@ -78,7 +79,7 @@ const formatDateTime = (date: Date) => {
     minute: "2-digit",
   }).format(date);
 };
-export default function FolderDetail({ folder }: { folder: Folder }) {
+export default function FolderDetail({ folder }: { folder: FolderType }) {
   return (
     <div className="w-full ">
       <Back href="/folders" />
@@ -109,7 +110,7 @@ export default function FolderDetail({ folder }: { folder: Folder }) {
 
                   <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                     <MapPin className="size-4" />
-                    {folder.location.city}
+                    {folder?.location?.city}
                   </div>
                 </div>
               </div>
