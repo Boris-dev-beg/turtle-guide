@@ -11,6 +11,7 @@ export async function getSession() {
 export async function requireSession() {
   const session = await getSession();
 
+  console.log("Session:", session)
   if (!session?.user) {
     redirect("/login");
   }

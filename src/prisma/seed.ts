@@ -339,108 +339,471 @@ async function main() {
 
   console.log("✅ Processes created");
 
-  // ============================================================
-  // QUESTIONS - BIRTH PROCEDURE
-  // ============================================================
+  /// ============================================================
+// QUESTIONS - BIRTH PROCEDURE
+// ============================================================
 
-  const birthQuestion = await prisma.question.create({
-    data: {
-      title: "Quel est votre besoin concernant votre acte de naissance ?",
-      description:
-        "Sélectionnez la situation qui correspond le mieux à votre besoin.",
-      procedureId: birthProcedure.id,
-    },
-  });
+const birthQuestion = await prisma.question.create({
+  data: {
+    title: "Quel est votre besoin concernant votre acte de naissance ?",
+    description:
+      "Sélectionnez la situation qui correspond le mieux à votre besoin.",
+    procedureId: birthProcedure.id,
+  },
+});
 
-  const birthAvailabilityQuestion = await prisma.question.create({
-    data: {
-      title: "Possédez-vous déjà une copie de votre acte de naissance ?",
-      description:
-        "Cette information permet de déterminer la démarche appropriée.",
-      procedureId: birthProcedure.id,
-    },
-  });
+const birthCopyQuestion = await prisma.question.create({
+  data: {
+    title: "Possédez-vous déjà une copie de votre acte de naissance ?",
+    description:
+      "Cette information permet de déterminer la démarche adaptée à votre situation.",
+    procedureId: birthProcedure.id,
+  },
+});
 
-  const certificationOption = await prisma.answerOption.create({
-    data: {
-      label: "Je souhaite faire certifier mon acte",
-      questionId: birthQuestion.id,
-      processId: birthCertificationProcess.id,
-    },
-  });
+const birthCopyAgeQuestion = await prisma.question.create({
+  data: {
+    title: "L'acte de naissance est-il encore lisible et exploitable ?",
+    description:
+      "Vérifiez que les informations présentes sur votre copie sont lisibles et peuvent être utilisées.",
+    procedureId: birthProcedure.id,
+  },
+});
 
-  await prisma.answerOption.create({
-    data: {
-      label: "Je souhaite obtenir une copie de mon acte",
-      questionId: birthQuestion.id,
-      nextQuestionId: birthAvailabilityQuestion.id,
-    },
-  });
+const birthMissingQuestion = await prisma.question.create({
+  data: {
+    title: "Savez-vous dans quelle commune votre naissance a été enregistrée ?",
+    description:
+      "Cette information permet d'orienter votre demande vers le service compétent.",
+    procedureId: birthProcedure.id,
+  },
+});
 
-  await prisma.answerOption.create({
-    data: {
-      label: "Oui",
-      questionId: birthAvailabilityQuestion.id,
-      processId: birthCertificateProcess.id,
-    },
-  });
+const birthCertificationQuestion = await prisma.question.create({
+  data: {
+    title: "Pourquoi souhaitez-vous faire certifier votre acte ?",
+    description:
+      "Indiquez l'utilisation prévue de l'acte afin de déterminer la démarche correspondante.",
+    procedureId: birthProcedure.id,
+  },
+});
 
-  await prisma.answerOption.create({
-    data: {
-      label: "Non",
-      questionId: birthAvailabilityQuestion.id,
-      processId: birthCertificateProcess.id,
-    },
-  });
+// ------------------------------------------------------------
+// Question 1
+// ------------------------------------------------------------
 
-  // ============================================================
-  // QUESTIONS - IDENTITY PROCEDURE
-  // ============================================================
+await prisma.answerOption.create({
+  data: {
+    label: "Je souhaite obtenir une copie de mon acte",
+    questionId: birthQuestion.id,
+    nextQuestionId: birthCopyQuestion.id,
+  },
+});
 
-  const identityQuestion = await prisma.question.create({
-    data: {
-      title: "Quel est votre besoin ?",
-      description: "Choisissez la situation qui vous correspond.",
-      procedureId: identityProcedure.id,
-    },
-  });
+await prisma.answerOption.create({
+  data: {
+    label: "Je souhaite faire certifier mon acte",
+    questionId: birthQuestion.id,
+    nextQuestionId: birthCertificationQuestion.id,
+  },
+});
 
-  await prisma.answerOption.createMany({
-    data: [
-      {
-        label: "Première demande",
-        questionId: identityQuestion.id,
-        processId: firstIdentityProcess.id,
-      },
-      {
-        label: "Renouvellement",
-        questionId: identityQuestion.id,
-        processId: renewalIdentityProcess.id,
-      },
-    ],
-  });
+// ------------------------------------------------------------
+// Question 2 - Possession de l'acte
+// ------------------------------------------------------------
 
-  // ============================================================
-  // QUESTIONS - RESIDENCE PROCEDURE
-  // ============================================================
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, j'en possède une",
+    questionId: birthCopyQuestion.id,
+    nextQuestionId: birthCopyAgeQuestion.id,
+  },
+});
 
-  const residenceQuestion = await prisma.question.create({
-    data: {
-      title: "Quelle démarche souhaitez-vous effectuer ?",
-      description: "Sélectionnez votre besoin.",
-      procedureId: residenceProcedure.id,
-    },
-  });
+await prisma.answerOption.create({
+  data: {
+    label: "Non, je n'en possède pas",
+    questionId: birthCopyQuestion.id,
+    nextQuestionId: birthMissingQuestion.id,
+  },
+});
 
-  await prisma.answerOption.create({
-    data: {
-      label: "Obtenir une attestation de résidence",
-      questionId: residenceQuestion.id,
-      processId: residenceCertificateProcess.id,
-    },
-  });
+// ------------------------------------------------------------
+// Question 3 - État de la copie
+// ------------------------------------------------------------
 
-  console.log("✅ Questions and answer options created");
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, elle est lisible",
+    questionId: birthCopyAgeQuestion.id,
+    processId: birthCertificateProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, elle est détériorée ou difficilement lisible",
+    questionId: birthCopyAgeQuestion.id,
+    processId: birthCertificateProcess.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 4 - Localisation de l'acte
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, je connais la commune",
+    questionId: birthMissingQuestion.id,
+    processId: birthCertificateProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, je ne connais pas la commune",
+    questionId: birthMissingQuestion.id,
+    processId: birthCertificateProcess.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 5 - Certification
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour une démarche administrative",
+    questionId: birthCertificationQuestion.id,
+    processId: birthCertificationProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour fournir un document à une administration",
+    questionId: birthCertificationQuestion.id,
+    processId: birthCertificationProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour une autre raison",
+    questionId: birthCertificationQuestion.id,
+    processId: birthCertificationProcess.id,
+  },
+});
+
+
+// ============================================================
+// QUESTIONS - IDENTITY PROCEDURE
+// ============================================================
+
+const identityQuestion = await prisma.question.create({
+  data: {
+    title: "Quel est votre besoin concernant votre document d'identité ?",
+    description:
+      "Sélectionnez la situation qui correspond à votre besoin.",
+    procedureId: identityProcedure.id,
+  },
+});
+
+const identityTypeQuestion = await prisma.question.create({
+  data: {
+    title: "S'agit-il de votre première demande de document d'identité ?",
+    description:
+      "Cette information permet de déterminer le parcours administratif adapté.",
+    procedureId: identityProcedure.id,
+  },
+});
+
+const identityExistingQuestion = await prisma.question.create({
+  data: {
+    title: "Votre document d'identité actuel est-il toujours valide ?",
+    description:
+      "Indiquez l'état actuel de votre document d'identité.",
+    procedureId: identityProcedure.id,
+  },
+});
+
+const identityLostQuestion = await prisma.question.create({
+  data: {
+    title: "Votre document d'identité a-t-il été perdu ou volé ?",
+    description:
+      "Cette information permet de déterminer les démarches supplémentaires nécessaires.",
+    procedureId: identityProcedure.id,
+  },
+});
+
+const identityModificationQuestion = await prisma.question.create({
+  data: {
+    title: "Souhaitez-vous modifier certaines informations présentes sur votre document ?",
+    description:
+      "Par exemple, une modification concernant votre nom ou une autre information administrative.",
+    procedureId: identityProcedure.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 1
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Je souhaite faire une première demande",
+    questionId: identityQuestion.id,
+    nextQuestionId: identityTypeQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Je souhaite renouveler mon document",
+    questionId: identityQuestion.id,
+    nextQuestionId: identityExistingQuestion.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 2 - Première demande
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, c'est ma première demande",
+    questionId: identityTypeQuestion.id,
+    processId: firstIdentityProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non",
+    questionId: identityTypeQuestion.id,
+    processId: firstIdentityProcess.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 3 - Validité
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, mon document est encore valide",
+    questionId: identityExistingQuestion.id,
+    nextQuestionId: identityModificationQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, mon document n'est plus valide",
+    questionId: identityExistingQuestion.id,
+    nextQuestionId: identityLostQuestion.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 4 - Perte / vol
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, il a été perdu ou volé",
+    questionId: identityLostQuestion.id,
+    processId: renewalIdentityProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, je possède toujours mon document",
+    questionId: identityLostQuestion.id,
+    processId: renewalIdentityProcess.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 5 - Modification
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, je souhaite modifier des informations",
+    questionId: identityModificationQuestion.id,
+    processId: renewalIdentityProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, je ne souhaite rien modifier",
+    questionId: identityModificationQuestion.id,
+    processId: renewalIdentityProcess.id,
+  },
+});
+
+// ============================================================
+// QUESTIONS - RESIDENCE PROCEDURE
+// ============================================================
+
+const residenceQuestion = await prisma.question.create({
+  data: {
+    title: "Quelle démarche souhaitez-vous effectuer ?",
+    description:
+      "Sélectionnez la démarche correspondant à votre situation.",
+    procedureId: residenceProcedure.id,
+  },
+});
+
+const residenceLocationQuestion = await prisma.question.create({
+  data: {
+    title: "Résidez-vous actuellement dans la commune concernée ?",
+    description:
+      "Cette information permet de vérifier le parcours administratif adapté.",
+    procedureId: residenceProcedure.id,
+  },
+});
+
+const residenceDurationQuestion = await prisma.question.create({
+  data: {
+    title: "Depuis combien de temps résidez-vous dans cette commune ?",
+    description:
+      "Indiquez approximativement la durée de votre résidence dans la commune.",
+    procedureId: residenceProcedure.id,
+  },
+});
+
+const residencePreviousCertificateQuestion = await prisma.question.create({
+  data: {
+    title: "Avez-vous déjà obtenu une attestation de résidence ?",
+    description:
+      "Cette information permet de déterminer si vous effectuez une première demande ou une nouvelle demande.",
+    procedureId: residenceProcedure.id,
+  },
+});
+
+const residenceReasonQuestion = await prisma.question.create({
+  data: {
+    title: "Pour quelle raison avez-vous besoin de cette attestation ?",
+    description:
+      "Sélectionnez l'utilisation prévue pour votre attestation de résidence.",
+    procedureId: residenceProcedure.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 1
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Je souhaite obtenir une attestation de résidence",
+    questionId: residenceQuestion.id,
+    nextQuestionId: residenceLocationQuestion.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 2 - Commune
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui",
+    questionId: residenceLocationQuestion.id,
+    nextQuestionId: residenceDurationQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non",
+    questionId: residenceLocationQuestion.id,
+    processId: residenceCertificateProcess.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 3 - Durée
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Moins de 3 mois",
+    questionId: residenceDurationQuestion.id,
+    nextQuestionId: residencePreviousCertificateQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Entre 3 mois et 1 an",
+    questionId: residenceDurationQuestion.id,
+    nextQuestionId: residencePreviousCertificateQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Plus d'un an",
+    questionId: residenceDurationQuestion.id,
+    nextQuestionId: residencePreviousCertificateQuestion.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 4 - Attestation précédente
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Oui, j'en ai déjà obtenu une",
+    nextQuestionId: residenceReasonQuestion.id,
+    questionId: residencePreviousCertificateQuestion.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Non, c'est ma première demande",
+    nextQuestionId: residenceReasonQuestion.id,
+    questionId: residencePreviousCertificateQuestion.id,
+  },
+});
+
+// ------------------------------------------------------------
+// Question 5 - Motif
+// ------------------------------------------------------------
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour une démarche administrative",
+    questionId: residenceReasonQuestion.id,
+    processId: residenceCertificateProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour constituer un dossier",
+    questionId: residenceReasonQuestion.id,
+    processId: residenceCertificateProcess.id,
+  },
+});
+
+await prisma.answerOption.create({
+  data: {
+    label: "Pour une autre raison",
+    questionId: residenceReasonQuestion.id,
+    processId: residenceCertificateProcess.id,
+  },
+});
+
+console.log("✅ Questions and answer trees created");
 
   // ============================================================
   // DOCUMENTS
@@ -635,12 +998,6 @@ async function main() {
     },
   });
 
-  await prisma.answer.create({
-    data: {
-      folderId: folder.id,
-      optionId: certificationOption.id,
-    },
-  });
 
   await prisma.progression.create({
     data: {
