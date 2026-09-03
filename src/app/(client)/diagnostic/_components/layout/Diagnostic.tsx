@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import DiagnosticSkeleton from "../cards/DiagnosticSkeleton";
 
 type User = {
   id: string;
@@ -27,16 +28,16 @@ type User = {
   image?: string | null | undefined;
 };
 type Result = {
-    name: string;
-    userId: string;
-    id: string;
-    status: FolderStatus;
-    createdAt: Date;
-    updatedAt: Date;
-    procedureId: string;
-    processId: string | null;
-    locationId: string | null;
-}
+  name: string;
+  userId: string;
+  id: string;
+  status: FolderStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  procedureId: string;
+  processId: string | null;
+  locationId: string | null;
+};
 
 const TakenSteps = [
   {
@@ -93,7 +94,7 @@ const CurrentQuestion = {
       id: 3,
       title: "Un proche de la famille",
       description:
-        "Grand-parent, onclem tante ou toute personne majeure présente lors de la naissance.",
+        "Grand-parent, oncle, tante ou toute personne majeure présente lors de la naissance.",
     },
     {
       id: 4,
@@ -110,11 +111,13 @@ const CurrentQuestion = {
 };
 
 export default function Diagnostic({ user }: { user: User }) {
+  // ! states
   const { procedure, category } = useFolderStore();
 
   const [folder, setFolder] = useState<Result | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // ! Functions
   useEffect(() => {
     if (!procedure || !category || !user.id) return;
 
@@ -139,8 +142,9 @@ export default function Diagnostic({ user }: { user: User }) {
     initializeFolder();
   }, [procedure, category, user.id]);
 
+  // ! Render
   if (loading) {
-    return <div>Chargement du dossier...</div>;
+    return <DiagnosticSkeleton />;
   }
 
   console.log("New Folder in diagnostic page:", folder);
@@ -148,8 +152,10 @@ export default function Diagnostic({ user }: { user: User }) {
     <>
       {/* First Side */}
       <FirstSide procedure={procedure} />
+
       {/* Question side */}
       <QuestionsSide />
+
       {/* Great to know */}
       <div className="turtle-alert-info max-[1200px]:hidden flex-col items-start h-fit w-full lg:w-100 shadow-sm">
         <span className="flex gap-2 items-center">
@@ -177,6 +183,7 @@ const FirstSide = ({ procedure }: { procedure: string }) => {
     <div className="h-fit lg:h-full w-full md:w-120 flex flex-col gap-4 py-4 px-2 border-r border-border bg-secondary/20 rounded-xl">
       {/* Back to home */}
       <Back href="/categories" />
+
       {/* Selected Procedure */}
       <div className="flex gap-3 items-start py-3 px-2 rounded-xl bg-background shadow-xs">
         <span className="flex items-center justify-center size-10 shrink-0 bg-primary/10 text-primary rounded-lg">
@@ -189,6 +196,7 @@ const FirstSide = ({ procedure }: { procedure: string }) => {
           <h2 className="font-bold line-clamp-2 leading-6">{procedure}</h2>
         </span>
       </div>
+
       {/* Steps Taken */}
       <div className="flex flex-col gap-3">
         <h1 className="text-muted-foreground flex items-center gap-2 text-sm font-semibold">
@@ -220,6 +228,7 @@ const FirstSide = ({ procedure }: { procedure: string }) => {
           ))}
         </div>
       </div>
+
       {/* Help Box */}
       <HelpBox />
     </div>
@@ -241,6 +250,7 @@ const QuestionsSide = () => {
           </h2>
         </div>
       </div>
+
       {/* Question description */}
       <div className="flex flex-col gap-3 pb-2">
         <h1 className="text-3xl font-bold tracking-tight leading-tight">
@@ -257,6 +267,7 @@ const QuestionsSide = () => {
           </Link>
         </p>
       </div>
+
       {/* Answer options */}
       <div className="grid gap-3 w-full px-1">
         {CurrentQuestion.answer_options.map((answer, index) => (
@@ -276,6 +287,7 @@ const QuestionsSide = () => {
           </div>
         ))}
       </div>
+
       {/* Actions */}
       <div className="flex flex-col sm:flex-row w-full items-center justify-between border-t border-border pt-4 mt-1 gap-3">
         <button className="btn btn-outline text-base rounded-lg w-full sm:w-auto">

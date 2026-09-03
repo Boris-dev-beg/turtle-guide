@@ -14,6 +14,7 @@ import { FolderType } from "../../types/types";
 import { useState } from "react";
 import { deleteFolder } from "@/lib/folder.action";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 const getStatusLabel = (status: FolderStatus) => {
   switch (status) {
@@ -165,10 +166,10 @@ export default function FolderDetail({
                   </p>
                 </div>
 
-                <button className="btn btn-primary w-fit">
+                <Link href="/diagnostic" className="btn btn-primary w-fit">
                   <Play className="size-4" />
                   Reprendre le diagnostic
-                </button>
+                </Link>
               </div>
             </div>
 
