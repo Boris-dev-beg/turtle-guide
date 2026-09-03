@@ -27,9 +27,17 @@ type CurrentQuestionType = {
 
 export const QuestionsSide = () => {
   // ! states
-  const { question, isLoading, isError, error, goToQuestion } = useQuestions();
+  const {
+    question,
+    isLoading,
+    isError,
+    error,
+    goToQuestion,
+    goToPreviousQuestion,
+    currentIndex,
+    canGoBack
+  } = useQuestions();
 
-  const [currentQuestionId, setCurrentQuestionId] = useState(0);
   const [currentQuestion, setCurrentQuestion] =
     useState<CurrentQuestionType | null>(null);
 
@@ -37,10 +45,11 @@ export const QuestionsSide = () => {
     id: string;
     nextQuestionId: string | null;
     processId: string | null;
-  }>({ id: "", nextQuestionId: "", processId: "" });
+  } | null>(null);
+
 
   // ! Functions
-
+  // ? Update current Question
   useEffect(() => {
     if (!question) return;
 
@@ -74,6 +83,7 @@ export const QuestionsSide = () => {
   }) => {
     if (option.nextQuestionId) {
       goToQuestion(option.nextQuestionId);
+      setSelectedOption(null);
       return;
     }
 
@@ -106,7 +116,7 @@ export const QuestionsSide = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="flex items-center justify-center px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">
-            Question {currentQuestionId + 1}
+            Question {currentIndex+1}
           </span>
           <span className="h-4 w-px bg-border" />
           <h2 className="text-muted-foreground text-sm font-medium">
@@ -138,10 +148,10 @@ export const QuestionsSide = () => {
           <div
             key={index}
             onClick={() => setSelectedOption(answer)}
-            className={`turtle-radio ${answer.id === selectedOption.id ? "turtle-radio-active shadow-sm" : "hover:border-primary/30 hover:bg-accent/40"} justify-start gap-3 items-start`}
+            className={`turtle-radio ${answer.id === selectedOption?.id ? "turtle-radio-active shadow-sm" : "hover:border-primary/30 hover:bg-accent/40"} justify-start gap-3 items-start`}
           >
             <span
-              className={`turtle-step ${answer.id === selectedOption.id ? "turtle-step-active" : "turtle-step-inactive"}`}
+              className={`turtle-step ${answer.id === selectedOption?.id ? "turtle-step-active" : "turtle-step-inactive"}`}
             />
             <div className="flex flex-col gap-1">
               <h2 className="text-lg font-bold"> {answer.title} </h2>
@@ -156,19 +166,21 @@ export const QuestionsSide = () => {
       {/* Actions */}
       <div className="flex flex-col sm:flex-row w-full items-center justify-between border-t border-border pt-4 mt-1 gap-3">
         <button
-          onClick={() =>
-            setCurrentQuestionId((prev) =>
-              prev > 0 ? currentQuestionId - 1 : 0,
-            )
-          }
+          disabled={!canGoBack}
+          onClick={goToPreviousQuestion}
           className="btn btn-outline text-base rounded-lg w-full sm:w-auto"
         >
           <ArrowLeft className="size-5" /> Question précédente
         </button>
-        {currentQuestionId < 5 ? (
+        {!selectedOption || selectedOption?.nextQuestionId ? (
           <button
-            onClick={() => handleNextQuestion(selectedOption)}
-            className="btn btn-outline text-base rounded-lg w-full sm:w-auto"
+            disabled={!selectedOption}
+            onClick={
+              !selectedOption
+                ? () => null
+                : () => handleNextQuestion(selectedOption)
+            }
+            className="disabled:cursor-not-allowed btn btn-outline text-base rounded-lg w-full sm:w-auto"
           >
             Question suivante
             <ArrowRight className="size-5" />
