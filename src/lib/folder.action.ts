@@ -36,9 +36,18 @@ export async function createOrGetFolderAction({
   return newFolder;
 }
 
+export async function updateFolderStatus(data: {
+  id: string;
+  userId: string;
+  processId: string;
+  status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
+}) {
+  return await FolderServices.updateFolder(data);
+}
+
 export async function deleteFolder(id: string, userId: string) {
   const FolderDeleted = await FolderServices.deleteFolder(id, userId);
 
-  console.log("Folder Deleted:", FolderDeleted);
-  return FolderDeleted
+  console.log("Deleted Folder:", FolderDeleted);
+  return FolderDeleted;
 }

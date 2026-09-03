@@ -1,8 +1,10 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useFolder } from "@/hooks/useFolder";
 import { useQuestions } from "@/hooks/useQuestions";
 import { ArrowLeft, ArrowRight, ArrowUpRightFromSquare } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type CurrentQuestionType = {
@@ -25,8 +27,10 @@ type CurrentQuestionType = {
   }[];
 };
 
-export const QuestionsSide = () => {
+export const QuestionsSide = ({ userId, folderId }: { userId: string, folderId: string }) => {
   // ! states
+  const router = useRouter();
+  const { updateStatus } = useFolder();
   const {
     question,
     isLoading,
@@ -35,7 +39,7 @@ export const QuestionsSide = () => {
     goToQuestion,
     goToPreviousQuestion,
     currentIndex,
-    canGoBack
+    canGoBack,
   } = useQuestions();
 
   const [currentQuestion, setCurrentQuestion] =
@@ -46,7 +50,6 @@ export const QuestionsSide = () => {
     nextQuestionId: string | null;
     processId: string | null;
   } | null>(null);
-
 
   // ! Functions
   // ? Update current Question
@@ -90,6 +93,13 @@ export const QuestionsSide = () => {
     // ! If it's the final question
     if (option.processId) {
       console.log(option.processId);
+      updateStatus({
+        id: folderId,
+        userId,
+        processId: option.processId,
+        status: "PENDING",
+      });
+      router.push("/folders");
     }
   };
 
@@ -116,7 +126,7 @@ export const QuestionsSide = () => {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <span className="flex items-center justify-center px-3 py-1.5 rounded-lg bg-primary/10 text-primary text-sm font-bold">
-            Question {currentIndex+1}
+            Question {currentIndex + 1}
           </span>
           <span className="h-4 w-px bg-border" />
           <h2 className="text-muted-foreground text-sm font-medium">
@@ -186,12 +196,12 @@ export const QuestionsSide = () => {
             <ArrowRight className="size-5" />
           </button>
         ) : (
-          <Link
-            href="/folders"
+          <button
+            onClick={() => handleNextQuestion(selectedOption)}
             className="btn btn-primary text-base rounded-lg px-5 w-full sm:w-auto"
           >
             Voir mon resultat <ArrowRight className="size-5" />
-          </Link>
+          </button>
         )}
       </div>
     </div>

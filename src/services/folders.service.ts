@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 
 export const FolderServices = {
+  // ! Get all folder
   async getAll(userId: string) {
     return await prisma.folder.findMany({
       where: {
@@ -12,6 +13,8 @@ export const FolderServices = {
       },
     });
   },
+
+  // ! Get one folder by name
   async getOne({ name, userId }: { name: string; userId: string }) {
     return prisma.folder.findFirst({
       where: {
@@ -25,6 +28,8 @@ export const FolderServices = {
       },
     });
   },
+
+  // ! Get one folder
   async getOneFolder(id: string, userId: string) {
     return await prisma.folder.findUnique({
       where: {
@@ -39,6 +44,7 @@ export const FolderServices = {
     });
   },
 
+  // ! Create folder
   async createFolder(data: {
     userId: string;
     name: string;
@@ -53,6 +59,26 @@ export const FolderServices = {
     });
   },
 
+  // ! Update folder status
+  async updateFolder(data: {
+    id: string;
+    userId: string;
+    processId: string;
+    status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
+  }) {
+    return await prisma.folder.update({
+      where: {
+        id: data.id,
+        userId: data.userId,
+      },
+      data: {
+        status: data.status,
+        processId: data.processId,
+      },
+    });
+  },
+
+  // ! Delete Folder
   async deleteFolder(id: string, userId: string) {
     return await prisma.folder.delete({
       where: {

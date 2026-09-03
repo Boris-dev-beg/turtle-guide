@@ -65,7 +65,6 @@ const TakenSteps = [
   },
 ];
 
-
 export default function Diagnostic({ user }: { user: User }) {
   // ! states
   const { procedure, category } = useFolderStore();
@@ -88,6 +87,7 @@ export default function Diagnostic({ user }: { user: User }) {
         });
 
         setFolder(result);
+        console.log("Creating folder result:", result);
       } catch (error) {
         console.error("Erreur lors de l'initialisation du dossier :", error);
       } finally {
@@ -103,14 +103,13 @@ export default function Diagnostic({ user }: { user: User }) {
     return <DiagnosticSkeleton />;
   }
 
-  console.log("New Folder in diagnostic page:", folder);
   return (
     <>
       {/* First Side */}
       <FirstSide procedure={procedure} />
 
       {/* Question side */}
-      <QuestionsSide />
+      <QuestionsSide userId={user.id} folderId={folder?.id || ""} />
 
       {/* Great to know */}
       <div className="turtle-alert-info max-[1200px]:hidden flex-col items-start h-fit w-full lg:w-100 shadow-sm">
@@ -190,5 +189,3 @@ const FirstSide = ({ procedure }: { procedure: string }) => {
     </div>
   );
 };
-
-

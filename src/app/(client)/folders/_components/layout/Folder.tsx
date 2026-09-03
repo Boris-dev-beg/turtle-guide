@@ -7,11 +7,11 @@ import { BackToHome } from "@/components/shared/links";
 import { FileText, Plus, PlusCircle } from "lucide-react";
 import FolderCard from "../cards/folderCard";
 import { FolderType } from "../../types/types";
+import Link from "next/link";
 // import { useFolderStore } from "@/store/folder.store";
 
 
 export default function Folder({ folders }: { folders: FolderType[] }) {
-  console.log(folders);
   return (
     <div className="flex flex-col md:flex-row gap-4 py-2 w-full">
       {/* First Side */}
@@ -43,10 +43,10 @@ export default function Folder({ folders }: { folders: FolderType[] }) {
             <h1 className="text-3xl md:text-4xl font-bold">Mes dossiers</h1>
             <p className="text-muted-foreground">Retrouvez tous vos dossiers</p>
           </div>
-          <button className="btn btn-primary py-2 text-base">
+          <Link href="/categories" className="btn btn-primary py-2 text-base">
             <Plus className="size-6" />
             Nouveau dossier
-          </button>
+          </Link>
         </div>
         {/* Folder Zone */}
         <div className="flex flex-col gap-2">
@@ -55,7 +55,7 @@ export default function Folder({ folders }: { folders: FolderType[] }) {
             <div className="flex w-full flex-col gap-3 lg:w-auto lg:min-w-100 lg:flex-row lg:items-center">
               <InputDemo
                 filter={(str) => console.log(str)}
-                className="w-full lg:w-100 text-base!"
+                className="w-full lg:w-100"
               />
             </div>
             <div className="w-full flex gap-2">

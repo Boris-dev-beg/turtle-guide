@@ -1,10 +1,8 @@
+import { ChevronRight, FileText, MapPin } from "lucide-react";
+import Link from "next/link";
+import { FolderType } from "../../types/types";
 
-import { ChevronRight, FileText, MapPin } from 'lucide-react';
-import Link from 'next/link';
-import { FolderType } from '../../types/types';
-
-
-export default function FolderCard ({ folder }: { folder: FolderType }) {
+export default function FolderCard({ folder }: { folder: FolderType }) {
   const status = folder.status;
   const { label, dateLabel } = getFolderStatus(folder);
   return (
@@ -19,8 +17,12 @@ export default function FolderCard ({ folder }: { folder: FolderType }) {
         <h1 className="text-lg font-bold">{folder.name}</h1>
         <p className="text-muted-foreground">{folder.procedure.title}</p>
         <p className="text-muted-foreground flex gap-1 items-center text-sm">
-          <MapPin className="size-4" />
-          {folder.location?.city}
+          {folder.location?.city && (
+            <>
+              <MapPin className="size-4" />
+              {folder.location?.city}
+            </>
+          )}
         </p>
       </span>
       <span className="w-fit flex flex-col text-nowrap md:mr-4">
@@ -43,8 +45,7 @@ export default function FolderCard ({ folder }: { folder: FolderType }) {
       </span>
     </Link>
   );
-};
-
+}
 
 const getFolderStatus = (folder: FolderType) => {
   switch (folder.status) {

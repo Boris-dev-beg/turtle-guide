@@ -14,7 +14,7 @@ import { FolderType } from "../../types/types";
 import { useState } from "react";
 import { deleteFolder } from "@/lib/folder.action";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
+import { useFolderStore } from "@/store/folder.store";
 
 const getStatusLabel = (status: FolderStatus) => {
   switch (status) {
@@ -74,6 +74,7 @@ export default function FolderDetail({
   userId: string;
 }) {
   // ! States
+  const { setCategory, setProcedure } = useFolderStore();
   const [wantToDelete, setWantToDelete] = useState(false);
   const router = useRouter();
 
@@ -83,6 +84,12 @@ export default function FolderDetail({
     console.log("Folder deleted:", folderDeleted);
 
     router.push("/folders");
+  };
+
+  const handleClick = () => {
+    setCategory(folder.name);
+    setProcedure(folder.procedure.title);
+    router.push("/diagnostic");
   };
 
   // ! Render
@@ -166,10 +173,10 @@ export default function FolderDetail({
                   </p>
                 </div>
 
-                <Link href="/diagnostic" className="btn btn-primary w-fit">
+                <button onClick={handleClick} className="btn btn-primary w-fit">
                   <Play className="size-4" />
                   Reprendre le diagnostic
-                </Link>
+                </button>
               </div>
             </div>
 
