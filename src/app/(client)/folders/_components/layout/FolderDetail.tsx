@@ -1,3 +1,4 @@
+"use client";
 import { Back } from "@/components/shared/links";
 import { FolderStatus } from "@/generated/prisma/enums";
 import {
@@ -5,29 +6,14 @@ import {
   FileText,
   Info,
   MapPin,
+  MoreVertical,
   Play,
   RefreshCcw,
 } from "lucide-react";
 import { FolderType } from "../../types/types";
-type Folder = {
-  id: string;
-  name: string;
-
-  status: FolderStatus;
-
-  createdAt: Date;
-  updatedAt: Date;
-
-  procedure: {
-    id: string;
-    title: string;
-  };
-
-  location: {
-    id: string;
-    city: string | null;
-  };
-};
+import { useState } from "react";
+import { deleteFolder } from "@/lib/folder.action";
+import { useRouter } from "next/navigation";
 
 const getStatusLabel = (status: FolderStatus) => {
   switch (status) {
@@ -79,7 +65,26 @@ const formatDateTime = (date: Date) => {
     minute: "2-digit",
   }).format(date);
 };
-export default function FolderDetail({ folder }: { folder: FolderType }) {
+export default function FolderDetail({
+  folder,
+  userId,
+}: {
+  folder: FolderType;
+  userId: string;
+}) {
+  // ! States
+  const [wantToDelete, setWantToDelete] = useState(false);
+  const router = useRouter();
+
+  // ! Functions
+  const handleDelete = async () => {
+    const folderDeleted = await deleteFolder(folder.id, userId);
+    console.log("Folder deleted:", folderDeleted);
+
+    router.push("/folders");
+  };
+
+  // ! Render
   return (
     <div className="w-full ">
       <Back href="/folders" />
@@ -87,13 +92,37 @@ export default function FolderDetail({ folder }: { folder: FolderType }) {
       <div className="grid grid-cols-1 gap-2 w-full">
         <div className="flex flex-col gap-2 ">
           <section className="turtle-card">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5 relative">
+              <div className="absolute top-0 right-0 flex flex-col gap-2">
+                <MoreVertical
+                  onClick={() => setWantToDelete(!wantToDelete)}
+                  className="hover:bg-secondary active:scale-95 active:shadow p-1 rounded-sm size-7 cursor-pointer"
+                />
+                <span
+                  className={
+                    wantToDelete
+                      ? "absolute top-full -left-77 bg-secondary w-80 p-2 flex flex-col gap-2 rounded-sm rounded-tr-none shadow-sm"
+                      : "hidden"
+                  }
+                >
+                  <p className="text-muted-foreground font-semibold">
+                    Cet Action est irreversible
+                  </p>
+                  <button
+                    onClick={handleDelete}
+                    className="btn btn-destructive "
+                  >
+                    Supprimer ce dossier
+                  </button>
+                </span>
+              </div>
+
               <div className="flex items-start gap-4 ">
-                <span className="flex items-center justify-center size-15 rounded-xl bg-accent text-primary">
-                  <FileText className="size-8" />
+                <span className="hidden md:flex items-center justify-center size-15 rounded-xl bg-accent text-primary">
+                  <FileText className="size-8 md:size-10" />
                 </span>
 
-                <div className="">
+                <div>
                   <div className="flex items-center gap-2 mb-1">
                     <span className="px-2 py-1 rounded-md bg-accent text-brand-green-text text-xs md:text-sm font-semibold">
                       {getStatusLabel(folder.status)}
@@ -109,13 +138,17 @@ export default function FolderDetail({ folder }: { folder: FolderType }) {
                   </p>
 
                   <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                    <MapPin className="size-4" />
-                    {folder?.location?.city}
+                    {folder?.location?.city && (
+                      <>
+                        <MapPin className="size-4" />
+                        {folder.location.city}
+                      </>
+                    )}
                   </div>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-3 text-sm md:text-base shrink-0">
+              <div className="flex flex-col gap-3 text-base shrink-0">
                 <div>
                   <p className="text-muted-foreground">Dossier créé le</p>
 
@@ -140,9 +173,9 @@ export default function FolderDetail({ folder }: { folder: FolderType }) {
             </div>
 
             <div className="flex items-center gap-3 mt-5 p-3 rounded-lg bg-brand-blue-bg border border-brand-blue-border text-brand-blue">
-              <Info className="size-4 shrink-0" />
+              <Info className="size-5 shrink-0" />
 
-              <p className="text-xs sm:text-sm">
+              <p className="text-sm sm:text-base">
                 Votre diagnostic est en cours. Répondez aux questions pour
                 identifier la démarche adaptée à votre situation.
               </p>

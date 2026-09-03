@@ -49,7 +49,15 @@ export const FolderServices = {
         userId: data.userId,
         name: data.name,
         procedureId: data.procedureId,
-        status: "PENDING",
+      },
+    });
+  },
+
+  async deleteFolder(id: string, userId: string) {
+    return await prisma.folder.delete({
+      where: {
+        id,
+        userId,
       },
     });
   },

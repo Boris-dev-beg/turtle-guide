@@ -188,6 +188,9 @@
   .btn-blue-outline {
     @apply bg-brand-blue-bg border border-brand-blue-border text-brand-blue hover:bg-brand-blue/10;
   }
+  .btn-destructive {
+    @apply bg-destructive text-white hover:bg-destructive/90 shadow-sm;
+  }
 
   .btn-blue {
     @apply bg-brand-blue text-white hover:bg-brand-blue-hover shadow-sm;

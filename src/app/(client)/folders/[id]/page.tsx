@@ -20,8 +20,11 @@ export default async function page({
   }
   return (
     <div className="w-full ">
-      {/* <PendingFolder /> */}
-      <FolderDetail folder={folder} />
+      {folder.status === "CREATED" ? (
+        <FolderDetail folder={folder} userId={userId} />
+      ) : (
+        <PendingFolder />
+      )}
     </div>
   );
 }

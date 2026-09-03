@@ -35,3 +35,10 @@ export async function createOrGetFolderAction({
 
   return newFolder;
 }
+
+export async function deleteFolder(id: string, userId: string) {
+  const FolderDeleted = await FolderServices.deleteFolder(id, userId);
+
+  console.log("Folder Deleted:", FolderDeleted);
+  return FolderDeleted
+}
