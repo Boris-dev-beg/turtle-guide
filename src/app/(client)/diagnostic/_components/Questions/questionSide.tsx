@@ -1,68 +1,9 @@
 "use client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useQuestions } from "@/hooks/useQuestions";
-// import { getAllQuestions } from "@/lib/diagnostic";
-// import { useFolderStore } from "@/store/folder.store";
 import { ArrowLeft, ArrowRight, ArrowUpRightFromSquare } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-// type Result = {
-//   title: string;
-//   procedureId: string;
-//   description: string | null;
-// };
-// type ResultAnswerOption = {
-//   id: string;
-//   label: string;
-//   processId: string | null;
-//   questionId: string;
-//   nextQuestionId: string | null;
-// };
-
-// const CurrentQuestion = {
-//   id: 5,
-//   title: "Qui peut effectuer la déclaration de naissance ?",
-//   description:
-//     "Selon la loi camerounaise sur l'enregistrement des faits d'etat civil, la déclaration doit être faite par les parents ou, à défaut, par certaines personnes habilitées.",
-
-//   legalBasisLink: {
-//     href: "/",
-//     label: "En savoir plus",
-//   },
-
-//   answer_options: [
-//     {
-//       id: 5,
-//       title: "Les parents (père et/ou mère)",
-//       description:
-//         "La déclaration est faite par le père, la mère ou les deux parents.",
-//     },
-//     {
-//       id: 2,
-//       title: "Le personnel de la formation sanitaire",
-//       description:
-//         "Si les parents ne peuvent pas se déplacer, le responsable du centre de santé peut faire la déclaration.",
-//     },
-//     {
-//       id: 3,
-//       title: "Un proche de la famille",
-//       description:
-//         "Grand-parent, oncle, tante ou toute personne majeure présente lors de la naissance.",
-//     },
-//     {
-//       id: 4,
-//       title: "Une autorité administrative",
-//       description:
-//         "Maire, chef traditionnel ou toutes autre autorité compétente.",
-//     },
-//     {
-//       id: 5,
-//       title: "Je ne suis pas sûr(e)",
-//       description: "Je préfère obtenir plus d'informations avant de continuer.",
-//     },
-//   ],
-// };
 
 type CurrentQuestionType = {
   id: string;
@@ -78,60 +19,75 @@ type CurrentQuestionType = {
     id: string;
     title: string;
     description: string;
+    questionId: string;
+    nextQuestionId: string | null;
+    processId: string | null;
   }[];
 };
 
 export const QuestionsSide = () => {
   // ! states
-  const { questions, isLoading, isError, error } = useQuestions();
+  const { question, isLoading, isError, error, goToQuestion } = useQuestions();
+
   const [currentQuestionId, setCurrentQuestionId] = useState(0);
-  const [currentQuestion, setCurrentQuestion] = useState<CurrentQuestionType>({
-    id: "",
-    title: "",
-    description: "",
+  const [currentQuestion, setCurrentQuestion] =
+    useState<CurrentQuestionType | null>(null);
 
-    legalBasisLink: {
-      href: "/",
-      label: "En savoir plus",
-    },
-
-    answer_options: [
-      {
-        id: "",
-        title: "",
-        description: "",
-      },
-    ],
-  });
-  const [currentAnswer, setCurrentAnswer] = useState("");
+  const [selectedOption, setSelectedOption] = useState<{
+    id: string;
+    nextQuestionId: string | null;
+    processId: string | null;
+  }>({ id: "", nextQuestionId: "", processId: "" });
 
   // ! Functions
-  useEffect(() => {
-    const updatecurrentQuestion = () => {
-      setCurrentQuestion({
-        id: questions[currentQuestionId].id,
-        title: questions[currentQuestionId].title,
-        description: questions[currentQuestionId]?.description,
 
+  useEffect(() => {
+    if (!question) return;
+
+    const updateCurrentQuestion = () => {
+      setCurrentQuestion({
+        id: question.id,
+        title: question.title,
+        description: question.description,
         legalBasisLink: {
           href: "/",
           label: "En savoir plus",
         },
-
-        answer_options: questions[currentQuestionId].options.map((option) => ({
+        answer_options: question.options.map((option) => ({
           id: option.id,
           title: option.label,
           description: "",
+
+          questionId: option.questionId,
+          nextQuestionId: option.nextQuestionId,
+          processId: option.processId,
         })),
       });
     };
-    if (questions.length > 0) updatecurrentQuestion();
-  }, [currentQuestionId, questions]);
+    updateCurrentQuestion();
+  }, [question]);
+
+  // ? Go to the next Question in the tree
+  const handleNextQuestion = (option: {
+    nextQuestionId: string | null;
+    processId: string | null;
+  }) => {
+    if (option.nextQuestionId) {
+      goToQuestion(option.nextQuestionId);
+      return;
+    }
+
+    // ! If it's the final question
+    if (option.processId) {
+      console.log(option.processId);
+    }
+  };
 
   // ! Render
-  if (isLoading) {
+  if (isLoading || !currentQuestion) {
     return <QuestionsSkeleton />;
   }
+
   if (isError) {
     console.error("Erreur lors de la récupération des questions :", error);
 
@@ -142,7 +98,7 @@ export const QuestionsSide = () => {
     );
   }
 
-  console.log("Questions Recuperer:", questions);
+  console.log("Questions Recuperer:", question);
   // ! Render
   return (
     <div className="flex flex-col gap-5 p-5 rounded-xl border border-border bg-background w-full shadow-xs">
@@ -181,11 +137,11 @@ export const QuestionsSide = () => {
         {currentQuestion.answer_options.map((answer, index) => (
           <div
             key={index}
-            onClick={() => setCurrentAnswer(answer.id)}
-            className={`turtle-radio ${answer.id === currentAnswer ? "turtle-radio-active shadow-sm" : "hover:border-primary/30 hover:bg-accent/40"} justify-start gap-3 items-start`}
+            onClick={() => setSelectedOption(answer)}
+            className={`turtle-radio ${answer.id === selectedOption.id ? "turtle-radio-active shadow-sm" : "hover:border-primary/30 hover:bg-accent/40"} justify-start gap-3 items-start`}
           >
             <span
-              className={`turtle-step ${answer.id === currentAnswer ? "turtle-step-active" : "turtle-step-inactive"}`}
+              className={`turtle-step ${answer.id === selectedOption.id ? "turtle-step-active" : "turtle-step-inactive"}`}
             />
             <div className="flex flex-col gap-1">
               <h2 className="text-lg font-bold"> {answer.title} </h2>
@@ -209,9 +165,9 @@ export const QuestionsSide = () => {
         >
           <ArrowLeft className="size-5" /> Question précédente
         </button>
-        {currentQuestionId < questions.length ? (
+        {currentQuestionId < 5 ? (
           <button
-            onClick={() => setCurrentQuestionId(currentQuestionId + 1)}
+            onClick={() => handleNextQuestion(selectedOption)}
             className="btn btn-outline text-base rounded-lg w-full sm:w-auto"
           >
             Question suivante

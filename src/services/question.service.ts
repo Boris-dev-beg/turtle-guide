@@ -7,9 +7,21 @@ export const questionServices = {
       where: {
         procedureId,
       },
-      include:{
-        options: true
-      }
+      include: {
+        options: true,
+      },
+    });
+  },
+
+  // ! Get All
+  async getFirst(procedureId: string) {
+    return await prisma.question.findFirst({
+      where: {
+        procedureId,
+      },
+      include: {
+        options: true,
+      },
     });
   },
 
@@ -18,6 +30,9 @@ export const questionServices = {
     return await prisma.question.findUnique({
       where: {
         id,
+      },
+      include: {
+        options: true,
       },
     });
   },
