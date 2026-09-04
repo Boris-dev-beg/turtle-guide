@@ -9,10 +9,7 @@ export const stepServices = {
       },
       include: {
         administrativeBody: true,
-      },
-      orderBy: {
-        id: "desc",
-      },
+      }
     });
   },
 };

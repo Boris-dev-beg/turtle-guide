@@ -45,4 +45,44 @@ export const questionServices = {
       },
     });
   },
+
+  // ! Get Answers
+  async getAnswers(folderId: string) {
+    return await prisma.answer.findMany({
+      where: {
+        folderId,
+      },
+    });
+  },
+  // ! Get Answer
+  async getAnswer({
+    folderId,
+    optionId,
+  }: {
+    folderId: string;
+    optionId: string;
+  }) {
+    return await prisma.answer.findFirst({
+      where: {
+        optionId,
+        folderId,
+      },
+    });
+  },
+
+  // ! Save Answer
+  async saveAnswer({
+    folderId,
+    optionId,
+  }: {
+    folderId: string;
+    optionId: string;
+  }) {
+    return await prisma.answer.create({
+      data: {
+        optionId,
+        folderId,
+      },
+    });
+  },
 };

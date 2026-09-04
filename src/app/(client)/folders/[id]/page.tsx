@@ -4,6 +4,7 @@ import { getSession } from "@/lib/session";
 import PendingFolder from "./PendingFolder";
 import { notFound } from "next/navigation";
 import { FolderType } from "../types/types";
+import { questionServices } from "@/services/question.service";
 
 export default async function page({
   params,
@@ -21,6 +22,9 @@ export default async function page({
   if (!folder) {
     notFound();
   }
+  const answers = await questionServices.getAnswers(folder.id);
+
+  console.log("Answer for this folder:", answers, folder.name);
   return (
     <div className="w-full ">
       {folder.status === "CREATED" ? (

@@ -1,11 +1,13 @@
 "use client";
 import Link from "next/link";
-import { Lightbulb } from "lucide-react";
+import { Lightbulb, MoreVertical } from "lucide-react";
 import { Back } from "@/components/shared/links";
 import { FolderType } from "../types/types";
 import { useSteps } from "@/hooks/useSteps";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import LoadingStep from "../_components/cards/loadingStep";
+import { useRouter } from "next/navigation";
+import { deleteFolder } from "@/lib/folder.action";
 
 export default function PendingFolder({
   folder,
@@ -15,6 +17,8 @@ export default function PendingFolder({
   userId: string;
 }) {
   const { steps, isLoading, setProcessId } = useSteps();
+  const [wantToDelete, setWantToDelete] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const setID = () => {
@@ -22,6 +26,13 @@ export default function PendingFolder({
     };
     setID();
   }, [setProcessId, folder.processId]);
+
+  const handleDelete = async () => {
+    const folderDeleted = await deleteFolder(folder.id, userId);
+    console.log("Folder deleted:", folderDeleted);
+
+    router.push("/folders");
+  };
 
   console.log("steps:", steps);
   console.log("userID:", userId);
@@ -32,9 +43,11 @@ export default function PendingFolder({
       <Back href="/folders" />
 
       {/* Titre */}
-      <div className="mb-6">
+      <div className="mb-6 relative">
         <div className="flex flex-col gap-2">
-          <span className="text-muted-foreground">{folder.name}</span>
+          <span className="text-muted-foreground font-semibold">
+            {folder.process?.title}
+          </span>
 
           <h1 className="text-3xl font-bold tracking-tight">
             Étapes de votre dossier
@@ -44,13 +57,33 @@ export default function PendingFolder({
             Suivez les différentes étapes de votre démarche administrative.
           </p>
         </div>
+        <div className="absolute top-0 right-0 flex flex-col gap-2">
+          <MoreVertical
+            onClick={() => setWantToDelete(!wantToDelete)}
+            className="hover:bg-secondary active:scale-95 active:shadow p-1 rounded-sm size-7 cursor-pointer"
+          />
+          <span
+            className={
+              wantToDelete
+                ? "absolute top-full -left-77 bg-secondary w-80 p-2 flex flex-col gap-2 rounded-sm rounded-tr-none shadow-sm"
+                : "hidden"
+            }
+          >
+            <p className="text-muted-foreground font-semibold">
+              Cet Action est irreversible
+            </p>
+            <button onClick={handleDelete} className="btn btn-destructive ">
+              Supprimer ce dossier
+            </button>
+          </span>
+        </div>
       </div>
 
       {/* Étapes */}
       <section className="turtle-card">
         <div className="mb-6">
           <h2 className="text-lg font-bold">Votre parcours</h2>
-          <p className="text-sm text-muted-foreground mt-1">
+          <p className="text-muted-foreground mt-1">
             Retrouvez les étapes de votre démarche et leur état
             d&apos;avancement.
           </p>
@@ -73,12 +106,10 @@ export default function PendingFolder({
                       <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
                         <div>
                           <div className="flex flex-wrap items-center gap-2">
-                            <h3 className="font-bold text-base">
-                              {step.title}
-                            </h3>
+                            <h3 className="font-bold text-lg">{step.title}</h3>
                           </div>
 
-                          <p className="text-sm text-muted-foreground leading-5 mt-1">
+                          <p className="text-muted-foreground leading-5 mt-1">
                             {step.description}
                           </p>
                         </div>

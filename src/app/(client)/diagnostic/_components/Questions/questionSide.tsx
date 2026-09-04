@@ -27,7 +27,13 @@ type CurrentQuestionType = {
   }[];
 };
 
-export const QuestionsSide = ({ userId, folderId }: { userId: string, folderId: string }) => {
+export const QuestionsSide = ({
+  userId,
+  folderId,
+}: {
+  userId: string;
+  folderId: string;
+}) => {
   // ! states
   const router = useRouter();
   const { updateStatus } = useFolder();
@@ -36,8 +42,10 @@ export const QuestionsSide = ({ userId, folderId }: { userId: string, folderId: 
     isLoading,
     isError,
     error,
+    answer,
     goToQuestion,
     goToPreviousQuestion,
+    setData,
     currentIndex,
     canGoBack,
   } = useQuestions();
@@ -81,9 +89,12 @@ export const QuestionsSide = ({ userId, folderId }: { userId: string, folderId: 
 
   // ? Go to the next Question in the tree
   const handleNextQuestion = (option: {
+    id: string;
     nextQuestionId: string | null;
     processId: string | null;
   }) => {
+    setData({ folderId, optionId: option.id });
+    console.log("Answer Saved:", answer);
     if (option.nextQuestionId) {
       goToQuestion(option.nextQuestionId);
       setSelectedOption(null);

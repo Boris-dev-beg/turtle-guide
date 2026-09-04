@@ -18,7 +18,7 @@ export const FolderServices = {
 
   // ! Get one folder by name
   async getOne({ name, userId }: { name: string; userId: string }) {
-    return prisma.folder.findFirst({
+    return await prisma.folder.findFirst({
       where: {
         name,
         userId,

@@ -1,4 +1,8 @@
-import { getFirstQuestion, getNextQuestion } from "@/lib/diagnostic";
+import {
+  getFirstQuestion,
+  getNextQuestion,
+  saveAnswer,
+} from "@/lib/diagnostic";
 import { useFolderStore } from "@/store/folder.store";
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
@@ -9,6 +13,10 @@ export function useQuestions() {
   const [nextQuestionId, setNextQuestionId] = useState<string | null>(null);
   const [questionHistory, setQuestionHistory] = useState<string[]>([]);
   const [currentIndex, setCurrentIndex] = useState(questionHistory.length);
+  const [data, setData] = useState<{
+    folderId: string;
+    optionId: string;
+  }>({ folderId: "", optionId: "" });
 
   // ! Get First Question
   const {
@@ -20,6 +28,13 @@ export function useQuestions() {
     queryKey: ["questions", procedure],
     queryFn: () => getFirstQuestion(procedure),
     enabled: !!procedure && !!category,
+  });
+
+  // ! Save answer
+  const { data: answer } = useQuery({
+    queryKey: ["answer", data],
+    queryFn: () => saveAnswer(data),
+    enabled: !!data.folderId && !!data.optionId,
   });
 
   // ! Get one
@@ -68,9 +83,11 @@ export function useQuestions() {
     isLoading: firstQuestionLoading || nextQuestionLoading,
     isError,
     error,
+    answer,
 
     goToQuestion,
     goToPreviousQuestion,
+    setData,
 
     canGoBack: questionHistory.length > 0,
     currentIndex,
