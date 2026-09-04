@@ -93,7 +93,7 @@ export const QuestionsSide = ({ userId, folderId }: { userId: string, folderId: 
     // ! If it's the final question
     if (option.processId) {
       console.log(option.processId);
-      updateStatus({
+      updateStatus.mutate({
         id: folderId,
         userId,
         processId: option.processId,

@@ -3,6 +3,7 @@ import FolderDetail from "../_components/layout/FolderDetail";
 import { getSession } from "@/lib/session";
 import PendingFolder from "./PendingFolder";
 import { notFound } from "next/navigation";
+import { FolderType } from "../types/types";
 
 export default async function page({
   params,
@@ -12,8 +13,10 @@ export default async function page({
   const { id } = await params;
   const session = await getSession();
   const userId = session?.user.id || "";
-  // const folders = await FolderServices.getAll(userId);
-  const folder = await FolderServices.getOneFolder(id, userId);
+  const folder: FolderType | null = await FolderServices.getOneFolder(
+    id,
+    userId,
+  );
   console.log("Folder:", folder);
   if (!folder) {
     notFound();
@@ -23,7 +26,7 @@ export default async function page({
       {folder.status === "CREATED" ? (
         <FolderDetail folder={folder} userId={userId} />
       ) : (
-        <PendingFolder />
+        <PendingFolder folder={folder} userId={userId} />
       )}
     </div>
   );

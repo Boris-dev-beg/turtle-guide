@@ -10,6 +10,8 @@ export const FolderServices = {
       include: {
         procedure: true,
         location: true,
+        progression: true,
+        process: true
       },
     });
   },
@@ -40,6 +42,7 @@ export const FolderServices = {
         procedure: true,
         location: true,
         progression: true,
+        process: true
       },
     });
   },

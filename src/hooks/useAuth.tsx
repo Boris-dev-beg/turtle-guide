@@ -1,7 +1,7 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { emailOtp, signIn, signUp } from "@/lib/auth-client";
+import { emailOtp, signIn, signUp } from "@/lib/auth/auth-client";
 
 export function useAuth() {
   const login = useMutation({

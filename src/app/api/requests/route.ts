@@ -1,4 +1,4 @@
-import { requestServices } from "@/services/requests.service";
+import { requestServices } from "@/services/steps.service";
 import { NextResponse } from "next/server";
 
 export async function GET() {
