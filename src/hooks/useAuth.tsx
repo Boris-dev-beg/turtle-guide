@@ -1,9 +1,13 @@
 "use client";
 
 import { useMutation } from "@tanstack/react-query";
-import { emailOtp, signIn, signUp } from "@/lib/auth/auth-client";
+import { emailOtp, signIn, signOut, signUp } from "@/lib/auth/auth-client";
+import { useRouter } from "next/navigation";
 
 export function useAuth() {
+  const router = useRouter();
+  
+  // ! Log In
   const login = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       const result = await signIn.email({
@@ -19,6 +23,18 @@ export function useAuth() {
     },
   });
 
+  // ! Log Out
+  const logout = async () => {
+    return await signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/login");
+        },
+      },
+    });
+  };
+
+  // ! Sing Up
   const signup = useMutation({
     mutationFn: async (data: {
       name: string;
@@ -39,7 +55,7 @@ export function useAuth() {
     },
   });
 
-  // Envoie l'OTP
+  // ! Envoie l'OTP
   const requestPasswordReset = useMutation({
     mutationFn: async (email: string) => {
       const { data, error } = await emailOtp.requestPasswordReset({
@@ -54,7 +70,7 @@ export function useAuth() {
     },
   });
 
-  // Vérifie l'OTP
+  // ! Vérifie l'OTP
   const verifyPasswordOtp = useMutation({
     mutationFn: async ({ email, otp }: { email: string; otp: string }) => {
       const { data, error } = await emailOtp.checkVerificationOtp({
@@ -71,7 +87,7 @@ export function useAuth() {
     },
   });
 
-  // Change le mot de passe
+  // ! Change le mot de passe
   const resetPassword = useMutation({
     mutationFn: async ({
       email,
@@ -99,6 +115,7 @@ export function useAuth() {
 
   return {
     login,
+    logout,
     signup,
     requestPasswordReset,
     verifyPasswordOtp,

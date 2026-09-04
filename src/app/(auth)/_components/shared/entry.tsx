@@ -22,8 +22,6 @@ import {
 
 interface GenericInputProps<T extends FieldValues, N extends FieldPath<T>> {
   field: ControllerRenderProps<T, N>;
-  label?: string;
-  placeholder?: string;
 }
 
 export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
@@ -31,7 +29,7 @@ export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
   placeholder,
   icon: Icon,
   type = "text",
-  icon2: Icon2,
+  icon2,
   fieldState,
   field,
 }: GenericInputProps<T, N> & {
@@ -39,7 +37,7 @@ export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
   placeholder: string;
   icon: LucideIcon;
   type?: string;
-  icon2?: LucideIcon;
+  icon2?: React.ReactNode;
   fieldState: ControllerFieldState;
 }) {
   return (
@@ -69,12 +67,12 @@ export function EntryZone<T extends FieldValues, N extends FieldPath<T>>({
           className="text-base! focus-visible:ring-0"
         />
 
-        {Icon2 && (
+        {icon2 && (
           <InputGroupAddon
             align="inline-end"
             className={`${fieldState.invalid ? "text-destructive" : " text-muted-foreground hover:text-foreground"} cursor-pointer px-3`}
           >
-            <Icon2 className="size-5" />
+            {icon2}
           </InputGroupAddon>
         )}
       </InputGroup>

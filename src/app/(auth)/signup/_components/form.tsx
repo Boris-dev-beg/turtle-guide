@@ -1,35 +1,46 @@
 "use client";
-import { Eye, LockKeyhole, Mail, User2, UserPlus2 } from "lucide-react";
-import { EntryZone } from "../shared/entry";
+import {
+  Eye,
+  EyeClosed,
+  LockKeyhole,
+  Mail,
+  User2,
+  UserPlus2,
+} from "lucide-react";
+import { EntryZone } from "../../_components/shared/entry";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
-import { signupSchema, SignUpType } from "../../_schema/signup.schema";
+import { signupSchema, SignUpType } from "../_schema/signup.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function SingUpForm() {
-  const router = useRouter()
-  const {signup} = useAuth()
-  const {
-    handleSubmit,
-    control,
-  } = useForm<SignUpType>({
+  // ! State
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const router = useRouter();
+  const { signup } = useAuth();
+  const { handleSubmit, control } = useForm<SignUpType>({
     resolver: zodResolver(signupSchema),
-    mode: "onChange"
+    mode: "onChange",
   });
 
+  // ! Functions
   const onSubmit = async (data: SignUpType) => {
     try {
-    await signup.mutateAsync(data);
+      await signup.mutateAsync(data);
 
-    router.push("/");
-  } catch (error) {
-    console.error("Erreur lors de l'inscription :", error);
-  }
+      router.push("/");
+    } catch (error) {
+      console.error("Erreur lors de l'inscription :", error);
+    }
   };
+
+  // ! Render
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
       <Controller
@@ -67,13 +78,21 @@ export default function SingUpForm() {
         control={control}
         render={({ field, fieldState }) => (
           <EntryZone
-            type="password"
+            type={showPassword ? "text" : "password"}
             icon={LockKeyhole}
             placeholder="Créer un mot de passe"
             label="Mot de passe"
             fieldState={fieldState}
             field={field}
-            icon2={Eye}
+            icon2={
+              <span onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
+                  <Eye className="size-5" />
+                ) : (
+                  <EyeClosed className="size-5" />
+                )}
+              </span>
+            }
           />
         )}
       />
@@ -83,13 +102,21 @@ export default function SingUpForm() {
         control={control}
         render={({ field, fieldState }) => (
           <EntryZone
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             icon={LockKeyhole}
             placeholder="Confirmez votre mot de passe"
             label="Confirmer le mot de passe"
             fieldState={fieldState}
             field={field}
-            icon2={Eye}
+            icon2={
+              <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                {showConfirmPassword ? (
+                  <Eye className="size-5" />
+                ) : (
+                  <EyeClosed className="size-5" />
+                )}
+              </span>
+            }
           />
         )}
       />

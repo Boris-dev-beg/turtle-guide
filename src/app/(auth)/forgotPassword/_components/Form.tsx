@@ -1,9 +1,9 @@
 "use client";
 import { useState } from "react";
-import AccountVerification from "./elements/steps/AccountVerification";
-import CodeVerfication from "./elements/steps/CodeVerfication";
-import NewPassword from "./elements/steps/NewPassword";
-import Done from "./elements/steps/Done";
+import AccountVerification from "./steps/AccountVerification";
+import CodeVerfication from "./steps/CodeVerfication";
+import NewPassword from "./steps/NewPassword";
+import Done from "./steps/Done";
 
 export default function ForgotPasswordForm() {
   // ! States
@@ -13,6 +13,7 @@ export default function ForgotPasswordForm() {
   const handleClick = () => {
     setCurrentStep((prevStep) => prevStep + 1);
   };
+  
   // ! Render
   return (
     <>

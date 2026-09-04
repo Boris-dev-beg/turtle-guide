@@ -1,13 +1,20 @@
 "use client";
 
 import { links } from "@/data/GlobalData";
+import { useAuth } from "@/hooks/useAuth";
 import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState } from "react";
 
 export const NavBar = ({ name }: { name?: string }) => {
+  // ! States
+  const [showProfile, setShowProfile] = useState(false);
   const pathName = usePathname();
+  const { logout } = useAuth();
 
+  // ! Functions
+  // ! Render
   return (
     <div className="flex items-center gap-2">
       <nav className="hidden items-center gap-1 md:flex lg:gap-2">
@@ -23,9 +30,22 @@ export const NavBar = ({ name }: { name?: string }) => {
       </nav>
 
       {name ? (
-        <span className="rounded-full bg-primary/10 text-primary-foreground/70 font-black text-lg p-1 border-2 border-white/30 uppercase">
-          {name[0] + name[1]}
-        </span>
+        <div className="flex flex-col rounded-full bg-primary/10 p-1 border-2 border-white/30 relative">
+          <h1
+            onClick={() => setShowProfile(!showProfile)}
+            className="text-primary-foreground/70 font-black uppercase cursor-pointer"
+          >
+            {name[0] + name[1]}
+          </h1>
+          {showProfile && (
+            <span className="absolute top-full right-full w-40 flex flex-col gap-2 p-2 rounded-sm bg-muted-foreground/90">
+              <h1 className="font-semibold">Mon profil</h1>
+              <button onClick={logout} className="btn btn-destructive text-base">
+                Déconnexion
+              </button>
+            </span>
+          )}
+        </div>
       ) : (
         <Link
           href="/login"

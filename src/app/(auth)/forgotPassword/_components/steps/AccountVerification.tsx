@@ -1,16 +1,16 @@
 "use client";
 import Link from "next/link";
-import { EntryZone } from "../../../shared/entry";
-import Form_layout from "../components/form_layout";
+import { EntryZone } from "../../../_components/shared/entry";
+import Form_layout from "../layout/form_layout";
 import { ArrowRight, ChevronLeft, Mail } from "lucide-react";
 import { Controller, useForm } from "react-hook-form";
 import {
   AccountVerificationSchema,
   AccountVerificationSchemaType,
-} from "@/app/(auth)/_schema/forgotPassword.schema";
+} from "@/app/(auth)/forgotPassword/schema/forgotPassword.schema";
 import { useAuth } from "@/hooks/useAuth";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useForgotPasswordStore } from "../../store/forgotPassword.store";
+import { useForgotPasswordStore } from "../../_store/forgotPassword.store";
 
 export default function AccountVerification({
   OnClick,
@@ -35,7 +35,7 @@ export default function AccountVerification({
       await requestPasswordReset.mutateAsync(data.email);
 
       setEmail(data.email);
-      OnClick()
+      OnClick();
     } catch (error) {
       console.error(error);
     }
@@ -49,7 +49,7 @@ export default function AccountVerification({
           de réinitialisation."
       icon={Mail}
     >
-      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5" >
+      <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-5">
         <Controller
           name="email"
           control={form.control}

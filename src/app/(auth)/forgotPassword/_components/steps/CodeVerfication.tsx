@@ -1,15 +1,15 @@
 "use client";
-import Form_layout from "../components/form_layout";
+import Form_layout from "../layout/form_layout";
 import { ChevronLeft, MailCheck, RefreshCcw } from "lucide-react";
-import { EntryOTPZone } from "../../../shared/entry";
+import { EntryOTPZone } from "../../../_components/shared/entry";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useAuth } from "@/hooks/useAuth";
-import { useForgotPasswordStore } from "../../store/forgotPassword.store";
+import { useForgotPasswordStore } from "../../_store/forgotPassword.store";
 import {
   CodeOTPSchema,
   CodeOTPSchemaType,
-} from "@/app/(auth)/_schema/forgotPassword.schema";
+} from "@/app/(auth)/forgotPassword/schema/forgotPassword.schema";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 

@@ -1,18 +1,21 @@
 "use client";
-import Form_layout from "../components/form_layout";
-import { ArrowRight, Eye, LockKeyhole } from "lucide-react";
-import { EntryZone } from "../../../shared/entry";
+import Form_layout from "../layout/form_layout";
+import { ArrowRight, Eye, EyeClosed, LockKeyhole } from "lucide-react";
+import { EntryZone } from "../../../_components/shared/entry";
 import { Controller, useForm } from "react-hook-form";
 import {
   ResetPasswordSchema,
   ResetPasswordSchemaType,
-} from "@/app/(auth)/_schema/forgotPassword.schema";
+} from "@/app/(auth)/forgotPassword/schema/forgotPassword.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/useAuth";
-import { useForgotPasswordStore } from "../../store/forgotPassword.store";
+import { useForgotPasswordStore } from "../../_store/forgotPassword.store";
+import { useState } from "react";
 
 export default function NewPassword({ OnClick }: { OnClick: () => void }) {
   // ! States
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const email = useForgotPasswordStore((state) => state.email);
   const otp = useForgotPasswordStore((state) => state.otp);
   const setPassword = useForgotPasswordStore((state) => state.setPassword);
@@ -30,7 +33,7 @@ export default function NewPassword({ OnClick }: { OnClick: () => void }) {
   const { resetPassword } = useAuth();
 
   const handleReset = async (data: ResetPasswordSchemaType) => {
-    const password = data.password
+    const password = data.password;
     try {
       await resetPassword.mutateAsync({
         email,
@@ -61,8 +64,16 @@ export default function NewPassword({ OnClick }: { OnClick: () => void }) {
               fieldState={fieldState}
               field={field}
               icon={LockKeyhole}
-              type="password"
-              icon2={Eye}
+              type={showPassword ? "text" : "password"}
+              icon2={
+                <span onClick={() => setShowPassword(!showPassword)}>
+                  {showPassword ? (
+                    <Eye className="size-5" />
+                  ) : (
+                    <EyeClosed className="size-5" />
+                  )}
+                </span>
+              }
             />
           )}
         />
@@ -76,8 +87,16 @@ export default function NewPassword({ OnClick }: { OnClick: () => void }) {
               field={field}
               fieldState={fieldState}
               icon={LockKeyhole}
-              type="password"
-              icon2={Eye}
+              type={showConfirmPassword ? "text" : "password"}
+              icon2={
+                <span onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                  {showConfirmPassword ? (
+                    <Eye className="size-5" />
+                  ) : (
+                    <EyeClosed className="size-5" />
+                  )}
+                </span>
+              }
             />
           )}
         />

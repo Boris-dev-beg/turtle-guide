@@ -1,16 +1,19 @@
 "use client";
-import { Eye, LockKeyhole, LogIn, Mail } from "lucide-react";
-import { EntryZone } from "../shared/entry";
+import { Eye, EyeClosed, LockKeyhole, LogIn, Mail } from "lucide-react";
+import { EntryZone } from "../../_components/shared/entry";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { LoginFormType, loginSchema } from "../../_schema/login.schema";
+import { LoginFormType, loginSchema } from "../_schema/login.schema";
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function LoginForm() {
+  // ! States
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
   const { handleSubmit, control } = useForm<LoginFormType>({
@@ -18,6 +21,7 @@ export default function LoginForm() {
     mode: "onChange",
   });
 
+  // ! Functions
   const onSubmit = async (data: LoginFormType) => {
     try {
       await login.mutateAsync(data);
@@ -27,6 +31,8 @@ export default function LoginForm() {
       console.error("Erreur lors de l'inscription :", error);
     }
   };
+
+  // ! Render
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
       <Controller
@@ -49,13 +55,21 @@ export default function LoginForm() {
         control={control}
         render={({ field, fieldState }) => (
           <EntryZone
-            type="password"
+            type={showPassword ? "text" : "password"}
             icon={LockKeyhole}
             fieldState={fieldState}
             field={field}
             placeholder="Votre mot de passe"
             label="Mot de passe"
-            icon2={Eye}
+            icon2={
+              <span onClick={() => setShowPassword(!showPassword)}>
+                {showPassword ? (
+                  <Eye className="size-5" />
+                ) : (
+                  <EyeClosed className="size-5" />
+                )}
+              </span>
+            }
           />
         )}
       />

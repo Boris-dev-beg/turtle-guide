@@ -1,6 +1,9 @@
-import { GoalIcon } from "lucide-react";
+
 import Link from "next/link";
-import LoginForm from "../_components/login/form";
+import google_icon from "../../../assets/images/Google_icon.png";
+import facebook_icon from "../../../assets/images/facebook_icon.png";
+import LoginForm from "./_components/form";
+import Image from "next/image";
 
 export default function page() {
   return (
@@ -28,26 +31,37 @@ export default function page() {
         <span className="h-0.5 flex-1 bg-border" />
       </div>
 
-      <div className="flex flex-col gap-3">
+      <div className="flex flex-col gap-1.5">
         <button
           type="button"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg border border-border bg-background px-4 font-semibold transition-colors hover:bg-muted"
+          className="flex text-base h-11 w-full items-center justify-center gap-2 btn btn-outline"
         >
-          <GoalIcon className="size-4" />
+          <Image
+            src={google_icon}
+            alt="Google Icon"
+            width={50}
+            height={50}
+            className="size-5"
+          />
           Continuer avec Google
         </button>
-
         <button
           type="button"
-          className="flex h-11 w-full items-center justify-center gap-2 rounded-lg bg-primary px-4 font-semibold text-primary-foreground transition-colors hover:bg-primary/90"
+          className="flex text-base h-11 w-full items-center justify-center gap-2 btn btn-outline"
         >
-          <GoalIcon className="size-4" />
+          <Image
+            src={facebook_icon}
+            alt="FaceBook Icon"
+            width={50}
+            height={50}
+            className="size-5"
+          />
           Continuer avec Facebook
         </button>
       </div>
 
       <p className="text-center text-muted-foreground">
-        Vous n&apso;avez pas encore de compte ?{" "}
+        Vous n&apos;avez pas encore de compte ?{" "}
         <Link
           href="/signup"
           className="font-semibold text-primary hover:underline"

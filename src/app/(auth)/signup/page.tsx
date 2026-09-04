@@ -1,4 +1,4 @@
-import SingUpForm from "../_components/signup/form";
+import SingUpForm from "./_components/form";
 import google_icon from "../../../assets/images/Google_icon.png";
 import Link from "next/link";
 import Image from "next/image";
