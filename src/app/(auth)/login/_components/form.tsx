@@ -16,7 +16,12 @@ export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { login } = useAuth();
-  const { handleSubmit, control } = useForm<LoginFormType>({
+  const {
+    handleSubmit,
+    control,
+    setError,
+    formState: { errors },
+  } = useForm<LoginFormType>({
     resolver: zodResolver(loginSchema),
     mode: "onChange",
   });
@@ -24,7 +29,12 @@ export default function LoginForm() {
   // ! Functions
   const onSubmit = async (data: LoginFormType) => {
     try {
-      await login.mutateAsync(data);
+      const result = await login.mutateAsync(data);
+
+      if (result.error) {
+        setError("root", { message: result.error.message });
+        return;
+      }
 
       router.push("/");
     } catch (error) {
@@ -35,6 +45,7 @@ export default function LoginForm() {
   // ! Render
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-2">
+      {errors.root && <p className="text-red-500">{errors.root.message}</p>}
       <Controller
         name="email"
         control={control}
@@ -73,7 +84,6 @@ export default function LoginForm() {
           />
         )}
       />
-
       <div className="space-y-4 pt-1">
         <div className="flex w-full justify-between items-center">
           <div className="flex items-start gap-3">

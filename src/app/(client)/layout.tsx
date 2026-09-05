@@ -12,7 +12,7 @@ export default async function layout({
   const session = await getSession();
   return (
     <section className="flex flex-col max-[500px]:w-screen max-w-screen min-h-screen w-full">
-      <Header name={session?.user.name || ""} />
+      <Header user={session?.user} />
       <main className="flex flex-col h-full flex-1 w-full mb-4">
         {children}
       </main>

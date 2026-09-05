@@ -7,15 +7,12 @@ export const metadata: Metadata = {
   description: "Aide dans vos demarche administratives",
 };
 
-
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className="h-full antialiased">
-        <body className="min-h-full w-full">
-          <QueryProvider>
-          {children}
-        </QueryProvider>
-          </body>
+      <body className="min-h-full w-full">
+        <QueryProvider>{children}</QueryProvider>
+      </body>
     </html>
   );
 }

@@ -1,7 +1,6 @@
 import SingUpForm from "./_components/form";
-import google_icon from "../../../assets/images/Google_icon.png";
 import Link from "next/link";
-import Image from "next/image";
+import SocialNetwork from "../login/_components/SocialNetwork";
 
 export default function page() {
   return (
@@ -29,19 +28,8 @@ export default function page() {
         <span className="h-0.5 flex-1 bg-border" />
       </div>
 
-      <button
-        type="button"
-        className="flex text-base h-11 w-full items-center justify-center gap-2 btn btn-outline my-2"
-      >
-        <Image
-          src={google_icon}
-          alt="Google Icon"
-          width={50}
-          height={50}
-          className="size-5"
-        />
-        S&apos;inscrire avec Google
-      </button>
+      {/* Login with social network */}
+      <SocialNetwork />
 
       <p className="text-center text-muted-foreground">
         Vous avez déjà un compte ?{" "}

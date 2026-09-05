@@ -27,6 +27,7 @@ export default function page() {
         </span>
         <span className="h-0.5 flex-1 bg-border" />
       </div>
+      
       {/* Login with social network */}
       <SocialNetwork />
 

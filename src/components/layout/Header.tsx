@@ -4,7 +4,11 @@ import Image from "next/image";
 import Turtle from "../../assets/images/logo.png";
 import { NavBar } from "../shared/NavBar";
 
-export default function Header({name}: {name:string}) {
+export default function Header({
+  user,
+}: {
+  user: { id: string; name: string; image?: string | undefined | null } | undefined;
+}) {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-primary/95 text-primary-foreground shadow-sm backdrop-blur-xl">
       <div className="wrapper flex h-16 w-full items-center justify-between">
@@ -34,7 +38,7 @@ export default function Header({name}: {name:string}) {
         </Link>
 
         {/* Navigation */}
-        <NavBar name={name} />
+        <NavBar user={user} />
       </div>
     </header>
   );
