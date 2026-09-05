@@ -53,9 +53,10 @@ export function useAuth() {
       password: string;
     }) => {
       const result = await signUp.email({
-        name: data.name,
         email: data.email,
         password: data.password,
+        name: data.password,
+        callbackURL: "/profile",
       });
 
       if (result.error) {

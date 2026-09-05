@@ -2,7 +2,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "../prisma";
 import { emailOTP } from "better-auth/plugins";
-import { sendPasswordResetOTP } from "./email";
+import { sendPasswordResetOTP, sendSignupVerificationLink } from "./email";
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {
@@ -33,6 +33,13 @@ export const auth = betterAuth({
     requireEmailVerification: true,
   },
 
+  emailVerification: {
+    sendOnSignUp: true,
+    autoSignInAfterVerification: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendSignupVerificationLink(user.email, url);
+    },
+  },
   plugins: [
     emailOTP({
       otpLength: 6,

@@ -6,7 +6,7 @@ import { LogOut, LucideIcon, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 export const NavBar = ({
   user,
@@ -16,11 +16,30 @@ export const NavBar = ({
     | undefined;
 }) => {
   // ! States
+  const profileRef = useRef<HTMLDivElement>(null);
   const [showProfile, setShowProfile] = useState(false);
   const pathName = usePathname();
   const { logout } = useAuth();
 
   // ! Functions
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      ) {
+        setShowProfile(false);
+      }
+    }
+
+    if (showProfile) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [showProfile]);
   // ! Render
   return (
     <div className="flex items-center gap-2">
@@ -37,7 +56,7 @@ export const NavBar = ({
       </nav>
 
       {user ? (
-        <div className="relative">
+        <div ref={profileRef} className="relative">
           {/* Avatar */}
           <button
             type="button"
