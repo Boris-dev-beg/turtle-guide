@@ -6,13 +6,28 @@ import { useRouter } from "next/navigation";
 
 export function useAuth() {
   const router = useRouter();
-  
+
   // ! Log In
   const login = useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
       const result = await signIn.email({
         email: data.email,
         password: data.password,
+      });
+
+      if (result.error) {
+        throw new Error(result.error.message);
+      }
+
+      return result.data;
+    },
+  });
+
+  // ! Log In with Social
+  const signInWithSocial = useMutation({
+    mutationFn: async (provider: string) => {
+      const result = await signIn.social({
+        provider,
       });
 
       if (result.error) {
@@ -115,6 +130,7 @@ export function useAuth() {
 
   return {
     login,
+    signInWithSocial,
     logout,
     signup,
     requestPasswordReset,

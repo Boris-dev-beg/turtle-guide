@@ -1,9 +1,6 @@
-
 import Link from "next/link";
-import google_icon from "../../../assets/images/Google_icon.png";
-import facebook_icon from "../../../assets/images/facebook_icon.png";
 import LoginForm from "./_components/form";
-import Image from "next/image";
+import SocialNetwork from "./_components/SocialNetwork";
 
 export default function page() {
   return (
@@ -30,35 +27,8 @@ export default function page() {
         </span>
         <span className="h-0.5 flex-1 bg-border" />
       </div>
-
-      <div className="flex flex-col gap-1.5">
-        <button
-          type="button"
-          className="flex text-base h-11 w-full items-center justify-center gap-2 btn btn-outline"
-        >
-          <Image
-            src={google_icon}
-            alt="Google Icon"
-            width={50}
-            height={50}
-            className="size-5"
-          />
-          Continuer avec Google
-        </button>
-        <button
-          type="button"
-          className="flex text-base h-11 w-full items-center justify-center gap-2 btn btn-outline"
-        >
-          <Image
-            src={facebook_icon}
-            alt="FaceBook Icon"
-            width={50}
-            height={50}
-            className="size-5"
-          />
-          Continuer avec Facebook
-        </button>
-      </div>
+      {/* Login with social network */}
+      <SocialNetwork />
 
       <p className="text-center text-muted-foreground">
         Vous n&apos;avez pas encore de compte ?{" "}
