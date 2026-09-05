@@ -1,18 +1,18 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import QueryProvider from "@/components/providers/queryProvider";
+import type { Metadata } from "next"; 
+import "./globals.css"; 
+import QueryProvider from "@/components/providers/queryProvider"; 
 
-export const metadata: Metadata = {
-  title: "Turtle Guide",
-  description: "Aide dans vos demarche administratives",
-};
+export const metadata: Metadata = { 
+  title: "Turtle Guide", 
+  description: "Aide dans vos demarche administratives", 
+}; 
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
-  return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full w-full">
-        <QueryProvider>{children}</QueryProvider>
-      </body>
-    </html>
-  );
-}
+export default function RootLayout({ children }: LayoutProps<"/">) { 
+  return ( 
+    <html lang="en" className="h-full antialiased"> 
+      <body className="min-h-full w-full"> 
+        <QueryProvider>{children}</QueryProvider> 
+      </body> 
+    </html> 
+  ); 
+} 

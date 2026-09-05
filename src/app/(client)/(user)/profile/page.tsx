@@ -1,24 +1,26 @@
-import { requireSession } from "@/lib/session";
-import Profile from "./_components/profile";
+import { requireSession } from "@/lib/session"; 
+import Profile from "./_components/profile"; 
+import { checkUserHasPassword } from "@/services/profile.service"; 
 
-export default async function page() {
-  const session = await requireSession();
-  const user = session?.user;
-  
-  return (
-    <div className="px-4 py-10 w-full flex flex-col">
-      {/* Header */}
-      <div className="mb-10">
-        <p className="font-semibold text-primary text-lg">Mon espace</p>
+export default async function page() { 
+  const session = await requireSession(); 
+  const user = session?.user; 
+  const hasPassword = await checkUserHasPassword(user.id); 
 
-        <h1 className="text-3xl font-black tracking-tight">Votre profil</h1>
+  return ( 
+    <div className="px-4 py-10 w-full flex flex-col"> 
+      {/* Header */} 
+      <div className="mb-10"> 
+        <p className="font-semibold text-primary text-lg">Mon espace</p> 
 
-        <p className="mt-2 text-muted-foreground">
-          Gérez simplement les informations de votre compte.
-        </p>
-      </div>
+        <h1 className="text-3xl font-black tracking-tight">Votre profil</h1> 
 
-      <Profile user={user} />
-    </div>
-  );
-}
+        <p className="mt-2 text-muted-foreground"> 
+          Gérez simplement les informations de votre compte. 
+        </p> 
+      </div> 
+
+      <Profile user={user} hasPassword={hasPassword} /> 
+    </div> 
+  ); 
+} 

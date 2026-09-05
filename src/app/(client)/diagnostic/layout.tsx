@@ -1,5 +1,5 @@
-import React from "react";
+import React from "react"; 
 
-export default function layout({ children }: { children: React.ReactNode }) {
-  return <section className="flex wrapper">{children}</section>;
-}
+export default function layout({ children }: { children: React.ReactNode }) { 
+  return <section className="flex wrapper">{children}</section>; 
+} 

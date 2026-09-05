@@ -1,8 +1,8 @@
-import { categoriesServices } from "@/services/categories.service";
-import { NextResponse } from "next/server";
+import { categoriesServices } from "@/services/categories.service"; 
+import { NextResponse } from "next/server"; 
 
-export async function GET() {
-  const respones = await categoriesServices.getAll();
+export async function GET() { 
+  const respones = await categoriesServices.getAll(); 
 
-  return NextResponse.json(respones);
-}
+  return NextResponse.json(respones); 
+} 
