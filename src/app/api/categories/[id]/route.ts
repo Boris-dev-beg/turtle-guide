@@ -1,13 +1,13 @@
-import { categoriesServices } from "@/services/categories.service";
-import {NextResponse } from "next/server";
+import { categoriesServices } from "@/services/categories.service"; 
+import {NextResponse } from "next/server"; 
 
-export async function GET(
-  requests: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
-  const { id } = await params;
+export async function GET( 
+  requests: Request, 
+  { params }: { params: Promise<{ id: string }> }, 
+) { 
+  const { id } = await params; 
 
-  const respones = await categoriesServices.getOne(id);
+  const respones = await categoriesServices.getOne(id); 
 
-  return NextResponse.json(respones);
-}
+  return NextResponse.json(respones); 
+} 
