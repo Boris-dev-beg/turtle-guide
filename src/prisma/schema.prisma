@@ -1,387 +1,387 @@
-generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
-}
-
-datasource db {
-  provider = "postgresql"
-}
-
-enum FolderStatus {
-  CREATED
-  PENDING
-  ENDED
-  CLOSED
-}
-
-enum TransactionStatus {
-  INITIATED
-  PENDING
-  SUCCESS
-  FAILED
-}
-
-model User {
-  id            String   @id
-  name          String
-  email         String
-  emailVerified Boolean  @default(false)
-  image         String?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-
-  administrator Administrator?
-
-  folders           Folder[]
-  donations         Donation[]
-  documentPurchases DocumentPurchase[]
-
-  sessions Session[]
-  accounts Account[]
-
-  @@unique([email])
-  @@map("users")
-}
-
-model Administrator {
-  id          String @id @default(cuid())
-  accessLevel String
-
-  userId String @unique
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@map("administrators")
-}
-
-model Category {
-  id          String  @id @default(cuid())
-  name        String
-  slug        String  @unique
-  description String
-  isActive    Boolean @default(true)
-
-  procedures Procedure[]
-
-  @@map("categories")
-}
-
-model Procedure {
-  id          String  @id @default(cuid())
-  title       String
-  description String
-  legalBasis  String
-  isActive    Boolean @default(true)
-
-  categoryId String
-  category   Category @relation(fields: [categoryId], references: [id])
-
-  questions Question[]
-  folders   Folder[]
-
-  @@index([categoryId])
-  @@map("procedures")
-}
-
-model Question {
-  id          String  @id @default(cuid())
-  title       String
-  description String?
+generator client { 
+  provider = "prisma-client" 
+  output   = "../generated/prisma" 
+} 
+
+datasource db { 
+  provider = "postgresql" 
+} 
+
+enum FolderStatus { 
+  CREATED 
+  PENDING 
+  ENDED 
+  CLOSED 
+} 
+
+enum TransactionStatus { 
+  INITIATED 
+  PENDING 
+  SUCCESS 
+  FAILED 
+} 
+
+model User { 
+  id            String   @id 
+  name          String 
+  email         String 
+  emailVerified Boolean  @default(false) 
+  image         String? 
+  createdAt     DateTime @default(now()) 
+  updatedAt     DateTime @updatedAt 
+
+  administrator Administrator? 
+
+  folders           Folder[] 
+  donations         Donation[] 
+  documentPurchases DocumentPurchase[] 
+
+  sessions Session[] 
+  accounts Account[] 
+
+  @@unique([email]) 
+  @@map("users") 
+} 
+
+model Administrator { 
+  id          String @id @default(cuid()) 
+  accessLevel String 
+
+  userId String @unique 
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade) 
+
+  @@map("administrators") 
+} 
+
+model Category { 
+  id          String  @id @default(cuid()) 
+  name        String 
+  slug        String  @unique 
+  description String 
+  isActive    Boolean @default(true) 
+
+  procedures Procedure[] 
+
+  @@map("categories") 
+} 
+
+model Procedure { 
+  id          String  @id @default(cuid()) 
+  title       String 
+  description String 
+  legalBasis  String 
+  isActive    Boolean @default(true) 
+
+  categoryId String 
+  category   Category @relation(fields: [categoryId], references: [id]) 
+
+  questions Question[] 
+  folders   Folder[] 
+
+  @@index([categoryId]) 
+  @@map("procedures") 
+} 
+
+model Question { 
+  id          String  @id @default(cuid()) 
+  title       String 
+  description String? 
 
-  procedureId String
-  procedure   Procedure @relation(fields: [procedureId], references: [id])
+  procedureId String 
+  procedure   Procedure @relation(fields: [procedureId], references: [id]) 
 
-  options        AnswerOption[]
-  nextForOptions AnswerOption[] @relation("NextQuestion")
-
-  progressions Progression[]
+  options        AnswerOption[] 
+  nextForOptions AnswerOption[] @relation("NextQuestion") 
+
+  progressions Progression[] 
 
-  @@index([procedureId])
-  @@map("questions")
-}
+  @@index([procedureId]) 
+  @@map("questions") 
+} 
 
-model AnswerOption {
-  id    String @id @default(cuid())
-  label String
+model AnswerOption { 
+  id    String @id @default(cuid()) 
+  label String 
 
-  questionId String
-  question   Question @relation(fields: [questionId], references: [id])
+  questionId String 
+  question   Question @relation(fields: [questionId], references: [id]) 
 
-  nextQuestionId String?
-  nextQuestion   Question? @relation("NextQuestion", fields: [nextQuestionId], references: [id])
+  nextQuestionId String? 
+  nextQuestion   Question? @relation("NextQuestion", fields: [nextQuestionId], references: [id]) 
 
-  processId String?
-  process   Process? @relation(fields: [processId], references: [id])
+  processId String? 
+  process   Process? @relation(fields: [processId], references: [id]) 
 
-  answer Answer[]
+  answer Answer[] 
 
-  @@index([questionId])
-  @@index([nextQuestionId])
-  @@index([processId])
-  @@map("answer_options")
-}
+  @@index([questionId]) 
+  @@index([nextQuestionId]) 
+  @@index([processId]) 
+  @@map("answer_options") 
+} 
 
-model Process {
-  id          String @id @default(cuid())
-  title       String
-  description String
+model Process { 
+  id          String @id @default(cuid()) 
+  title       String 
+  description String 
 
-  answerOptions AnswerOption[]
-  folders       Folder[]
-  steps         Step[]
+  answerOptions AnswerOption[] 
+  folders       Folder[] 
+  steps         Step[] 
 
-  @@map("processes")
-}
+  @@map("processes") 
+} 
 
-model Folder {
-  id        String       @id @default(cuid())
-  name      String
-  status    FolderStatus @default(CREATED)
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+model Folder { 
+  id        String       @id @default(cuid()) 
+  name      String 
+  status    FolderStatus @default(CREATED) 
+  createdAt DateTime     @default(now()) 
+  updatedAt DateTime     @updatedAt 
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId String 
+  user   User   @relation(fields: [userId], references: [id]) 
 
-  procedureId String
-  procedure   Procedure @relation(fields: [procedureId], references: [id])
+  procedureId String 
+  procedure   Procedure @relation(fields: [procedureId], references: [id]) 
 
-  processId String?
-  process   Process? @relation(fields: [processId], references: [id])
+  processId String? 
+  process   Process? @relation(fields: [processId], references: [id]) 
 
-  answers     Answer[]
-  progression Progression?
+  answers     Answer[] 
+  progression Progression? 
 
-  locationId String?
-  location   Location? @relation(fields: [locationId], references: [id])
+  locationId String? 
+  location   Location? @relation(fields: [locationId], references: [id]) 
 
-  @@index([userId])
-  @@index([procedureId])
-  @@index([processId])
-  @@map("folders")
-}
+  @@index([userId]) 
+  @@index([procedureId]) 
+  @@index([processId]) 
+  @@map("folders") 
+} 
 
-model Answer {
-  id         String   @id @default(cuid())
-  answeredAt DateTime @default(now())
+model Answer { 
+  id         String   @id @default(cuid()) 
+  answeredAt DateTime @default(now()) 
 
-  folderId String
-  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String 
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade) 
 
-  optionId String
-  option   AnswerOption @relation(fields: [optionId], references: [id])
+  optionId String 
+  option   AnswerOption @relation(fields: [optionId], references: [id]) 
 
-  @@index([folderId])
-  @@index([optionId])
-  @@map("answers")
-}
+  @@index([folderId]) 
+  @@index([optionId]) 
+  @@map("answers") 
+} 
 
-model Progression {
-  id                String   @id @default(cuid())
-  currentQuestionId String
-  lastUpdatedAt     DateTime @updatedAt
+model Progression { 
+  id                String   @id @default(cuid()) 
+  currentQuestionId String 
+  lastUpdatedAt     DateTime @updatedAt 
 
-  folderId String @unique
-  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade)
+  folderId String @unique 
+  folder   Folder @relation(fields: [folderId], references: [id], onDelete: Cascade) 
 
-  currentQuestion Question @relation(fields: [currentQuestionId], references: [id])
+  currentQuestion Question @relation(fields: [currentQuestionId], references: [id]) 
 
-  @@index([currentQuestionId])
-  @@map("progressions")
-}
+  @@index([currentQuestionId]) 
+  @@map("progressions") 
+} 
 
-model Step {
-  id          String @id @default(cuid())
-  title       String
-  description String
+model Step { 
+  id          String @id @default(cuid()) 
+  title       String 
+  description String 
 
-  processId String
-  process   Process @relation(fields: [processId], references: [id])
+  processId String 
+  process   Process @relation(fields: [processId], references: [id]) 
 
-  administrativeBodyId String?
-  administrativeBody   AdministrativeBody? @relation(fields: [administrativeBodyId], references: [id])
+  administrativeBodyId String? 
+  administrativeBody   AdministrativeBody? @relation(fields: [administrativeBodyId], references: [id]) 
 
-  documents   Document[]
-  fraudAlerts FraudAlert[]
+  documents   Document[] 
+  fraudAlerts FraudAlert[] 
 
-  @@index([processId])
-  @@map("steps")
-}
+  @@index([processId]) 
+  @@map("steps") 
+} 
 
-model Document {
-  id           String  @id @default(cuid())
-  name         String
-  price        Decimal
-  customizable Boolean @default(false)
-  legalWarning String?
+model Document { 
+  id           String  @id @default(cuid()) 
+  name         String 
+  price        Decimal 
+  customizable Boolean @default(false) 
+  legalWarning String? 
 
-  purchases DocumentPurchase[]
-  steps     Step[]
+  purchases DocumentPurchase[] 
+  steps     Step[] 
 
-  @@map("documents")
-}
+  @@map("documents") 
+} 
 
-model DocumentPurchase {
-  id           String   @id @default(cuid())
-  purchaseDate DateTime @default(now())
-  amount       Decimal
+model DocumentPurchase { 
+  id           String   @id @default(cuid()) 
+  purchaseDate DateTime @default(now()) 
+  amount       Decimal 
 
-  userId String
-  user   User   @relation(fields: [userId], references: [id])
+  userId String 
+  user   User   @relation(fields: [userId], references: [id]) 
 
-  documentId String
-  document   Document @relation(fields: [documentId], references: [id])
+  documentId String 
+  document   Document @relation(fields: [documentId], references: [id]) 
 
-  transactions Transaction[]
+  transactions Transaction[] 
 
-  @@index([userId])
-  @@index([documentId])
-  @@map("document_purchases")
-}
+  @@index([userId]) 
+  @@index([documentId]) 
+  @@map("document_purchases") 
+} 
 
-model Transaction {
-  id            String            @id @default(cuid())
-  reference     String            @unique
-  amount        Decimal
-  paymentMethod String?
-  date          DateTime          @default(now())
-  status        TransactionStatus
+model Transaction { 
+  id            String            @id @default(cuid()) 
+  reference     String            @unique 
+  amount        Decimal 
+  paymentMethod String? 
+  date          DateTime          @default(now()) 
+  status        TransactionStatus 
 
-  documentPurchaseId String?
-  documentPurchase   DocumentPurchase? @relation(fields: [documentPurchaseId], references: [id], onDelete: Cascade)
+  documentPurchaseId String? 
+  documentPurchase   DocumentPurchase? @relation(fields: [documentPurchaseId], references: [id], onDelete: Cascade) 
 
-  donationId String?
-  donation   Donation? @relation(fields: [donationId], references: [id])
+  donationId String? 
+  donation   Donation? @relation(fields: [donationId], references: [id]) 
 
-  @@index([documentPurchaseId])
-  @@map("transactions")
-}
+  @@index([documentPurchaseId]) 
+  @@map("transactions") 
+} 
 
-model AdministrativeBody {
-  id   String @id @default(cuid())
-  name String
+model AdministrativeBody { 
+  id   String @id @default(cuid()) 
+  name String 
 
-  administrativeUnits AdministrativeUnit[]
+  administrativeUnits AdministrativeUnit[] 
 
-  steps Step[]
+  steps Step[] 
 
-  @@map("administrative_bodies")
-}
+  @@map("administrative_bodies") 
+} 
 
-model AdministrativeUnit {
-  id   String @id @default(cuid())
-  name String
+model AdministrativeUnit { 
+  id   String @id @default(cuid()) 
+  name String 
 
-  administrativeBodyId String
-  administrativeBody   AdministrativeBody @relation(fields: [administrativeBodyId], references: [id])
+  administrativeBodyId String 
+  administrativeBody   AdministrativeBody @relation(fields: [administrativeBodyId], references: [id]) 
 
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
+  locationId String 
+  location   Location @relation(fields: [locationId], references: [id]) 
 
-  areaServed AreaServed[]
+  areaServed AreaServed[] 
 
-  @@index([locationId])
-}
-
-model AreaServed {
-  id   String @id @default(cuid())
-  name String
-
-  locationId String
-  location   Location @relation(fields: [locationId], references: [id])
-
-  administrativeUnitId String
-  adminstrativeUnit    AdministrativeUnit @relation(fields: [administrativeUnitId], references: [id])
-}
-
-model Location {
-  id        String   @id @default(cuid())
-  address   String?
-  city      String?
-  latitude  Decimal?
-  longitude Decimal?
-
-  administrativeUnits AdministrativeUnit[]
-
-  folders Folder[]
-
-  areaServed AreaServed[]
-
-  @@map("locations")
-}
-
-model Donation {
-  id     String   @id @default(cuid())
-  amount Decimal
-  date   DateTime @default(now())
-
-  userId String?
-  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  transaction Transaction[]
-
-  @@index([userId])
-  @@map("donations")
-}
-
-model FraudAlert {
-  id              String   @id @default(cuid())
-  title           String
-  description     String
-  publicationDate DateTime @default(now())
-
-  stepId String
-  step   Step   @relation(fields: [stepId], references: [id], onDelete: Cascade)
-
-  @@index([stepId])
-  @@map("fraud_alerts")
-}
-
-model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
-  @@unique([token])
-  @@index([userId])
-  @@map("session")
-}
-
-model Account {
-  id                    String    @id
-  issuer                String
-  accountId             String
-  providerId            String
-  userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
-  accessToken           String?
-  refreshToken          String?
-  idToken               String?
-  accessTokenExpiresAt  DateTime?
-  refreshTokenExpiresAt DateTime?
-  scope                 String?
-  password              String?
-  createdAt             DateTime  @default(now())
-  updatedAt             DateTime  @updatedAt
-
-  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx")
-  @@index([userId])
-  @@map("account")
-}
-
-model Verification {
-  id         String   @id
-  identifier String
-  value      String
-  expiresAt  DateTime
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
-
-  @@index([identifier])
-  @@map("verification")
-}
+  @@index([locationId]) 
+} 
+
+model AreaServed { 
+  id   String @id @default(cuid()) 
+  name String 
+
+  locationId String 
+  location   Location @relation(fields: [locationId], references: [id]) 
+
+  administrativeUnitId String 
+  adminstrativeUnit    AdministrativeUnit @relation(fields: [administrativeUnitId], references: [id]) 
+} 
+
+model Location { 
+  id        String   @id @default(cuid()) 
+  address   String? 
+  city      String? 
+  latitude  Decimal? 
+  longitude Decimal? 
+
+  administrativeUnits AdministrativeUnit[] 
+
+  folders Folder[] 
+
+  areaServed AreaServed[] 
+
+  @@map("locations") 
+} 
+
+model Donation { 
+  id     String   @id @default(cuid()) 
+  amount Decimal 
+  date   DateTime @default(now()) 
+
+  userId String? 
+  user   User?   @relation(fields: [userId], references: [id], onDelete: SetNull) 
+
+  transaction Transaction[] 
+
+  @@index([userId]) 
+  @@map("donations") 
+} 
+
+model FraudAlert { 
+  id              String   @id @default(cuid()) 
+  title           String 
+  description     String 
+  publicationDate DateTime @default(now()) 
+
+  stepId String 
+  step   Step   @relation(fields: [stepId], references: [id], onDelete: Cascade) 
+
+  @@index([stepId]) 
+  @@map("fraud_alerts") 
+} 
+
+model Session { 
+  id        String   @id 
+  expiresAt DateTime 
+  token     String 
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+  ipAddress String? 
+  userAgent String? 
+  userId    String 
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade) 
+
+  @@unique([token]) 
+  @@index([userId]) 
+  @@map("session") 
+} 
+
+model Account { 
+  id                    String    @id 
+  issuer                String 
+  accountId             String 
+  providerId            String 
+  userId                String 
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade) 
+  accessToken           String? 
+  refreshToken          String? 
+  idToken               String? 
+  accessTokenExpiresAt  DateTime? 
+  refreshTokenExpiresAt DateTime? 
+  scope                 String? 
+  password              String? 
+  createdAt             DateTime  @default(now()) 
+  updatedAt             DateTime  @updatedAt 
+
+  @@unique([issuer, accountId], map: "account_issuer_accountId_uidx") 
+  @@index([userId]) 
+  @@map("account") 
+} 
+
+model Verification { 
+  id         String   @id 
+  identifier String 
+  value      String 
+  expiresAt  DateTime 
+  createdAt  DateTime @default(now()) 
+  updatedAt  DateTime @updatedAt 
+
+  @@index([identifier]) 
+  @@map("verification") 
+} 

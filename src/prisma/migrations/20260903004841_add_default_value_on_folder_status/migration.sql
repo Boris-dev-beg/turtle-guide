@@ -1,2 +1,2 @@
--- AlterTable
-ALTER TABLE "folders" ALTER COLUMN "status" SET DEFAULT 'CREATED';
+-- AlterTable 
+ALTER TABLE "folders" ALTER COLUMN "status" SET DEFAULT 'CREATED'; 
