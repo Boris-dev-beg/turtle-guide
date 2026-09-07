@@ -22,7 +22,6 @@ export function ProcesSteps({
   } | null;
   currentStep: Step | undefined;
 }) {
-    console.log("Steps:", process?.steps)
   return (
     <Card className="turtle-card">
       <CardHeader className="px-5 pb-4 pt-5 sm:px-6 sm:pt-6">

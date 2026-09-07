@@ -1,11 +1,12 @@
 "use client";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Input } from "@/components/ui/input";
 import { EmptyFolders, FolderCard } from "../cards/folderCard";
 import { useFolder } from "@/hooks/useFolder";
 import { FoldersLoading } from "../cards/FoldersLoading";
 import { FoldersError } from "../cards/FoldersError";
+import Link from "next/link";
 
 export default function Folders({ userId }: { userId: string }) {
   // ! States
@@ -31,7 +32,7 @@ export default function Folders({ userId }: { userId: string }) {
       {/* Filtres */}
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <Tabs defaultValue="all">
-          <TabsList className="h-10! rounded-sm border border-border bg-card p-2">
+          <TabsList className="h-12! rounded-sm border border-border bg-card p-2">
             <TabsTrigger value="all" className="rounded-sm px-4 text-base h-8">
               Tous ({folders ? folders.length : 0})
             </TabsTrigger>
@@ -93,9 +94,19 @@ export default function Folders({ userId }: { userId: string }) {
       </div>
 
       {/* Footer de liste */}
-      <p className="mt-5 text-base text-brand-ink-muted">
-        {folders ? folders.length : 0} dossiers au total
-      </p>
+      <div className="flex w-full justify-between mt-6 items-center">
+        <p className="text-base text-brand-ink-muted">
+          {folders ? folders.length : 0} dossiers au total
+        </p>
+
+        {/* CTA */}
+        <Link href="/categories"
+          className="rounded-sm gap-2 bg-card text-sm md:text-base btn btn-outline py-3 px-5 cursor-pointer"
+        >
+          Nouveau dossier
+          <Plus className="size-5 transition-transform group-hover:translate-x-0.5" />
+        </Link>
+      </div>
     </main>
   );
 }

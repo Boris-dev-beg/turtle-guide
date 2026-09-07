@@ -135,7 +135,12 @@ export const links = [
     icon: HomeIcon, 
     href: "/", 
     label: "Accueil", 
-  }, 
+  },
+  { 
+    icon: Folders, 
+    href: "/categories", 
+    label: "Démarches", 
+  },
   { 
     icon: Folders, 
     href: "/folders", 

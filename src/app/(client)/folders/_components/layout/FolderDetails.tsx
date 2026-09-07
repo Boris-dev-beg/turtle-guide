@@ -12,6 +12,7 @@ import {
   FileText,
   Flag,
   Info,
+  Loader2,
   LucideIcon,
   MapPin,
   Play,
@@ -34,6 +35,10 @@ import { FolderDetailsError } from "../cards/FoldersError";
 import { FolderType, Step } from "../../types/types";
 import { FolderStatus } from "@/generated/prisma/enums";
 import { ProcesSteps } from "../cards/Steps";
+import { useRouter } from "next/navigation";
+import { deleteFolder } from "@/lib/folder.action";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const statusConfig: Record<
   FolderStatus,
@@ -94,6 +99,9 @@ export default function FolderDetailsPage({
   id: string;
   userId: string;
 }) {
+  // ! States
+  const router = useRouter();
+  const [isDeleting, setIsDeleting] = useState(false);
   const { folder, folderIsLoading, folderIsError, folderRefetch } = useFolder(
     userId,
     id,
@@ -115,6 +123,33 @@ export default function FolderDetailsPage({
   }
   const currentStep = folder.process?.steps[1];
 
+  // ! Functions
+
+  const handleDelete = async () => {
+    if (isDeleting) return;
+
+    try {
+      setIsDeleting(true);
+
+      await deleteFolder(folder.id, userId);
+
+      toast.success("Dossier supprimé", {
+        description: "Votre dossier a été supprimé avec succès.",
+      });
+
+      router.push("/folders");
+    } catch (error) {
+      console.error("Erreur lors de la suppression du dossier:", error);
+
+      toast.error("Impossible de supprimer le dossier", {
+        description: "Une erreur est survenue. Veuillez réessayer.",
+      });
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  // ! Render
   return (
     <main className="wrapper w-full py-6 sm:py-8 lg:py-10">
       <div className="mb-6">
@@ -133,7 +168,7 @@ export default function FolderDetailsPage({
             </div>
 
             <div className="min-w-0">
-              <div className="mb-2 flex flex-wrap items-center gap-2">
+              <div className="mb-1 flex flex-wrap items-center gap-2">
                 <h1 className="text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
                   {folder.name}
                 </h1>
@@ -149,7 +184,7 @@ export default function FolderDetailsPage({
                 <span>Mis à jour le {formatDate(folder.updatedAt)}</span>
               </div>
 
-              <p className="mt-3 max-w-3xl text-sm leading-6 text-brand-ink-muted sm:text-base">
+              <p className="mt-1 max-w-3xl text-sm leading-6 text-brand-ink-muted sm:text-base">
                 {folder.procedure.description}
               </p>
             </div>
@@ -158,34 +193,49 @@ export default function FolderDetailsPage({
           {/* Actions */}
 
           <DropdownMenu>
-            <DropdownMenuTrigger>
-              <Button
-                variant="outline"
-                className="w-full shrink-0 justify-between rounded-sm sm:w-auto text-base"
-              >
-                Actions
-                <ChevronDown className="size-5" />
-              </Button>
+            <DropdownMenuTrigger className="w-full shrink-0 flex btn btn-outline py-2 justify-between rounded-sm sm:w-auto text-base">
+              Actions
+              <ChevronDown className="size-5" />
             </DropdownMenuTrigger>
 
             <DropdownMenuContent align="end" className="w-56 *:text-base">
               {folder.status === "PENDING" && (
-                <DropdownMenuItem className="gap-2">
-                  <RefreshCcw className="size-5" />
-                  Reprendre la démarche
+                <DropdownMenuItem>
+                  <Link href="/categories" className="flex gap-2">
+                    <RefreshCcw className="size-5" />
+                    Reprendre la démarche
+                  </Link>
                 </DropdownMenuItem>
               )}
 
               {folder.status === "CREATED" && (
-                <DropdownMenuItem className="gap-2">
-                  <Play className="size-5" />
-                  Continuer le diagnostic
+                <DropdownMenuItem>
+                  <Link href="/categories" className="gap-2 flex ">
+                    <Play className="size-5" />
+                    Continuer le diagnostic
+                  </Link>
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuItem className="gap-2 text-destructive focus:text-destructive font-medium">
-                <Trash2 className="size-5" />
-                Supprimer le dossier
+              <DropdownMenuItem className="gap-2 text-destructive font-medium">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={isDeleting}
+                  className="btn btn-destructive-outline hover:bg-card hover:text-destructive! disabled:cursor-not-allowed disabled:opacity-60"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="size-5 animate-spin" />
+                      Suppression...
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="size-5 hover:text-current!" />
+                      Supprimer le dossier
+                    </>
+                  )}
+                </button>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -321,8 +371,6 @@ export default function FolderDetailsPage({
     </main>
   );
 }
-
-
 
 const ProcessInfos = ({
   folder,

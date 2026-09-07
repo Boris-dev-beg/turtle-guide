@@ -8,6 +8,7 @@ import {
   FileText,
   FolderOpen,
   FolderPlus,
+  Plus,
 } from "lucide-react";
 import { FolderType } from "../../types/types";
 import { Badge } from "@/components/ui/badge";
@@ -78,13 +79,11 @@ export function FolderCard({ folder }: { folder: FolderType }) {
   const isFinished = folder.status === "ENDED" || folder.status === "CLOSED";
 
   const actionLabel =
-    folder.status === "PENDING" || folder.status === "CREATED"
-      ? "Reprendre la démarche"
-      : "Voir le dossier";
+    folder.status === "CREATED" ? "Reprendre la démarche" : "Voir le dossier";
 
   return (
     <Link href={`/folders/${folder.id}`}>
-      <Card className="group rounded-xl border-border bg-card shadow-none transition-all hover:border-brand-green-light/40 hover:shadow-sm">
+      <Card className="group rounded-sm border-border bg-card shadow-none transition-all hover:border-brand-green-light/40 hover:shadow-sm">
         <CardContent className="p-3">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             {/* Folder's Information */}
@@ -155,29 +154,23 @@ export function FolderCard({ folder }: { folder: FolderType }) {
 export function EmptyFolders() {
   return (
     <div className="flex min-h-90 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-12 text-center">
-      <div className="mb-5 flex size-14 items-center justify-center rounded-full bg-brand-green-soft">
-        <FolderPlus
-          className="size-6 text-brand-green"
-          strokeWidth={1.8}
-        />
+      <div className="mb-5 flex size-18 items-center justify-center rounded-full bg-brand-green-soft">
+        <FolderPlus className="size-10 text-brand-green" strokeWidth={1.8} />
       </div>
 
-      <h2 className="font-heading text-2xl font-semibold text-brand-ink">
+      <h2 className="font-heading text-3xl font-semibold text-brand-ink">
         Aucun dossier pour le moment
       </h2>
 
-      <p className="mt-2 max-w-md text-sm leading-6 text-brand-ink-muted">
-        Vous n&apos;avez pas encore de dossier. Commencez une démarche
-        pour créer votre premier dossier.
+      <p className="mt-2 max-w-md leading-6 text-brand-ink-muted">
+        Vous n&apos;avez pas encore de dossier. Commencez une démarche pour
+        créer votre premier dossier.
       </p>
 
-      <Button
-        type="button"
-        className="btn btn-primary mt-6"
-      >
+      <Link href="/categories" className="btn btn-primary text-base mt-6">
         Créer un dossier
-        <ArrowRight className="size-4" />
-      </Button>
+        <Plus className="size-5" />
+      </Link>
     </div>
-  )
+  );
 }

@@ -36,8 +36,6 @@ export function FoldersError({ onRetry }: FolderErrorProps) {
   );
 }
 
-
-
 export function FolderDetailsError({
   onRetry,
 }: FolderErrorProps) {

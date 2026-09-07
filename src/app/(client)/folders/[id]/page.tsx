@@ -1,9 +1,7 @@
 import { FolderServices } from "@/services/folders.service";
 import { getSession } from "@/lib/session";
-import PendingFolder from "./PendingFolder";
 import { notFound } from "next/navigation";
 import { FolderType } from "../types/types";
-import { questionServices } from "@/services/question.service";
 import FolderDetailsPage from "../_components/layout/FolderDetails";
 
 export default async function page({
@@ -21,16 +19,10 @@ export default async function page({
   if (!folder) {
     notFound();
   }
-  const answers = await questionServices.getAnswers(folder.id);
 
   return (
     <div className="w-full ">
-      {folder.status === "CREATED" ? (
-        // <FolderDetail folder={folder} userId={userId} />
-        <FolderDetailsPage id={id} userId={userId} />
-      ) : (
-        <PendingFolder folder={folder} userId={userId} />
-      )}
+      <FolderDetailsPage id={id} userId={userId} />
     </div>
   );
 }

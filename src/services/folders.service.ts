@@ -8,10 +8,26 @@ export const FolderServices = {
         userId: userId,
       },
       include: {
-        procedure: true,
+        procedure: {
+          include: {
+            category: true,
+          },
+        },
         location: true,
         progression: true,
-        process: true,
+        process: {
+          include: {
+            steps: {
+              include: {
+                administrativeBody: true,
+
+                documents: true,
+
+                fraudAlerts: true,
+              },
+            },
+          },
+        },
       },
     });
   },
