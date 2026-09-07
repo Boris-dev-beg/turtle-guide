@@ -1,15 +1,34 @@
 "use client";
-import { getFolders, updateFolderStatus } from "@/lib/folder.action";
+import { getFolder, getFolders, updateFolderStatus } from "@/lib/folder.action";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useFolder(userId: string) {
+export function useFolder(userId: string, id?: string) {
   const queryClient = useQueryClient();
-  // ! Get user's folders
+  const folderId = id ?? "";
 
-  const { data: folders, isLoading, isError,refetch } = useQuery({
+  // ! Get user's folders
+  const {
+    data: folders,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ["folders", userId],
-    queryFn: async () => await getFolders(userId as string),
+    queryFn: async () => await getFolders(userId),
     enabled: !!userId,
+  });
+
+  // ! Get One folder
+  const {
+    data: folder,
+    isLoading: folderIsLoading,
+    isError: folderIsError,
+    error: folderError,
+    refetch: folderRefetch,
+  } = useQuery({
+    queryKey: ["folder", userId, folderId],
+    queryFn: async () => await getFolder(folderId, userId),
+    enabled: !!userId && !!folderId,
   });
 
   // ! Update folder's status
@@ -29,13 +48,18 @@ export function useFolder(userId: string) {
     },
   });
 
-  console.log("Folders (server):", folders);
-
   return {
     folders,
+    folder,
+
     isLoading,
     isError,
     refetch,
+    folderIsLoading,
+    folderIsError,
+    folderError,
+    folderRefetch,
+
     updateStatus,
   };
 }

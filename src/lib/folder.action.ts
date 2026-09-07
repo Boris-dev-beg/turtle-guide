@@ -37,9 +37,14 @@ export async function createOrGetFolderAction({
   return newFolder;
 }
 
-// ! GET Folder
+// ! GET Folders
 export async function getFolders(userId: string) {
   return await FolderServices.getAll(userId);
+}
+
+// ! GET one folder
+export async function getFolder(id: string, userId: string) {
+  return await FolderServices.getOneFolder(id, userId);
 }
 
 // ! UPDATE folder status
