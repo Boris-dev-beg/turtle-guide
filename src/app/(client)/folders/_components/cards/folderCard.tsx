@@ -1,82 +1,183 @@
-import { ChevronRight, FileText, MapPin } from "lucide-react"; 
-import Link from "next/link"; 
-import { FolderType } from "../../types/types"; 
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  ArrowRight,
+  BriefcaseBusiness,
+  CheckCircle2,
+  Clock3,
+  FileText,
+  FolderOpen,
+  FolderPlus,
+} from "lucide-react";
+import { FolderType } from "../../types/types";
+import { Badge } from "@/components/ui/badge";
+import { FolderStatus } from "@/generated/prisma/enums";
+import Link from "next/link";
 
-export default function FolderCard({ folder }: { folder: FolderType }) { 
-  const status = folder.status; 
-  const { label, dateLabel } = getFolderStatus(folder); 
-  return ( 
-    <Link 
-      href={`/folders/${folder.id}`} 
-      className="group flex gap-4 p-2 items-center turtle-radio active:scale-95" 
-    > 
-      <span className="p-2 bg-primary/10 rounded-sm text-primary"> 
-        <FileText className="size-7" /> 
-      </span> 
-      <span className="w-full"> 
-        <h1 className="text-lg font-bold">{folder.name}</h1> 
-        <p className="text-muted-foreground">{folder.procedure.title}</p> 
-        <p className="text-muted-foreground flex gap-1 items-center text-sm"> 
-          {folder.location?.city && ( 
-            <> 
-              <MapPin className="size-4" /> 
-              {folder.location?.city} 
-            </> 
-          )} 
-        </p> 
-      </span> 
-      <span className="w-fit flex flex-col text-nowrap md:mr-4"> 
-        <p 
-          className={`px-2.5 py-1.5 text-sm rounded-full w-fit ${status === "CREATED" ? "bg-orange-500/10 text-orange-400" : status === "PENDING" ? "bg-brand-blue-bg text-brand-blue" : status === "ENDED" ? "bg-primary/10 text-primary" : "text-gray-500 bg-gray-100"}`} 
-        > 
-          {label} 
-        </p> 
-        <p className="text-sm text-muted-foreground"> 
-          {dateLabel}{" "} 
-          {folder.updatedAt.toLocaleDateString("fr-FR", { 
-            day: "2-digit", 
-            month: "short", 
-            year: "numeric", 
-          })} 
-        </p> 
-      </span> 
-      <span className="group-hover:bg-muted-foreground/10 text-muted-foreground p-1 rounded-full"> 
-        <ChevronRight className="sieze-5" /> 
-      </span> 
-    </Link> 
-  ); 
-} 
+const formatDateTime = (date: Date) => {
+  return new Intl.DateTimeFormat("fr-FR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  }).format(date);
+};
 
-const getFolderStatus = (folder: FolderType) => { 
-  switch (folder.status) { 
-    case "CREATED": 
-      return { 
-        label: "En cours", 
-        dateLabel: "Mis à jour le", 
-      }; 
+const statusConfig: Record<
+  FolderStatus,
+  {
+    label: string;
+    className: string;
+    icon: typeof Clock3;
+  }
+> = {
+  CREATED: {
+    label: "À commencer",
+    className: "border-brand-info/20 bg-brand-info-bg text-brand-info",
+    icon: FileText,
+  },
 
-    case "PENDING": 
-      return { 
-        label: "En attente", 
-        dateLabel: "Mis à jour le", 
-      }; 
+  PENDING: {
+    label: "En cours",
+    className:
+      "border-brand-green/20 bg-brand-green-soft text-brand-green-dark",
+    icon: Clock3,
+  },
 
-    case "ENDED": 
-      return { 
-        label: "Terminé", 
-        dateLabel: "Terminé le", 
-      }; 
+  ENDED: {
+    label: "Terminé",
+    className:
+      "border-brand-green/20 bg-brand-green-soft text-brand-green-dark",
+    icon: CheckCircle2,
+  },
 
-    case "CLOSED": 
-      return { 
-        label: "Archivé", 
-        dateLabel: "Archivé le", 
-      }; 
+  CLOSED: {
+    label: "Fermé",
+    className: "border-border bg-muted text-muted-foreground",
+    icon: FolderOpen,
+  },
+};
 
-    default: 
-      return { 
-        label: folder.status, 
-        dateLabel: "Mis à jour le", 
-      }; 
-  } 
-}; 
+function FolderStatusBadge({ status }: { status: FolderStatus }) {
+  const config = statusConfig[status];
+  const Icon = config.icon;
+
+  return (
+    <Badge
+      variant="outline"
+      className={`gap-1.5 rounded-full px-2.5 py-1 text-sm font-semibold ${config.className} h-6`}
+    >
+      <Icon className="size-6" />
+      {config.label}
+    </Badge>
+  );
+}
+
+export function FolderCard({ folder }: { folder: FolderType }) {
+  const isFinished = folder.status === "ENDED" || folder.status === "CLOSED";
+
+  const actionLabel =
+    folder.status === "PENDING" || folder.status === "CREATED"
+      ? "Reprendre la démarche"
+      : "Voir le dossier";
+
+  return (
+    <Link href={`/folders/${folder.id}`}>
+      <Card className="group rounded-xl border-border bg-card shadow-none transition-all hover:border-brand-green-light/40 hover:shadow-sm">
+        <CardContent className="p-3">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+            {/* Folder's Information */}
+            <div className="flex min-w-0 gap-4">
+              <div className="flex size-13 sm:size-15 shrink-0 items-center justify-center rounded-full bg-brand-green-soft text-brand-green">
+                <BriefcaseBusiness className="size-7 sm:size-9" />
+              </div>
+
+              <div className="min-w-0">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h2 className="font-heading text-xl sm:text-2xl font-semibold text-brand-ink">
+                    {folder.name}
+                  </h2>
+
+                  <FolderStatusBadge status={folder.status} />
+                </div>
+
+                <p className="max-sm:mt-1 text-sm sm:text-base text-brand-ink-muted">
+                  {folder.procedure.title}
+                </p>
+
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-brand-ink-muted">
+                  <span>Créé le {formatDateTime(folder.createdAt)}</span>
+
+                  <span aria-hidden="true" className="hidden sm:inline">
+                    •
+                  </span>
+
+                  <span>Mis à jour le {formatDateTime(folder.updatedAt)}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action */}
+            <Button
+              variant="outline"
+              className="shrink-0 gap-2 border-border bg-card text-sm md:text-base font-semibold hover:border-brand-green-light/40 hover:bg-brand-green-soft py-5 px-3 cursor-pointer"
+            >
+              {actionLabel}
+              <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
+            </Button>
+          </div>
+
+          {isFinished && (
+            <div className="mt-5 border-t border-border pt-4">
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-brand-ink-muted">Démarche terminée</span>
+
+                <span className="font-semibold text-brand-green-text">
+                  100%
+                </span>
+              </div>
+
+              <div className="mt-2 turtle-progress-track">
+                <div
+                  className="turtle-progress-fill"
+                  style={{ width: "100%" }}
+                />
+              </div>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </Link>
+  );
+}
+
+export function EmptyFolders() {
+  return (
+    <div className="flex min-h-90 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-12 text-center">
+      <div className="mb-5 flex size-14 items-center justify-center rounded-full bg-brand-green-soft">
+        <FolderPlus
+          className="size-6 text-brand-green"
+          strokeWidth={1.8}
+        />
+      </div>
+
+      <h2 className="font-heading text-2xl font-semibold text-brand-ink">
+        Aucun dossier pour le moment
+      </h2>
+
+      <p className="mt-2 max-w-md text-sm leading-6 text-brand-ink-muted">
+        Vous n&apos;avez pas encore de dossier. Commencez une démarche
+        pour créer votre premier dossier.
+      </p>
+
+      <Button
+        type="button"
+        className="btn btn-primary mt-6"
+      >
+        Créer un dossier
+        <ArrowRight className="size-4" />
+      </Button>
+    </div>
+  )
+}

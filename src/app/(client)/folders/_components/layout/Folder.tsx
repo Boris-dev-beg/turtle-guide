@@ -5,7 +5,7 @@ import { InputDemo } from "@/components/shared/inputs";
 import { BackToHome } from "@/components/shared/links";
 
 import { FileText, Plus, PlusCircle } from "lucide-react";
-import FolderCard from "../cards/folderCard";
+import FolderCard from "../cards/folderCard_";
 import { FolderType } from "../../types/types";
 import Link from "next/link";
 // import { useFolderStore } from "@/store/folder.store";
