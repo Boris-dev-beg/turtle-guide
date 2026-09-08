@@ -2,12 +2,11 @@ import {
   ArrowRight,
   Building2,
   Check,
-  ClipboardCheck,
   FileText,
   ShieldAlert,
 } from "lucide-react";
 import { Step } from "../../types/types";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 
 export function ProcesSteps({
@@ -23,7 +22,7 @@ export function ProcesSteps({
   currentStep: Step | undefined;
 }) {
   return (
-    <Card className="turtle-card">
+    <div>
       <CardHeader className="px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
         <CardTitle className="text-2xl md:text-3xl font-semibold text-brand-ink">
           Étapes de la démarche
@@ -171,30 +170,25 @@ export function ProcesSteps({
           </div>
         )}
       </CardContent>
-    </Card>
+    </div>
   );
 }
 
 export function DiagnosticIncomplete() {
   return (
-    <div className="mb-6 rounded-xl border border-brand-green/20 bg-brand-green-soft/30 p-5 sm:p-6">
-      <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex gap-4">
-          <div className="flex size-11 shrink-0 items-center justify-center rounded-full bg-brand-green-soft">
-            <ClipboardCheck className="size-9 text-brand-green" />
-          </div>
-
+    <div className="mb-6 rounded-sm border border-brand-green/10 bg-brand-green-soft/20 p-5 sm:p-6">
+      <div className="flex flex-col gap-5 items-center justify-between">
+        
           <div className="min-w-0">
-            <h2 className="font-heading text-lg md:text-xl font-semibold text-brand-ink">
+            <h2 className="font-heading text-xl md:text-2xl font-semibold text-brand-ink text-center">
               Votre diagnostic n&apos;est pas terminé
             </h2>
 
-            <p className="mt-1 max-w-2xl text-base leading-6 text-brand-ink-muted">
+            <p className="mt-1 max-w-2xl text-base leading-6 text-brand-ink-muted text-center">
               Il reste quelques questions à compléter avant de pouvoir
               déterminer précisément les étapes de votre démarche.
             </p>
           </div>
-        </div>
 
         <button type="button" className="btn btn-primary rounded-sm py-3 text-base shrink-0">
           Reprendre le diagnostic

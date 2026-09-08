@@ -4,11 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-
-/* =========================================================
-   FONTS
-   ========================================================= */
-
 @font-face {
   font-family: "Manrope";
   src: url("/manrope.ttf") format("TrueType");
@@ -29,19 +24,9 @@
 
 
 @theme inline {
-
-  /* =========================================================
-     TYPOGRAPHY
-     ========================================================= */
-
   --font-body: "Manrope";
   --font-heading: "Newsreader";
   --font-data: "PlexMono";
-
-
-  /* =========================================================
-     SHADCN / SEMANTIC COLORS
-     ========================================================= */
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -86,11 +71,6 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
-
-  /* =========================================================
-     BRAND / TURTLEGUIDE
-     ========================================================= */
-
   --color-brand-green-text: var(--brand-green-text);
 
   --color-brand-green: var(--brand-green);
@@ -113,10 +93,6 @@
   --color-brand-info: var(--brand-info);
   --color-brand-info-bg: var(--brand-info-bg);
 
-  /* =========================================================
-     RADIUS
-     ========================================================= */
-
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -127,17 +103,7 @@
   --radius-4xl: calc(var(--radius) * 2.6);
 }
 
-
-/* =========================================================
-   LIGHT THEME
-   ========================================================= */
-
 :root {
-
-  /* ---------------------------------------------------------
-     Base
-     --------------------------------------------------------- */
-
   --background: #f8f9f6;
   --foreground: #172033;
 
@@ -147,59 +113,24 @@
   --popover: #ffffff;
   --popover-foreground: #172033;
 
-
-  /* ---------------------------------------------------------
-     Primary
-     --------------------------------------------------------- */
-
   --primary: #086b56;
   --primary-foreground: #ffffff;
-
-
-  /* ---------------------------------------------------------
-     Secondary
-     --------------------------------------------------------- */
 
   --secondary: #edf3f0;
   --secondary-foreground: #064b3b;
 
-
-  /* ---------------------------------------------------------
-     Muted
-     --------------------------------------------------------- */
-
   --muted: #f1f4f2;
   --muted-foreground: #607087;
-
-
-  /* ---------------------------------------------------------
-     Accent
-     --------------------------------------------------------- */
 
   --accent: #e5f1eb;
   --accent-foreground: #064b3b;
 
-
-  /* ---------------------------------------------------------
-     Destructive
-     --------------------------------------------------------- */
-
   --destructive: #c9674b;
   --destructive-foreground: #ffffff;
-
-
-  /* ---------------------------------------------------------
-     Borders / inputs
-     --------------------------------------------------------- */
 
   --border: #dce4df;
   --input: #dce4df;
   --ring: #086b56;
-
-
-  /* ---------------------------------------------------------
-     Charts
-     --------------------------------------------------------- */
 
   --chart-1: #086b56;
   --chart-2: #3982c6;
@@ -207,17 +138,7 @@
   --chart-4: #c9674b;
   --chart-5: #607087;
 
-
-  /* ---------------------------------------------------------
-     Radius
-     --------------------------------------------------------- */
-
   --radius: 0.75rem;
-
-
-  /* ---------------------------------------------------------
-     Sidebar
-     --------------------------------------------------------- */
 
   --sidebar: #ffffff;
   --sidebar-foreground: #172033;
@@ -231,11 +152,6 @@
   --sidebar-border: #dce4df;
   --sidebar-ring: #086b56;
 
-
-  /* =========================================================
-     TURTLEGUIDE BRAND
-     ========================================================= */
-
   --brand-green-text: #086b56;
 
   --brand-green: #086b56;
@@ -243,52 +159,23 @@
   --brand-green-light: #16856d;
   --brand-green-soft: #e5f1eb;
 
-
-  /* ---------------------------------------------------------
-     Typography colors
-     --------------------------------------------------------- */
-
   --brand-ink: #172033;
   --brand-ink-muted: #607087;
-
-
-  /* ---------------------------------------------------------
-     Warm surfaces
-     --------------------------------------------------------- */
 
   --brand-cream: #f8f9f6;
   --brand-beige: #f5f1e8;
 
-
-  /* ---------------------------------------------------------
-     Attention
-     --------------------------------------------------------- */
-
   --brand-yellow: #e5b94a;
   --brand-yellow-bg: #fff8e8;
 
-
-  /* ---------------------------------------------------------
-     Danger
-     --------------------------------------------------------- */
-
   --brand-danger: #c9674b;
   --brand-danger-bg: #fff0ed;
-
-
-  /* ---------------------------------------------------------
-     Information
-     --------------------------------------------------------- */
 
   --brand-info: #3982c6;
   --brand-info-bg: #edf5fb;
 
 }
 
-
-/* =========================================================
-   DARK THEME
-   ========================================================= */
 
 .dark {
 
@@ -340,10 +227,6 @@
 }
 
 
-/* =========================================================
-   BASE
-   ========================================================= */
-
 @layer base {
 
   * {
@@ -364,18 +247,12 @@
 }
 
 
-/* =========================================================
-   TURTLEGUIDE COMPONENTS
-   ========================================================= */
-
 @layer components {
 
-  /* =======================================================
-     BUTTONS
-     ======================================================= */
+  /* ! ---- BUTTONS ---- */
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold rounded-lg transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold rounded-sm transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
@@ -386,9 +263,7 @@
     @apply border border-border bg-card text-foreground hover:bg-muted hover:border-brand-green-light/40;
   }
 
-  /* =======================================================
-     DESTRUCTIVE
-     ======================================================= */
+  /* ! ---- DESTRUCTIVE ---- */
 
   .btn-destructive {
     @apply bg-destructive text-white hover:bg-destructive/90 shadow-sm;
@@ -400,21 +275,17 @@
   }
 
 
-  /* =======================================================
-     CARDS
-     ======================================================= */
+  /* ! ---- CARDS ---- */
 
   .turtle-card {
-    @apply bg-card border border-border rounded-xl p-5 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
+    @apply bg-card border border-border rounded-sm p-5 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
   }
 
 
-  /* =======================================================
-     RADIO / ANSWERS
-     ======================================================= */
+  /* ! ---- RADIO / ANSWERS ---- */
 
   .turtle-radio {
-    @apply flex items-center justify-between p-4 border border-border rounded-lg cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
+    @apply flex items-center justify-between p-4 border border-border rounded-sm cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
   }
 
 
@@ -423,18 +294,14 @@
   }
 
 
-  /* =======================================================
-     INFORMATION ALERT
-     ======================================================= */
+  /* ! ---- INFOs ALERT ---- */
 
   .turtle-alert-info {
-    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-xl text-foreground;
+    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-sm text-foreground;
   }
 
 
-  /* =======================================================
-     STEPS
-     ======================================================= */
+  /* ! ---- STEPS ---- */
 
   .turtle-step {
     @apply flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0;
@@ -451,9 +318,7 @@
   }
 
 
-  /* =======================================================
-     PROGRESS
-     ======================================================= */
+  /* ! ---- PROGRESS ---- */
 
   .turtle-progress-track {
     @apply w-full bg-muted h-2 rounded-full overflow-hidden;
@@ -465,9 +330,7 @@
   }
 
 
-  /* =======================================================
-     LAYOUT
-     ======================================================= */
+  /* ! ---- LAYOUT ---- */
 
   .wrapper {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;

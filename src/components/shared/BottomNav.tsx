@@ -9,7 +9,7 @@ export default function BottomNav() {
 
   return ( 
     <footer className="fixed inset-x-0 bottom-0 z-50 px-3 pb-3 md:hidden"> 
-      <nav className="mx-auto grid h-16 max-w-md grid-cols-3 items-center rounded-2xl bg-secondary/95 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.15)] backdrop-blur-xl"> 
+      <nav className="mx-auto grid h-16 max-w-md grid-cols-4 items-center rounded-2xl bg-secondary/95 p-1.5 shadow-[0_8px_30px_rgba(0,0,0,0.15)] backdrop-blur-xl"> 
         {links.map((link, index) => ( 
           <Link_ 
             key={index} 

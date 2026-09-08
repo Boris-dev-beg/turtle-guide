@@ -153,7 +153,7 @@ const FirstSide = ({ procedure }: { procedure: string }) => {
       </div>
 
       {/* Steps Taken */}
-      <div className="flex flex-col gap-3">
+      <div className="hidden md:flex flex-col gap-3">
         <h1 className="text-muted-foreground flex items-center gap-2 text-sm font-semibold">
           <Link2 className="size-4 text-primary" /> Étapes parcourues
         </h1>

@@ -6,12 +6,10 @@ import {
   ArrowRight,
   Building2,
   CalendarDays,
-  Check,
   ChevronDown,
   Clock3,
   FileText,
   Flag,
-  Info,
   Loader2,
   LucideIcon,
   MapPin,
@@ -48,7 +46,7 @@ const statusConfig: Record<
   }
 > = {
   CREATED: {
-    label: "Créé",
+    label: "Commencé",
     className: "border-blue-200 bg-blue-50 text-blue-700",
   },
 
@@ -84,9 +82,9 @@ function FolderStatusBadge({ status }: { status: FolderStatus }) {
   return (
     <Badge
       variant="outline"
-      className={`rounded-full p-3 font-medium text-sm ${config.className}`}
+      className={`p-3 font-medium text-sm ${config.className}`}
     >
-      <span className="mr-1.5 size-2 rounded-full bg-current" />
+      <span className="size-2 rounded-full bg-current" />
       {config.label}
     </Badge>
   );
@@ -169,7 +167,7 @@ export default function FolderDetailsPage({
 
             <div className="min-w-0">
               <div className="mb-1 flex flex-wrap items-center gap-2">
-                <h1 className="text-3xl font-semibold tracking-tight text-brand-ink sm:text-4xl">
+                <h1 className="text-4xl font-semibold tracking-tight text-brand-ink">
                   {folder.name}
                 </h1>
 
@@ -184,7 +182,7 @@ export default function FolderDetailsPage({
                 <span>Mis à jour le {formatDate(folder.updatedAt)}</span>
               </div>
 
-              <p className="mt-1 max-w-3xl text-sm leading-6 text-brand-ink-muted sm:text-base">
+              <p className="mt-1 max-w-3xl leading-6 text-brand-ink-muted">
                 {folder.procedure.description}
               </p>
             </div>
@@ -198,10 +196,10 @@ export default function FolderDetailsPage({
               <ChevronDown className="size-5" />
             </DropdownMenuTrigger>
 
-            <DropdownMenuContent align="end" className="w-56 *:text-base">
+            <DropdownMenuContent align="end" className="w-60 *:text-base">
               {folder.status === "PENDING" && (
                 <DropdownMenuItem>
-                  <Link href="/categories" className="flex gap-2">
+                  <Link href="/categories" className="btn flex gap-2">
                     <RefreshCcw className="size-5" />
                     Reprendre la démarche
                   </Link>
@@ -210,19 +208,22 @@ export default function FolderDetailsPage({
 
               {folder.status === "CREATED" && (
                 <DropdownMenuItem>
-                  <Link href="/categories" className="gap-2 flex ">
+                  <Link href="/categories" className="btn gap-2 flex ">
                     <Play className="size-5" />
                     Continuer le diagnostic
                   </Link>
                 </DropdownMenuItem>
               )}
 
-              <DropdownMenuItem className="gap-2 text-destructive font-medium">
+              <DropdownMenuItem
+                variant="destructive"
+                className="gap-2 text-destructive font-medium"
+              >
                 <button
                   type="button"
                   onClick={handleDelete}
                   disabled={isDeleting}
-                  className="btn btn-destructive-outline hover:bg-card hover:text-destructive! disabled:cursor-not-allowed disabled:opacity-60"
+                  className="btn hover:text-destructive! disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {isDeleting ? (
                     <>
@@ -243,20 +244,22 @@ export default function FolderDetailsPage({
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-5 turtle-card shadow-none hover:border-border">
           {/*  Steps */}
           <ProcesSteps process={folder.process} currentStep={currentStep} />
 
           {/* Infos */}
-          <ProcessInfos folder={folder} currentStep={currentStep} />
+          {folder.process?.steps && (
+            <ProcessInfos folder={folder} currentStep={currentStep} />
+          )}
 
-          <div className="turtle-alert-info w-fit">
-            <Info className="size-7 shrink-0 text-brand-info" />
-
+          <div className="turtle-alert-info border-brand-info/50 w-fit">
             <div>
-              <p className="font-semibold text-brand-ink">Bon à savoir</p>
+              <p className="font-semibold text-brand-ink text-lg">
+                Bon à savoir
+              </p>
 
-              <p className="mt-1 text-sm leading-5 text-brand-ink-muted sm:text-sm">
+              <p className="mt-1 leading-5 text-brand-ink-muted sm:text-sm">
                 Vérifiez toujours les informations et les documents demandés
                 avant de vous déplacer auprès de l&apos;administration.
               </p>
@@ -264,9 +267,9 @@ export default function FolderDetailsPage({
           </div>
         </div>
 
-        <aside className="min-w-0 space-y-5">
+        <aside className="min-w-0 space-y-5 turtle-card shadow-none hover:border-border">
           {currentStep && (
-            <Card className="turtle-card">
+            <Card className="border-none shadow-none ring-0">
               <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
                 <CardTitle className="flex items-center gap-3 text-lg text-brand-ink">
                   <span className="flex size-9 items-center justify-center rounded-full bg-brand-green-soft">
@@ -293,17 +296,14 @@ export default function FolderDetailsPage({
             </Card>
           )}
 
-          <Card className="turtle-card">
+          <Card className="p-0 border-none shadow-none ring-0">
             <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
               <CardTitle className="flex items-center justify-between gap-3 text-base text-brand-ink">
-                <span className="flex items-center gap-3 text-lg">
-                  <span className="flex size-9 items-center justify-center rounded-full bg-brand-green-soft">
-                    <FileText className="size-6 text-brand-green" />
-                  </span>
+                <h2 className="flex items-center gap-3 text-lg">
                   Documents requis
-                </span>
+                </h2>
 
-                <span className="text-sm font-medium text-brand-green">
+                <span className="text-base font-medium text-brand-green">
                   {folder.process?.steps.reduce(
                     (total, step) => total + step.documents.length,
                     0,
@@ -320,52 +320,52 @@ export default function FolderDetailsPage({
                     key={document.id}
                     className="flex items-start gap-3 rounded-lg border border-border p-3"
                   >
-                    <div className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded border border-brand-green bg-brand-green">
-                      <Check className="size-5 text-white" />
+                    <div className="flex shrink-0 items-center justify-center">
+                      <FileText className="size-8 text-brand-green" />
                     </div>
 
                     <div className="min-w-0">
-                      <p className="text-base font-medium leading-5 text-brand-ink">
+                      <p className="text-lg font-medium leading-5 text-brand-ink">
                         {document.name}
                       </p>
 
-                      <p className="mt-0.5 text-sm text-brand-ink-muted">
+                      <p className="text-brand-ink-muted">
                         {document.price.toString()}
                       </p>
                     </div>
                   </div>
-                ))}
+                )) ?? (
+                <p className="text-base font-medium text-brand-ink px-3">
+                  Pas de documents disponibles
+                </p>
+              )}
             </CardContent>
           </Card>
 
-          <Card className="border-brand-green/20 bg-brand-green-soft/40 shadow-none">
+          <div className="border-brand-green/20 border bg-brand-green-soft/40 rounded-sm">
             <CardContent className="p-5">
               <div className="flex gap-3">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-card">
-                  <Info className="size-6 text-brand-green" />
-                </div>
-
                 <div>
-                  <h3 className="text-base font-semibold text-brand-green-dark">
+                  <h3 className="text-lg font-semibold text-brand-green-dark">
                     Besoin d&apos;aide ?
                   </h3>
 
-                  <p className="mt-1 text-sm leading-5 text-brand-ink-muted">
+                  <p className="mt-1 leading-5 text-brand-ink-muted text-base">
                     Consultez notre centre d&apos;aide ou contactez notre équipe
                     si vous avez besoin d&apos;assistance.
                   </p>
 
                   <Button
                     variant="outline"
-                    className="mt-3 h-9 rounded-sm border-brand-green/30 bg-card text-sm text-brand-green hover:bg-brand-green-soft"
+                    className="mt-3 h-10 rounded-sm border-brand-green/30 bg-card text-base text-brand-green hover:bg-brand-green-soft"
                   >
                     Voir l&apos;aide et le support
-                    <ArrowRight className="size-4" />
+                    <ArrowRight className="size-5" />
                   </Button>
                 </div>
               </div>
             </CardContent>
-          </Card>
+          </div>
         </aside>
       </div>
     </main>
@@ -380,9 +380,9 @@ const ProcessInfos = ({
   currentStep?: Step;
 }) => {
   return (
-    <Card className="turtle-card">
+    <div>
       <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
-        <CardTitle className="text-xl sm:text-2xl text-brand-ink">
+        <CardTitle className="text-2xl sm:text-3xl text-brand-ink">
           Informations sur la démarche
         </CardTitle>
       </CardHeader>
@@ -445,7 +445,7 @@ const ProcessInfos = ({
           value={folder.procedure.legalBasis}
         />
       </CardContent>
-    </Card>
+    </div>
   );
 };
 
@@ -460,14 +460,14 @@ function InfoItem({
 }) {
   return (
     <div className="flex min-w-0 gap-3">
-      <div className="flex size-9 shrink-0 items-center justify-center rounded-full bg-brand-green-soft">
-        <Icon className="size-5 text-brand-green" />
+      <div className="flex size-12 shrink-0 items-center justify-center">
+        <Icon className="size-8 text-brand-green" />
       </div>
 
-      <div className="min-w-0">
-        <p className="text-sm text-brand-ink-muted">{label}</p>
+      <div className="min-w-0 leading-4">
+        <p className="text-brand-ink-muted">{label}</p>
 
-        <p className="mt-0.5 wrap-break-word text-base font-medium text-brand-ink">
+        <p className="mt-0.5 wrap-break-word text-lg font-medium text-brand-ink leading-6">
           {value}
         </p>
       </div>

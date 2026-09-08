@@ -34,7 +34,7 @@ const statusConfig: Record<
   }
 > = {
   CREATED: {
-    label: "À commencer",
+    label: "Commencer",
     className: "border-brand-info/20 bg-brand-info-bg text-brand-info",
     icon: FileText,
   },
@@ -62,14 +62,12 @@ const statusConfig: Record<
 
 function FolderStatusBadge({ status }: { status: FolderStatus }) {
   const config = statusConfig[status];
-  const Icon = config.icon;
 
   return (
     <Badge
       variant="outline"
       className={`gap-1.5 rounded-full px-2.5 py-1 text-sm font-semibold ${config.className} h-6`}
     >
-      <Icon className="size-6" />
       {config.label}
     </Badge>
   );
@@ -86,26 +84,27 @@ export function FolderCard({ folder }: { folder: FolderType }) {
       <Card className="group rounded-sm border-border bg-card shadow-none transition-all hover:border-brand-green-light/40 hover:shadow-sm">
         <CardContent className="p-3">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+
             {/* Folder's Information */}
             <div className="flex min-w-0 gap-4">
-              <div className="flex size-13 sm:size-15 shrink-0 items-center justify-center rounded-full bg-brand-green-soft text-brand-green">
-                <BriefcaseBusiness className="size-7 sm:size-9" />
+              <div className="hidden sm:flex size-15 shrink-0 items-center justify-center rounded-full bg-brand-green-soft text-brand-green">
+                <BriefcaseBusiness className="size-9" />
               </div>
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-heading text-xl sm:text-2xl font-semibold text-brand-ink">
+                  <h2 className="font-heading text-2xl font-semibold text-brand-ink">
                     {folder.name}
                   </h2>
 
                   <FolderStatusBadge status={folder.status} />
                 </div>
 
-                <p className="max-sm:mt-1 text-sm sm:text-base text-brand-ink-muted">
+                <p className="max-sm:mt-1 text-base text-brand-ink-muted">
                   {folder.procedure.title}
                 </p>
 
-                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-brand-ink-muted">
+                <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-brand-ink-muted leading-5">
                   <span>Créé le {formatDateTime(folder.createdAt)}</span>
 
                   <span aria-hidden="true" className="hidden sm:inline">
@@ -120,7 +119,7 @@ export function FolderCard({ folder }: { folder: FolderType }) {
             {/* Action */}
             <Button
               variant="outline"
-              className="shrink-0 gap-2 border-border bg-card text-sm md:text-base font-semibold hover:border-brand-green-light/40 hover:bg-brand-green-soft py-5 px-3 cursor-pointer"
+              className="shrink-0 gap-2 btn bg-card text-base font-semibold hover:border-brand-green-light/10 hover:bg-brand-green-soft/20 py-5 px-3 cursor-pointer"
             >
               {actionLabel}
               <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
