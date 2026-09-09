@@ -15,6 +15,7 @@ import { useEffect, useState } from "react";
 import { DiagnosticLoading } from "../cards/Loaders";
 import { QuestionsSide } from "../Questions/questionSide";
 import { useFolder } from "@/hooks/useFolder";
+import { DiagnosticError } from "../cards/Errors";
 
 type User = {
   id: string;
@@ -69,10 +70,13 @@ export default function Diagnostic({ user }: { user: User }) {
   const { procedure, category } = useFolderStore();
 
   const [isInitializing, setIsInitializing] = useState(true);
-  const [folder, setFolder] = useState<Result | null>(null);
-  const { createOrGetFolderAsync } = useFolder(
-    user.id,
+  const [initializationError, setInitializationError] = useState<Error | null>(
+    null,
   );
+  const [isRetrying, setIsRetrying] = useState(false);
+
+  const [folder, setFolder] = useState<Result | null>(null);
+  const { createOrGetFolderAsync } = useFolder(user.id);
 
   // ! Functions
   // ? Initialisation of te folder
@@ -115,6 +119,11 @@ export default function Diagnostic({ user }: { user: User }) {
         }
       } catch (error) {
         console.error("Erreur lors de l'initialisation du dossier :", error);
+        setInitializationError(
+          error instanceof Error
+            ? error
+            : new Error("Une erreur est survenue."),
+        );
       } finally {
         if (!cancelled) {
           setIsInitializing(false);
@@ -131,9 +140,38 @@ export default function Diagnostic({ user }: { user: User }) {
   const handleStartDiagnostic = () => {
     return null;
   };
+  const handleRetry = async () => {
+    if (!user.id || !procedure || !category) return;
+
+    try {
+      setIsRetrying(true);
+      setInitializationError(null);
+
+      const result = await createOrGetFolderAsync({
+        procedureName: procedure,
+        userId: user.id,
+        category,
+      });
+
+      setFolder(result.folder);
+    } catch (error) {
+      console.error("Erreur lors de la nouvelle tentative :", error);
+
+      setInitializationError(
+        error instanceof Error ? error : new Error("Une erreur est survenue."),
+      );
+    } finally {
+      setIsRetrying(false);
+    }
+  };
 
   // ! Render
+  // ? Loading
   if (isInitializing) return <DiagnosticLoading />;
+
+  // ? Error
+  if (initializationError)
+    return <DiagnosticError onRetry={handleRetry} isRetrying={isRetrying} />;
 
   return (
     <>

@@ -114,9 +114,6 @@ export function useFolder(userId: string, id?: string) {
 
     createOrGetFolder,
     createOrGetFolderAsync: createOrGetFolder.mutateAsync,
-    isCreatingOrGettingFolder: createOrGetFolder.isPending,
-    createOrGetFolderError: createOrGetFolder.error,
-    createOrGetFolderIsError: createOrGetFolder.isError,
 
     updateStatus,
     delFolder,
