@@ -34,7 +34,6 @@ import { FolderType, Step } from "../../types/types";
 import { FolderStatus } from "@/generated/prisma/enums";
 import { ProcesSteps } from "../cards/Steps";
 import { useRouter } from "next/navigation";
-import { deleteFolder } from "@/lib/folder.action";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -100,10 +99,8 @@ export default function FolderDetailsPage({
   // ! States
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
-  const { folder, folderIsLoading, folderIsError, folderRefetch } = useFolder(
-    userId,
-    id,
-  );
+  const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
+    useFolder(userId, id);
 
   // ! Loading
   if (folderIsLoading) {
@@ -123,13 +120,13 @@ export default function FolderDetailsPage({
 
   // ! Functions
 
-  const handleDelete = async () => {
+  const handleDelete = () => {
     if (isDeleting) return;
 
     try {
       setIsDeleting(true);
 
-      await deleteFolder(folder.id, userId);
+      delFolder.mutate({ id: folder.id, userId });
 
       toast.success("Dossier supprimé", {
         description: "Votre dossier a été supprimé avec succès.",

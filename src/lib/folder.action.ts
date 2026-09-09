@@ -13,28 +13,17 @@ export async function createOrGetFolderAction({
   userId: string;
   category: string;
 }) {
-  const folderExist = await FolderServices.getOne({
-    name: category,
-    userId,
-  });
-
-  if (folderExist) {
-    return folderExist;
-  }
-
   const procedure = await proceduresServices.getOne(procedureName);
 
   if (!procedure) {
     throw new Error("Procédure introuvable");
   }
 
-  const newFolder = await FolderServices.createFolder({
+  return await FolderServices.getOrCreateDiagnosticFolder({
     userId,
-    name: category,
     procedureId: procedure.id,
+    name: category,
   });
-
-  return newFolder;
 }
 
 // ! GET Folders

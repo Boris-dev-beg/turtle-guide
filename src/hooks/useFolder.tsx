@@ -1,12 +1,18 @@
 "use client";
-import { getFolder, getFolders, updateFolderStatus } from "@/lib/folder.action";
+import {
+  createOrGetFolderAction,
+  deleteFolder,
+  getFolder,
+  getFolders,
+  updateFolderStatus,
+} from "@/lib/folder.action";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export function useFolder(userId: string, id?: string) {
   const queryClient = useQueryClient();
   const folderId = id ?? "";
 
-  // ! Get user's folders
+  // ! Get user folders
   const {
     data: folders,
     isLoading,
@@ -31,6 +37,30 @@ export function useFolder(userId: string, id?: string) {
     enabled: !!userId && !!folderId,
   });
 
+  // ! Create or get folder
+  const createOrGetFolder = useMutation({
+    mutationFn: async (data: {
+      procedureName: string;
+      userId: string;
+      category: string;
+    }) => {
+      return await createOrGetFolderAction(data);
+    },
+
+    onSuccess: (result) => {
+      // ? Immediatly set the folder in the cache
+      queryClient.setQueryData(
+        ["folder", userId, result.folder.id],
+        result.folder
+      );
+
+      // ? Invalidate the list of folders
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+    },
+  });
+
   // ! Update folder's status
   const updateStatus = useMutation({
     mutationFn: async (data: {
@@ -41,7 +71,29 @@ export function useFolder(userId: string, id?: string) {
     }) => {
       return await updateFolderStatus(data);
     },
-    onSuccess: () => {
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+    },
+  });
+
+  // ! Delete folder
+  const delFolder = useMutation({
+    mutationFn: async (data: { userId: string; id: string }) => {
+      return await deleteFolder(data.id, data.userId);
+    },
+    onSuccess: (_, variables) => {
+      // ? Imediatly remove it in the cache
+      queryClient.removeQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+
+      // ? Invalidate the list of folders
       queryClient.invalidateQueries({
         queryKey: ["folders", userId],
       });
@@ -60,6 +112,8 @@ export function useFolder(userId: string, id?: string) {
     folderError,
     folderRefetch,
 
+    createOrGetFolder,
     updateStatus,
+    delFolder,
   };
 }

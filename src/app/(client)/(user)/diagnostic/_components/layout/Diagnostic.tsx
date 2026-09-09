@@ -3,8 +3,6 @@
 import { HelpBox } from "@/app/(client)/(user)/diagnostic/_components/cards/HelpBox";
 import { Back } from "@/components/shared/links";
 import { FolderStatus } from "@/generated/prisma/enums";
-// import { CreateFolder } from "@/lib/folder";
-import { createOrGetFolderAction } from "@/lib/folder.action";
 import { useFolderStore } from "@/store/folder.store";
 import {
   ArrowUpRightFromSquare,
@@ -13,9 +11,10 @@ import {
   Link2,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import DiagnosticSkeleton from "../cards/DiagnosticSkeleton";
 import { QuestionsSide } from "../Questions/questionSide";
+import { useFolder } from "@/hooks/useFolder";
 
 type User = {
   id: string;
@@ -70,33 +69,62 @@ export default function Diagnostic({ user }: { user: User }) {
   const { procedure, category } = useFolderStore();
 
   const [folder, setFolder] = useState<Result | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
+  const {createOrGetFolder} = useFolder(user.id)
 
   // ! Functions
-  useEffect(() => {
-    if (!procedure || !category || !user.id) return;
+  // ? Initialisation of te folder
+  const handleStartDiagnostic = async () => {
+    if (!user.id || !procedure || !category) return;
 
-    const initializeFolder = async () => {
-      try {
-        setLoading(true);
+    try {
+      setLoading(true)
+      const result = await createOrGetFolder.mutateAsync({
+        procedureName: procedure,
+        userId: user.id,
+        category,
+      });
 
-        const result = await createOrGetFolderAction({
-          procedureName: procedure,
-          userId: user.id,
-          category,
-        });
+      setFolder(result.folder);
 
-        setFolder(result);
-        console.log("Creating folder result:", result);
-      } catch (error) {
-        console.error("Erreur lors de l'initialisation du dossier :", error);
-      } finally {
-        setLoading(false);
+      // ? If it's a new folder
+      if (result.status === "CREATED") {
+        console.log(
+          "Nouveau dossier créé :",
+          result.folder.id
+        );
+
+        return;
       }
-    };
 
-    initializeFolder();
-  }, [procedure, category, user.id]);
+      // ? If the folder already exist
+      if (result.status === "EXISTING_ACTIVE") {
+        console.log(
+          "Dossier actif récupéré :",
+          result.folder.id
+        );
+
+        return;
+      }
+
+      // ? If it's an old folder (status=="ENDED" || status=="CLOSED")
+      if (result.status === "EXISTING_COMPLETED") {
+        console.log(
+          "Ancien dossier trouvé :",
+          result.folder.id
+        );
+
+        return;
+      }
+    } catch (error) {
+      console.error(
+        "Erreur lors de l'initialisation du dossier :",
+        error
+      );
+    }finally{
+      setLoading(false)
+    }
+  };
 
   // ! Render
   if (loading) {
@@ -106,7 +134,7 @@ export default function Diagnostic({ user }: { user: User }) {
   return (
     <>
       {/* First Side */}
-      <FirstSide procedure={procedure} />
+      <FirstSide procedure={procedure} handleStartDiagnostic={handleStartDiagnostic} />
 
       {/* Question side */}
       <QuestionsSide userId={user.id} folderId={folder?.id || ""} />
@@ -133,11 +161,19 @@ export default function Diagnostic({ user }: { user: User }) {
   );
 }
 
-const FirstSide = ({ procedure }: { procedure: string }) => {
+const FirstSide = ({ procedure, handleStartDiagnostic }: { procedure: string, handleStartDiagnostic:()=>void }) => {
   return (
     <div className="h-fit lg:h-full w-full md:w-120 flex flex-col gap-4 py-4 px-2 border-r border-border bg-secondary/20 rounded-xl">
       {/* Back to home */}
       <Back href="/categories" />
+
+      <button
+          type="button"
+          onClick={handleStartDiagnostic}
+          className="btn btn-primary"
+        >
+          Commencer le diagnostic
+        </button>
 
       {/* Selected Procedure */}
       <div className="flex gap-3 items-start py-3 px-2 rounded-xl bg-background shadow-xs">

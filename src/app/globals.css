@@ -5,28 +5,20 @@
 @custom-variant dark (&:is(.dark *));
 
 @font-face {
-  font-family: "Manrope";
-  src: url("/manrope.ttf") format("TrueType");
+  font-family: "Inter";
+  src: url("/fonts/Inter.ttf") format("TrueType");
   font-display: swap;
 }
 
 @font-face {
-  font-family: "Newsreader";
-  src: url("/newsreader.ttf") format("TrueType");
+  font-family: "Spectral";
+  src: url("/fonts/Spectral.ttf") format("TrueType");
   font-display: swap;
 }
-
-@font-face {
-  font-family: "PlexMono";
-  src: url("/IBMPlexMono.ttf") format("TrueType");
-  font-display: swap;
-}
-
 
 @theme inline {
-  --font-body: "Manrope";
-  --font-heading: "Newsreader";
-  --font-data: "PlexMono";
+  --font-body: "Inter";
+  --font-heading: "Spectral";
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);

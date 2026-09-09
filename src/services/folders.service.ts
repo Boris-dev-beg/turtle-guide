@@ -1,5 +1,39 @@
 import { prisma } from "@/lib/prisma";
 
+// ! Possibles situtation
+export type DiagnosticFolderStatus =
+  | "CREATED"
+  | "EXISTING_ACTIVE"
+  | "EXISTING_COMPLETED";
+
+// ! Commun include
+const diagnosticFolderInclude = {
+  procedure: {
+    include: {
+      category: true,
+    },
+  },
+
+  location: true,
+
+  progression: true,
+
+  process: {
+    include: {
+      steps: {
+        include: {
+          administrativeBody: true,
+          documents: true,
+          fraudAlerts: true,
+        },
+      },
+    },
+  },
+} as const;
+
+// ! Active folder status
+const ACTIVE_FOLDER_STATUSES = ["CREATED", "PENDING"] as const;
+
 export const FolderServices = {
   // ! Get all folder
   async getAll(userId: string) {
@@ -32,19 +66,83 @@ export const FolderServices = {
     });
   },
 
-  // ! Get one folder by name
-  async getOne({ name, userId }: { name: string; userId: string }) {
-    return await prisma.folder.findFirst({
+  // ! Get or Create Folder
+  async getOrCreateDiagnosticFolder({
+    userId,
+    procedureId,
+    name,
+  }: {
+    userId: string;
+    procedureId: string;
+    name: string;
+  }) {
+
+    // ? Search active folder
+    const activeFolder = await prisma.folder.findFirst({
       where: {
-        name,
         userId,
+        procedureId,
+        status: {
+          in: [...ACTIVE_FOLDER_STATUSES],
+        },
       },
-      include: {
-        procedure: true,
-        location: true,
-        progression: true,
+
+      include: diagnosticFolderInclude,
+      orderBy: {
+        updatedAt: "desc",
       },
     });
+
+    // ? If active folder was found
+    if (activeFolder) {
+      return {
+        status: "EXISTING_ACTIVE" as const,
+        folder: activeFolder,
+      };
+    }
+
+    // ? ELSE: Search previous folder
+    const previousFolder = await prisma.folder.findFirst({
+      where: {
+        userId,
+        procedureId,
+        status: {
+          in: ["ENDED", "CLOSED"],
+        },
+      },
+
+      include: diagnosticFolderInclude,
+
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+
+    // ? Previous folder was found, return it.
+    if (previousFolder) {
+      return {
+        status: "EXISTING_COMPLETED" as const,
+        folder: previousFolder,
+      };
+    }
+
+    // ? ELSE: Create one folder
+    const newFolder = await prisma.folder.create({
+      data: {
+        userId,
+        procedureId,
+        name,
+        status: "CREATED",
+      },
+
+      include: diagnosticFolderInclude,
+    });
+
+   // ? Then return it
+    return {
+      status: "CREATED" as const,
+      folder: newFolder,
+    };
   },
 
   // ! Get one folder
