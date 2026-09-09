@@ -11,8 +11,8 @@ import {
   Link2,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import DiagnosticSkeleton from "../cards/DiagnosticSkeleton";
+import { useEffect, useState } from "react";
+import { DiagnosticLoading } from "../cards/Loaders";
 import { QuestionsSide } from "../Questions/questionSide";
 import { useFolder } from "@/hooks/useFolder";
 
@@ -68,73 +68,80 @@ export default function Diagnostic({ user }: { user: User }) {
   // ! states
   const { procedure, category } = useFolderStore();
 
+  const [isInitializing, setIsInitializing] = useState(true);
   const [folder, setFolder] = useState<Result | null>(null);
-  const [loading, setLoading] = useState(false);
-  const {createOrGetFolder} = useFolder(user.id)
+  const { createOrGetFolderAsync } = useFolder(
+    user.id,
+  );
 
   // ! Functions
   // ? Initialisation of te folder
-  const handleStartDiagnostic = async () => {
+  useEffect(() => {
     if (!user.id || !procedure || !category) return;
 
-    try {
-      setLoading(true)
-      const result = await createOrGetFolder.mutateAsync({
-        procedureName: procedure,
-        userId: user.id,
-        category,
-      });
+    let cancelled = false;
 
-      setFolder(result.folder);
+    const initializeFolder = async () => {
+      try {
+        const result = await createOrGetFolderAsync({
+          procedureName: procedure,
+          userId: user.id,
+          category,
+        });
 
-      // ? If it's a new folder
-      if (result.status === "CREATED") {
-        console.log(
-          "Nouveau dossier créé :",
-          result.folder.id
-        );
+        if (cancelled) return;
 
-        return;
+        setFolder(result.folder);
+
+        // ? Nouveau dossier
+        if (result.status === "CREATED") {
+          console.log("Nouveau dossier créé :", result.folder.id);
+
+          return;
+        }
+
+        // ? Dossier actif déjà existant
+        if (result.status === "EXISTING_ACTIVE") {
+          console.log("Dossier actif récupéré :", result.folder.id);
+
+          return;
+        }
+
+        // ? Ancien dossier trouvé
+        if (result.status === "EXISTING_COMPLETED") {
+          console.log("Ancien dossier trouvé :", result.folder.id);
+
+          return;
+        }
+      } catch (error) {
+        console.error("Erreur lors de l'initialisation du dossier :", error);
+      } finally {
+        if (!cancelled) {
+          setIsInitializing(false);
+        }
       }
+    };
 
-      // ? If the folder already exist
-      if (result.status === "EXISTING_ACTIVE") {
-        console.log(
-          "Dossier actif récupéré :",
-          result.folder.id
-        );
+    initializeFolder();
+    return () => {
+      cancelled = true;
+    };
+  }, [user.id, procedure, category, createOrGetFolderAsync]);
 
-        return;
-      }
-
-      // ? If it's an old folder (status=="ENDED" || status=="CLOSED")
-      if (result.status === "EXISTING_COMPLETED") {
-        console.log(
-          "Ancien dossier trouvé :",
-          result.folder.id
-        );
-
-        return;
-      }
-    } catch (error) {
-      console.error(
-        "Erreur lors de l'initialisation du dossier :",
-        error
-      );
-    }finally{
-      setLoading(false)
-    }
+  const handleStartDiagnostic = () => {
+    return null;
   };
 
   // ! Render
-  if (loading) {
-    return <DiagnosticSkeleton />;
-  }
+  if (isInitializing) return <DiagnosticLoading />;
 
   return (
     <>
       {/* First Side */}
-      <FirstSide procedure={procedure} handleStartDiagnostic={handleStartDiagnostic} />
+      <FirstSide
+        procedure={procedure}
+        handleStartDiagnostic={handleStartDiagnostic}
+      />
 
       {/* Question side */}
       <QuestionsSide userId={user.id} folderId={folder?.id || ""} />
@@ -161,19 +168,25 @@ export default function Diagnostic({ user }: { user: User }) {
   );
 }
 
-const FirstSide = ({ procedure, handleStartDiagnostic }: { procedure: string, handleStartDiagnostic:()=>void }) => {
+const FirstSide = ({
+  procedure,
+  handleStartDiagnostic,
+}: {
+  procedure: string;
+  handleStartDiagnostic: () => void;
+}) => {
   return (
     <div className="h-fit lg:h-full w-full md:w-120 flex flex-col gap-4 py-4 px-2 border-r border-border bg-secondary/20 rounded-xl">
       {/* Back to home */}
       <Back href="/categories" />
 
       <button
-          type="button"
-          onClick={handleStartDiagnostic}
-          className="btn btn-primary"
-        >
-          Commencer le diagnostic
-        </button>
+        type="button"
+        onClick={handleStartDiagnostic}
+        className="btn btn-primary"
+      >
+        Commencer le diagnostic
+      </button>
 
       {/* Selected Procedure */}
       <div className="flex gap-3 items-start py-3 px-2 rounded-xl bg-background shadow-xs">

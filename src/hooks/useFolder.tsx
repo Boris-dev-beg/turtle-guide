@@ -51,7 +51,7 @@ export function useFolder(userId: string, id?: string) {
       // ? Immediatly set the folder in the cache
       queryClient.setQueryData(
         ["folder", userId, result.folder.id],
-        result.folder
+        result.folder,
       );
 
       // ? Invalidate the list of folders
@@ -113,6 +113,11 @@ export function useFolder(userId: string, id?: string) {
     folderRefetch,
 
     createOrGetFolder,
+    createOrGetFolderAsync: createOrGetFolder.mutateAsync,
+    isCreatingOrGettingFolder: createOrGetFolder.isPending,
+    createOrGetFolderError: createOrGetFolder.error,
+    createOrGetFolderIsError: createOrGetFolder.isError,
+
     updateStatus,
     delFolder,
   };
