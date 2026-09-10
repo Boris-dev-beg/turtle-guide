@@ -105,28 +105,7 @@ export default function Diagnostic({ user }: { user: User }) {
         if (cancelled) return;
 
         setFolder(result.folder);
-        setInitializationResult({ status: "CREATED" });
-
-        // ? Nouveau dossier
-        if (result.status === "CREATED") {
-          console.log("Nouveau dossier créé :", result.folder.id);
-
-          return;
-        }
-
-        // ? Dossier actif déjà existant
-        if (result.status === "EXISTING_ACTIVE") {
-          console.log("Dossier actif récupéré :", result.folder.id);
-
-          return;
-        }
-
-        // ? Ancien dossier trouvé
-        if (result.status === "EXISTING_COMPLETED") {
-          console.log("Ancien dossier trouvé :", result.folder.id);
-
-          return;
-        }
+        setInitializationResult({ status: result.status });
       } catch (error) {
         console.error("Erreur lors de l'initialisation du dossier :", error);
         setInitializationError(

@@ -1,5 +1,4 @@
 import { Skeleton } from "@/components/ui/skeleton"; 
-import { FileText } from "lucide-react";
 
 
 export function DiagnosticLoading() {
@@ -11,14 +10,13 @@ export function DiagnosticLoading() {
     >
 
       <div className="mb-6 flex items-start gap-4">
-          <FileText className="size-10 md:size-15 text-brand-green" />
 
         <div>
-          <h1 className="font-heading text-2xl md:text-3xl font-semibold text-brand-ink">
+          <h1 className="font-body text-3xl md:text-4xl font-semibold text-brand-ink">
             Préparation de votre dossier
           </h1>
 
-          <p className="mt-1 text-sm md:text-base leading-6 text-brand-ink-muted">
+          <p className="mt-1 text-sm md:text-base leading-5 md:leading-6 text-brand-ink-muted">
             Nous préparons votre diagnostic et vérifions votre dossier.
           </p>
         </div>
