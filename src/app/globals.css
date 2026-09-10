@@ -244,7 +244,7 @@
   /* ! ---- BUTTONS ---- */
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold rounded-sm transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold rounded-xs transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
@@ -270,14 +270,14 @@
   /* ! ---- CARDS ---- */
 
   .turtle-card {
-    @apply bg-card border border-border rounded-sm p-5 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
+    @apply bg-card border border-border rounded-xs p-5 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
   }
 
 
   /* ! ---- RADIO / ANSWERS ---- */
 
   .turtle-radio {
-    @apply flex items-center justify-between p-4 border border-border rounded-sm cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
+    @apply flex items-center justify-between p-4 border border-border rounded-xs cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
   }
 
 
@@ -289,7 +289,7 @@
   /* ! ---- INFOs ALERT ---- */
 
   .turtle-alert-info {
-    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-sm text-foreground;
+    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-xs text-foreground;
   }
 
 

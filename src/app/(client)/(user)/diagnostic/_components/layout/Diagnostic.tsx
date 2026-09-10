@@ -12,10 +12,15 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { DiagnosticLoading } from "../cards/Loaders";
+import { DiagnosticLoading } from "../states/Loaders";
 import { QuestionsSide } from "../Questions/questionSide";
 import { useFolder } from "@/hooks/useFolder";
-import { DiagnosticError } from "../cards/Errors";
+import { DiagnosticError } from "../states/Errors";
+import { DiagnosticCreated } from "../Pages/DiagnosticCreated";
+import { DiagnosticFolderStatus } from "@/services/folders.service";
+import { DiagnosticExisting } from "../Pages/DiagnosticExisting";
+import { DiagnosticCompleted } from "../Pages/DiagnosticCompleted";
+import { useRouter } from "next/navigation";
 
 type User = {
   id: string;
@@ -67,12 +72,16 @@ const TakenSteps = [
 
 export default function Diagnostic({ user }: { user: User }) {
   // ! states
+  const router = useRouter();
   const { procedure, category } = useFolderStore();
 
   const [isInitializing, setIsInitializing] = useState(true);
   const [initializationError, setInitializationError] = useState<Error | null>(
     null,
   );
+  const [initializationResult, setInitializationResult] = useState<{
+    status: DiagnosticFolderStatus;
+  } | null>(null);
   const [isRetrying, setIsRetrying] = useState(false);
 
   const [folder, setFolder] = useState<Result | null>(null);
@@ -96,6 +105,7 @@ export default function Diagnostic({ user }: { user: User }) {
         if (cancelled) return;
 
         setFolder(result.folder);
+        setInitializationResult({ status: "CREATED" });
 
         // ? Nouveau dossier
         if (result.status === "CREATED") {
@@ -170,9 +180,46 @@ export default function Diagnostic({ user }: { user: User }) {
   if (isInitializing) return <DiagnosticLoading />;
 
   // ? Error
-  if (initializationError)
+  if (initializationError || !folder)
     return <DiagnosticError onRetry={handleRetry} isRetrying={isRetrying} />;
 
+  // ? Everything is OK
+  if (initializationResult?.status === "CREATED") {
+    return (
+      <DiagnosticCreated
+        folder={folder}
+        onStart={() => {
+          // ici tu passes réellement à la première question
+        }}
+      />
+    );
+  }
+
+  if (initializationResult?.status === "EXISTING_ACTIVE") {
+    return (
+      <DiagnosticExisting
+        folder={folder}
+        onContinue={() => {
+          // Reprendre le diagnostic
+        }}
+      />
+    );
+  }
+
+  if (initializationResult?.status === "EXISTING_COMPLETED") {
+    return (
+      <DiagnosticCompleted
+        folder={folder}
+        onViewFolder={() => {
+          router.push(`/dossiers/${folder.id}`);
+        }}
+        onRestart={() => {
+          // supprimer l'ancien dossier
+          // puis créer un nouveau diagnostic
+        }}
+      />
+    );
+  }
   return (
     <>
       {/* First Side */}
