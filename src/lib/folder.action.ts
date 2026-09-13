@@ -3,7 +3,7 @@
 import { FolderServices } from "@/services/folders.service";
 import { proceduresServices } from "@/services/procedure.service";
 
-// ! CREATE Folder
+// ! CREATE OR GET Folder
 export async function createOrGetFolderAction({
   procedureName,
   userId,

@@ -79,7 +79,7 @@ export default function DiagnocticLayout({
             <span className="text-brand-ink font-medium">Dossier</span>
 
             <span className="font-mono text-sm text-brand-ink">
-              #{folder.id}
+              #{folder.id.slice(0, 6)}
             </span>
           </div>
         </div>

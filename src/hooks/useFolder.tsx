@@ -38,28 +38,29 @@ export function useFolder(userId: string, id?: string) {
   });
 
   // ! Create or get folder
-  const createOrGetFolder = useMutation({
-    mutationFn: async (data: {
-      procedureName: string;
-      userId: string;
-      category: string;
-    }) => {
-      return await createOrGetFolderAction(data);
-    },
-
-    onSuccess: (result) => {
-      // ? Immediatly set the folder in the cache
-      queryClient.setQueryData(
-        ["folder", userId, result.folder.id],
-        result.folder,
-      );
-
-      // ? Invalidate the list of folders
-      queryClient.invalidateQueries({
-        queryKey: ["folders", userId],
-      });
-    },
-  });
+  // ! Get or create the active folder for a procedure
+  function useCreateOrGetFolder(data: {
+    procedureName?: string;
+    category?: string;
+  }) {
+    return useQuery({
+      queryKey: [
+        "folder",
+        "create-or-get",
+        userId,
+        data.procedureName,
+        data.category,
+      ],
+      queryFn: async () =>
+        await createOrGetFolderAction({
+          procedureName: data.procedureName!,
+          userId,
+          category: data.category!,
+        }),
+      enabled: !!userId && !!data.procedureName && !!data.category,
+      retry: false,
+    });
+  }
 
   // ! Update folder's status
   const updateStatus = useMutation({
@@ -100,7 +101,7 @@ export function useFolder(userId: string, id?: string) {
     },
   });
 
-  return {
+   return {
     folders,
     folder,
 
@@ -112,8 +113,7 @@ export function useFolder(userId: string, id?: string) {
     folderError,
     folderRefetch,
 
-    createOrGetFolder,
-    createOrGetFolderAsync: createOrGetFolder.mutateAsync,
+    useCreateOrGetFolder, // nouveau
 
     updateStatus,
     delFolder,

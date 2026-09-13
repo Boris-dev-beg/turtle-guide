@@ -1,3 +1,4 @@
+import { FolderStatus } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 
 // ! Possibles situtation
@@ -197,7 +198,7 @@ export const FolderServices = {
     id: string;
     userId: string;
     processId: string;
-    status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
+    status: FolderStatus
   }) {
     return await prisma.folder.update({
       where: {
