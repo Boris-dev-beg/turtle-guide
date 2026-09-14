@@ -10,15 +10,8 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: "Spectral";
-  src: url("/fonts/Spectral.ttf") format("TrueType");
-  font-display: swap;
-}
-
 @theme inline {
   --font-body: "Inter";
-  --font-heading: "Spectral";
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -85,6 +78,8 @@
   --color-brand-info: var(--brand-info);
   --color-brand-info-bg: var(--brand-info-bg);
 
+  --color-brand-line: var(--brand-line);
+
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -96,69 +91,69 @@
 }
 
 :root {
-  --background: #f8f9f6;
-  --foreground: #172033;
+  --background: #f7f9f6;
+  --foreground: #141f2e;
 
   --card: #ffffff;
-  --card-foreground: #172033;
+  --card-foreground: #141f2e;
 
   --popover: #ffffff;
-  --popover-foreground: #172033;
+  --popover-foreground: #141f2e;
 
-  --primary: #086b56;
+  --primary: #0b6e56;
   --primary-foreground: #ffffff;
 
-  --secondary: #edf3f0;
-  --secondary-foreground: #064b3b;
+  --secondary: #eef4f0;
+  --secondary-foreground: #06463a;
 
-  --muted: #f1f4f2;
-  --muted-foreground: #607087;
+  --muted: #f1f4f1;
+  --muted-foreground: #5c6f7f;
 
-  --accent: #e5f1eb;
-  --accent-foreground: #064b3b;
+  --accent: #e6f2ec;
+  --accent-foreground: #06463a;
 
   --destructive: #c9674b;
   --destructive-foreground: #ffffff;
 
-  --border: #dce4df;
-  --input: #dce4df;
-  --ring: #086b56;
+  --border: #e0e6e1;
+  --input: #e0e6e1;
+  --ring: #0b6e56;
 
-  --chart-1: #086b56;
+  --chart-1: #0b6e56;
   --chart-2: #3982c6;
-  --chart-3: #e5b94a;
+  --chart-3: #e0862e;
   --chart-4: #c9674b;
-  --chart-5: #607087;
+  --chart-5: #5c6f7f;
 
-  --radius: 0.75rem;
+  --radius: 0.85rem;
 
   --sidebar: #ffffff;
-  --sidebar-foreground: #172033;
+  --sidebar-foreground: #141f2e;
 
-  --sidebar-primary: #086b56;
+  --sidebar-primary: #0b6e56;
   --sidebar-primary-foreground: #ffffff;
 
-  --sidebar-accent: #e5f1eb;
-  --sidebar-accent-foreground: #064b3b;
+  --sidebar-accent: #e6f2ec;
+  --sidebar-accent-foreground: #06463a;
 
-  --sidebar-border: #dce4df;
-  --sidebar-ring: #086b56;
+  --sidebar-border: #e0e6e1;
+  --sidebar-ring: #0b6e56;
 
-  --brand-green-text: #086b56;
+  --brand-green-text: #0b6e56;
 
-  --brand-green: #086b56;
-  --brand-green-dark: #064b3b;
-  --brand-green-light: #16856d;
-  --brand-green-soft: #e5f1eb;
+  --brand-green: #0b6e56;
+  --brand-green-dark: #06463a;
+  --brand-green-light: #1a9578;
+  --brand-green-soft: #e6f2ec;
 
-  --brand-ink: #172033;
-  --brand-ink-muted: #607087;
+  --brand-ink: #141f2e;
+  --brand-ink-muted: #5c6f7f;
 
-  --brand-cream: #f8f9f6;
-  --brand-beige: #f5f1e8;
+  --brand-cream: #f7f9f6;
+  --brand-beige: #f5f1e6;
 
-  --brand-yellow: #e5b94a;
-  --brand-yellow-bg: #fff8e8;
+  --brand-yellow: #e0862e;
+  --brand-yellow-bg: #fdf2e2;
 
   --brand-danger: #c9674b;
   --brand-danger-bg: #fff0ed;
@@ -166,21 +161,20 @@
   --brand-info: #3982c6;
   --brand-info-bg: #edf5fb;
 
+  --brand-line: #d7e6de;
 }
 
-
 .dark {
-
-  --background: #101b18;
-  --foreground: #f5f7f6;
+  --background: #0f1a17;
+  --foreground: #f4f7f5;
 
   --card: #16231f;
-  --card-foreground: #f5f7f6;
+  --card-foreground: #f4f7f5;
 
   --popover: #16231f;
-  --popover-foreground: #f5f7f6;
+  --popover-foreground: #f4f7f5;
 
-  --primary: #51aa91;
+  --primary: #4fb195;
   --primary-foreground: #073d30;
 
   --secondary: #1c302a;
@@ -197,30 +191,30 @@
 
   --border: #ffffff1a;
   --input: #ffffff1f;
-  --ring: #51aa91;
+  --ring: #4fb195;
 
-  --chart-1: #51aa91;
+  --chart-1: #4fb195;
   --chart-2: #69a8d9;
-  --chart-3: #e5b94a;
+  --chart-3: #e8a561;
   --chart-4: #d97a5d;
   --chart-5: #9ba7a2;
 
   --sidebar: #16231f;
-  --sidebar-foreground: #f5f7f6;
+  --sidebar-foreground: #f4f7f5;
 
-  --sidebar-primary: #51aa91;
+  --sidebar-primary: #4fb195;
   --sidebar-primary-foreground: #073d30;
 
   --sidebar-accent: #1c302a;
   --sidebar-accent-foreground: #dcefe8;
 
   --sidebar-border: #ffffff1a;
-  --sidebar-ring: #51aa91;
+  --sidebar-ring: #4fb195;
+
+  --brand-line: #ffffff1a;
 }
 
-
 @layer base {
-
   * {
     @apply border-border outline-ring/50 font-body;
   }
@@ -229,26 +223,28 @@
     @apply bg-background text-foreground;
   }
 
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-heading;
-  }
-
-  button, input, textarea, select {
+  button,
+  input,
+  textarea,
+  select {
     @apply font-body;
   }
 }
 
+@utility turtle-hero-image {
+  @apply w-full h-full object-cover rounded-xs;
+  clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+}
 
 @layer components {
-
   /* ! ---- BUTTONS ---- */
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-3 text-base font-semibold rounded-xs transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold rounded-sm transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90 shadow-sm;
+    @apply bg-primary text-primary-foreground hover:bg-brand-green-dark shadow-sm;
   }
 
   .btn-outline {
@@ -261,54 +257,57 @@
     @apply bg-destructive text-white hover:bg-destructive/90 shadow-sm;
   }
 
-
   .btn-destructive-outline {
     @apply border border-destructive/20 bg-card text-destructive hover:bg-destructive hover:text-destructive-foreground shrink-0 transition-colors;
   }
 
-
   /* ! ---- CARDS ---- */
 
   .turtle-card {
-    @apply bg-card border border-border rounded-xs p-5 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
+    @apply bg-card border border-border rounded-sm p-6 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
   }
-
 
   /* ! ---- RADIO / ANSWERS ---- */
 
   .turtle-radio {
-    @apply flex items-center justify-between p-4 border border-border rounded-xs cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
+    @apply flex items-center justify-between p-4 border border-border rounded-md cursor-pointer transition-all bg-card hover:bg-brand-green-soft/40 hover:border-brand-green-light/40;
   }
-
 
   .turtle-radio-active {
     @apply border-primary bg-brand-green-soft text-brand-green-dark font-medium ring-1 ring-primary/30;
   }
 
-
   /* ! ---- INFOs ALERT ---- */
 
   .turtle-alert-info {
-    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-xs text-foreground;
+    @apply flex items-center justify-between gap-4 p-4 bg-brand-info-bg border border-brand-info rounded-md text-foreground;
   }
 
+  .turtle-alert-warning {
+    @apply flex items-center justify-between gap-4 p-4 bg-brand-yellow-bg border-l-4 border-brand-yellow rounded-md text-foreground;
+  }
+
+  .turtle-alert-warning-title {
+    @apply font-semibold text-brand-yellow;
+  }
 
   /* ! ---- STEPS ---- */
 
   .turtle-step {
-    @apply flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0;
+    @apply flex items-center justify-center w-9 h-9 rounded-full text-sm font-bold shrink-0;
   }
-
 
   .turtle-step-active {
     @apply bg-primary text-primary-foreground border-2 border-primary;
   }
 
-
   .turtle-step-inactive {
     @apply bg-muted text-muted-foreground border-2 border-border;
   }
 
+  .turtle-step-connector {
+    @apply flex-1 border-t-2 border-dashed border-brand-line min-w-8;
+  }
 
   /* ! ---- PROGRESS ---- */
 
@@ -316,11 +315,25 @@
     @apply w-full bg-muted h-2 rounded-full overflow-hidden;
   }
 
-
   .turtle-progress-fill {
     @apply bg-primary h-full rounded-full transition-all duration-300 ease-out;
   }
 
+  .turtle-feature {
+    @apply flex items-start gap-3 p-4;
+  }
+
+  .turtle-feature-icon {
+    @apply flex items-center justify-center w-10 h-10 rounded-full bg-brand-green-soft text-primary shrink-0;
+  }
+
+  .turtle-eyebrow {
+    @apply flex items-center gap-2 text-sm font-semibold text-primary;
+  }
+
+  .turtle-link {
+    @apply inline-flex items-center gap-1 text-sm font-semibold text-primary underline-offset-4 hover:underline;
+  }
 
   /* ! ---- LAYOUT ---- */
 

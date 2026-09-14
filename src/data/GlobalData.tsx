@@ -21,16 +21,16 @@ import {
 } from "lucide-react"; 
 
 // ! Hero 
-export const Hero_infos = { 
-  title: "Toutes vos démarches administratives,", 
-  subtitle: "simplement expliquées.", 
-  description: 
-    "TurtleGuide vous accompagne pas à pas pour comprendre vos démarches et éviter les anarques.", 
-  link: { 
-    label: "Commencer", 
-    href: "/categories", 
-  }, 
-}; 
+export const Hero_infos = {
+  eyebrow: "La plateforme de guide administratif camerounais",
+  title: "Vos démarches administratives et judiciaires, étape par étape",
+  description:
+    "TurtleGuide vous aide à identifier et suivre pas à pas vos démarches, en toute simplicité.",
+  link: {
+    href: "/demarches",
+    label: "Commencer une démarche",
+  },
+};
 
 // ! How it work 
 export const HowDoesItWork_infos = { 
