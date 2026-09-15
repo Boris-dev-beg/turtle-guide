@@ -100,7 +100,7 @@
   --popover: #ffffff;
   --popover-foreground: #141f2e;
 
-  --primary: #0b6e56;
+  --primary: #086b56;
   --primary-foreground: #ffffff;
 
   --secondary: #eef4f0;
@@ -234,6 +234,11 @@
 @utility turtle-hero-image {
   @apply w-full h-full object-cover rounded-xs;
   clip-path: polygon(6% 0, 100% 0, 94% 100%, 0 100%);
+}
+
+@utility turtle-engagment-card {
+  @apply w-full h-full object-cover rounded-none;
+  clip-path: polygon(0 0, 10% 70%, 100% 90%, 88% 20%);
 }
 
 @layer components {

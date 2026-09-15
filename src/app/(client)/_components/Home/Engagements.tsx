@@ -4,14 +4,8 @@ import { LucideIcon } from "lucide-react";
 
 export default function OurEngagements() { 
   return ( 
-    <section className="wrapper flex flex-col gap-6"> 
-      {/* Header */} 
-      <h2 className="text-2xl font-semibold uppercase tracking-wider text-brand-green-text"> 
-        {OurEngagements_infos.title} 
-      </h2> 
-
-      {/* Cards */} 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"> 
+    <section className="wrapper flex flex-col gap-6 w-full"> 
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"> 
         {OurEngagements_infos.elements.map((eng, index) => ( 
           <Card_ 
             key={index} 
@@ -35,17 +29,17 @@ const Card_ = ({
   description: string; 
 }) => { 
   return ( 
-    <Card className="group flex h-full flex-col items-start gap-4 rounded-xl border-border/60 bg-card p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-brand-green-text/30 hover:shadow-md"> 
-      <span className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-brand-green-text/10 text-brand-green-text transition-colors duration-300 group-hover:bg-brand-green-text group-hover:text-white"> 
-        <Icon className="size-7" /> 
+    <Card className="group flex h-full w-full flex-row items-start px-12  lg:px-6 py-13 pb-15 transition-all duration-300  hover:shadow-md rounded-none turtle-engagment-card"> 
+      <span className="flex"> 
+        <Icon className="size-10" /> 
       </span> 
 
       <div className="space-y-2"> 
-        <CardTitle className="text-[20px] font-semibold leading-tight"> 
+        <CardTitle className="text-base font-semibold leading-tight"> 
           {title} 
         </CardTitle> 
 
-        <CardDescription className="line-clamp-3 text-base leading-6"> 
+        <CardDescription className="line-clamp-3 text-sm leading-5"> 
           {description} 
         </CardDescription> 
       </div> 

@@ -11,9 +11,9 @@ export default function Hero() {
       {/* Colonne texte */}
       <div className="wrapper relative z-10 flex w-full items-center py-16 lg:py-24">
         <div className="flex w-full max-w-xl flex-col items-start gap-4">
-          <span className="text-sm font-semibold text-brand-green-text">
+          <h2 className="text-xs font-semibold text-brand-green-text uppercase">
             {Hero_infos.eyebrow}
-          </span>
+          </h2>
 
           <h1 className="text-4xl font-bold leading-[1.1] tracking-tight text-foreground sm:text-5xl">
             {Hero_infos.title}
@@ -25,7 +25,7 @@ export default function Hero() {
 
           <Link
             href={Hero_infos.link.href}
-            className="btn btn-primary mt-2 gap-2"
+            className="btn btn-primary text-nowrap mt-2 gap-2"
           >
             {Hero_infos.link.label}
             <ArrowRight className="size-5" />
@@ -34,14 +34,15 @@ export default function Hero() {
       </div>
 
       {/* Colonne image */}
-      <div className="relative h-72 w-full sm:h-100 lg:h-120">
-        <div className="hidden lg:flex turtle-hero-image relative h-full w-full lg:bg-ring lg:-left-20 lg:-top-10 lg:absolute lg:inset-0" />
+      <div className="relative h-72 w-full sm:h-110 lg:h-130">
+        <div className="hidden lg:flex turtle-hero-image relative h-full w-full lg:bg-primary lg:-left-20 lg:-top-10 lg:absolute lg:inset-0" />
 
         <div className="lg:turtle-hero-image relative h-full w-full lg:absolute lg:inset-0 overflow-hidden">
           <Image
             src={hero_img}
             alt="Ministère des Affaires Étrangères du Cameroun"
             fill
+            sizes=""
             priority
             className="object-cover"
           />
