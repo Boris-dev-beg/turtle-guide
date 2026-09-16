@@ -1,7 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-
-import Turtle from "../../assets/images/logo.png";
 import logo_mobile from "../../assets/images/logos/mobile.png";
 import logo_tablet from "../../assets/images/logos/tablet.png";
 import logo_descktop from "../../assets/images/logos/desktop.png";
@@ -20,7 +18,7 @@ export default function Header({
         {/* Logo */}
         <Link
           href="/"
-          className="group flex items-center justify-center w-15 md:w-55 gap-2 transition-opacity hover:opacity-90"
+          className="group flex items-center justify-center w-15 md:w-55 min-w-15 gap-2 transition-opacity hover:opacity-90"
         >
           <Image
             src={logo_mobile}

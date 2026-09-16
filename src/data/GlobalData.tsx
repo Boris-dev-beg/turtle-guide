@@ -35,6 +35,7 @@ export const Hero_infos = {
 // ! How it work
 export const HowDoesItWork_infos = {
   title: "Comment ça fonctionne ?",
+  subtitle: "En quelques étapes, accédez à la démarche qui vous concerne et suivez son avancement.",
   element: [
     {
       id: 1,
@@ -55,9 +56,9 @@ export const HowDoesItWork_infos = {
     },
   ],
   alert: {
-    title: "Attention aux faux agents !",
+    title: "Attention aux arnaques !",
     description:
-      "TurtleGuide ne délivre aucun document officiel. Méfiez-vous des intermediaires.",
+      "TurtleGuide ne vous demandera jamais de payer un service via un intermediaire non officiel. En cas de doute, contactez toujours les services compétents.",
   },
 };
 

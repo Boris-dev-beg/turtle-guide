@@ -220,7 +220,7 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-white text-foreground;
   }
 
   button,
@@ -243,9 +243,8 @@
 
 @layer components {
   /* ! ---- BUTTONS ---- */
-
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold rounded-sm transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-6 py-3.5 text-base font-semibold rounded-xs transition-all cursor-pointer active:scale-[98%] disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
@@ -257,7 +256,6 @@
   }
 
   /* ! ---- DESTRUCTIVE ---- */
-
   .btn-destructive {
     @apply bg-destructive text-white hover:bg-destructive/90 shadow-sm;
   }

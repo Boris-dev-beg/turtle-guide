@@ -5,7 +5,7 @@ import { LucideIcon } from "lucide-react";
 export default function OurEngagements() { 
   return ( 
     <section className="wrapper flex flex-col gap-6 w-full"> 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"> 
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-0"> 
         {OurEngagements_infos.elements.map((eng, index) => ( 
           <Card_ 
             key={index} 
@@ -29,7 +29,7 @@ const Card_ = ({
   description: string; 
 }) => { 
   return ( 
-    <Card className="group flex h-full w-full flex-row items-start px-12  lg:px-6 py-13 pb-15 transition-all duration-300  hover:shadow-md rounded-none turtle-engagment-card"> 
+    <Card className="flex h-full flex-row items-start px-5 sm:px-12 lg:px-6 py-6 sm:py-13 sm:pb-15 rounded-none sm:turtle-engagment-card bg-muted/50"> 
       <span className="flex"> 
         <Icon className="size-10" /> 
       </span> 

@@ -2,7 +2,7 @@
 
 import { links } from "@/data/GlobalData";
 import { useAuth } from "@/hooks/useAuth";
-import { LogOut, ChevronDown, User } from "lucide-react";
+import { LogOut, User } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -40,6 +40,7 @@ export const NavBar = ({
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, [showProfile]);
+
   // ! Render
   return (
     <div className="flex items-center gap-2">
@@ -79,21 +80,11 @@ export const NavBar = ({
                 </span>
               )}
             </div>
-
-            <span className="hidden text-sm font-semibold text-foreground sm:block">
-              {user.name}
-            </span>
-
-            <ChevronDown
-              className={`size-4 text-muted-foreground transition-transform duration-200 ${
-                showProfile ? "rotate-180" : ""
-              }`}
-            />
           </button>
 
           {/* Popup */}
           {showProfile && (
-            <div className="absolute right-0 top-[calc(100%+12px)] z-50 w-64 overflow-hidden rounded-lg border border-border bg-background shadow-xl animate-in fade-in-0 zoom-in-95 slide-in-from-top-2">
+            <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-xs border border-border bg-background shadow-xl animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 space-y-4">
               <div className="border-b border-border p-4">
                 <div className="flex items-center gap-3">
                   <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10">
@@ -106,7 +97,7 @@ export const NavBar = ({
                         className="size-full object-cover"
                       />
                     ) : (
-                      <span className="text-xs font-black uppercase text-primary">
+                      <span className="text-sm font-semibold uppercase text-primary">
                         {user.name.slice(0, 2)}
                       </span>
                     )}
@@ -117,18 +108,18 @@ export const NavBar = ({
                       {user.name}
                     </p>
 
-                    <p className="text-muted-foreground">
+                    <p className="text-muted-foreground text-sm">
                       Votre espace personnel
                     </p>
                   </div>
                 </div>
               </div>
 
-              <div className="p-2 flex flex-col gap-2">
+              <div className="p-2 flex flex-col gap-3">
                 <Link
                   href="/profile"
                   onClick={() => setShowProfile(false)}
-                  className="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-muted btn text-muted-foreground text-base"
+                  className="flex items-center justify-between rounded-xs p-3 transition-colors hover:bg-muted btn text-muted-foreground text-base btn"
                 >
                   <span>Mon profil</span>
                   <User className="text-muted-foreground size-5" />
@@ -149,7 +140,7 @@ export const NavBar = ({
       ) : (
         <Link
           href="/login"
-          className="ml-1 rounded-lg border-2 border-white/30 bg-white/10 px-3 py-2 font-semibold text-primary-foreground backdrop-blur-sm transition-all duration-200 hover:bg-white hover:text-primary sm:px-4"
+          className="btn btn-outline ml-1 px-3 py-2 font-medium sm:px-4"
         >
           Se connecter
         </Link>
@@ -173,7 +164,7 @@ const Link_ = ({
   return (
     <Link
       href={href}
-      className={`relative flex items-center gap-1.5 px-2.5 py-1 font-semibold whitespace-nowrap transition-all duration-200 lg:px-3 ${isActive ? "text-primary" : "hover:text-primary"}`}
+      className={`relative flex items-center gap-0.5 px-2.5 py-1 font-medium whitespace-nowrap transition-all duration-200 lg:px-3 text-sm ${isActive ? "text-primary" : "hover:text-primary"}`}
     >
       <span>{label}</span>
 
