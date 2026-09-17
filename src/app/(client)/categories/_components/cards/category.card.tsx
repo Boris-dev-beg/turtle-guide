@@ -31,6 +31,8 @@ export function Category_card({
 
     router.push(`/categories/${title}`);
   };
+  
+  // ! Render
   return (
     <Card
       onClick={handleClick}

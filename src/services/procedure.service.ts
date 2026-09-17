@@ -42,9 +42,6 @@ export const proceduresServices = {
       include: { 
         category: true, 
       }, 
-      orderBy: { 
-        title: "asc", 
-      }, 
       take: 4, 
     }); 
   }, 
