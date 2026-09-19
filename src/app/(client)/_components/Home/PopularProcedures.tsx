@@ -45,6 +45,7 @@ export default function PopularProcedures() {
               <Card_
                 key={proc.id}
                 title={proc.title}
+                image={proc.image}
                 categoryName={proc.category.name}
               />
             ))
