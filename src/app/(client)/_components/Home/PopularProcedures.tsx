@@ -38,7 +38,7 @@ export default function PopularProcedures() {
               <Card_loader />
               <Card_loader />
             </>
-          ) : !PopularProcedures ? (
+          ) : !PopularProcedures || PopularProcedures.length == 0 ? (
             <p>Pas encore de procedure populaire</p>
           ) : (
             PopularProcedures.map((proc) => (

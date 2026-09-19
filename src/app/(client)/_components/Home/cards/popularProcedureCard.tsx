@@ -2,7 +2,7 @@
 
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useProcedures } from "@/hooks/useProcedures";
+// import { useProcedures } from "@/hooks/useProcedures";
 import { useFolderStore } from "@/store/folder.store";
 import { ChevronRight } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -16,12 +16,12 @@ export function Card_({
 }) {
   // ! States
   const router = useRouter();
-  const { getByCategory } = useProcedures();
+  // const { getByCategory } = useProcedures();
   const { setCategory, setProcedure } = useFolderStore();
 
   // ! Functions
   const handleClick = () => {
-    getByCategory(title);
+    // getByCategory(title);
     setCategory(categoryName);
     setProcedure(title);
 

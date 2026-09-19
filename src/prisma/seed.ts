@@ -1,1072 +1,919 @@
-import { 
-  PrismaClient, 
-  FolderStatus, 
-  TransactionStatus, 
-} from "../generated/prisma/client"; 
-
-import { PrismaPg } from "@prisma/adapter-pg"; 
-
-const adapter = new PrismaPg({ 
-  connectionString: process.env.DATABASE_URL!, 
-}); 
-
-const prisma = new PrismaClient({ 
-  adapter, 
-}); 
-
-async function main() { 
-  console.log("🌱 Starting seed..."); 
-
-  // ============================================================ 
-  // CLEAN DATABASE 
-  // ============================================================ 
-
-  await prisma.transaction.deleteMany(); 
-  await prisma.documentPurchase.deleteMany(); 
-  await prisma.donation.deleteMany(); 
-
-  await prisma.fraudAlert.deleteMany(); 
-  await prisma.step.deleteMany(); 
-  await prisma.document.deleteMany(); 
-
-  await prisma.answer.deleteMany(); 
-  await prisma.progression.deleteMany(); 
-  await prisma.folder.deleteMany(); 
-
-  await prisma.answerOption.deleteMany(); 
-  await prisma.question.deleteMany(); 
-
-  await prisma.process.deleteMany(); 
-  await prisma.procedure.deleteMany(); 
-  await prisma.category.deleteMany(); 
-
-  await prisma.areaServed.deleteMany(); 
-  await prisma.administrativeUnit.deleteMany(); 
-  await prisma.administrativeBody.deleteMany(); 
-  await prisma.location.deleteMany(); 
-
-  // Tables Better Auth 
-  await prisma.account.deleteMany(); 
-  await prisma.session.deleteMany(); 
-  await prisma.verification.deleteMany(); 
-
-  await prisma.administrator.deleteMany(); 
-  await prisma.user.deleteMany(); 
-
-  console.log("🗑️ Database cleaned"); 
-
-  // ============================================================ 
-  // USERS 
-  // ============================================================ 
-
-  const user = await prisma.user.create({ 
-    data: { 
-      id: "user_boris_001", 
-      name: "Boris Mangwa", 
-      email: "boris@example.com", 
-      emailVerified: true, 
-    }, 
-  }); 
-
-  const adminUser = await prisma.user.create({ 
-    data: { 
-      id: "user_admin_001", 
-      name: "Administrateur TurtleGuide", 
-      email: "admin@example.com", 
-      emailVerified: true, 
-
-      administrator: { 
-        create: { 
-          accessLevel: "ADMIN", 
-        }, 
-      }, 
-    }, 
-  }); 
-
-  console.log("✅ Users created"); 
-
-  // ============================================================ 
-  // LOCATIONS 
-  // ============================================================ 
-
-  const bamegoum = await prisma.location.create({ 
-    data: { 
-      address: "Centre-ville de Bamegoum", 
-      city: "Bamegoum", 
-      latitude: 5.52, 
-      longitude: 10.42, 
-    }, 
-  }); 
-
-  const bafoussam = await prisma.location.create({ 
-    data: { 
-      address: "Centre administratif de Bafoussam", 
-      city: "Bafoussam", 
-      latitude: 5.4778, 
-      longitude: 10.4176, 
-    }, 
-  }); 
-
-  const bamenda = await prisma.location.create({ 
-    data: { 
-      address: "Centre administratif de Bamenda", 
-      city: "Bamenda", 
-      latitude: 5.9597, 
-      longitude: 10.1459, 
-    }, 
-  }); 
-
-  console.log("✅ Locations created"); 
-
-  // ============================================================ 
-  // ADMINISTRATIVE BODIES 
-  // ============================================================ 
-
-  const mairie = await prisma.administrativeBody.create({ 
-    data: { 
-      name: "Mairie", 
-    }, 
-  }); 
-
-  const prefecture = await prisma.administrativeBody.create({ 
-    data: { 
-      name: "Préfecture", 
-    }, 
-  }); 
-
-  const tribunal = await prisma.administrativeBody.create({ 
-    data: { 
-      name: "Tribunal de Première Instance", 
-    }, 
-  }); 
-
-  console.log("✅ Administrative bodies created"); 
-
-  // ============================================================ 
-  // ADMINISTRATIVE UNITS 
-  // ============================================================ 
-
-  const mairieBafoussam = await prisma.administrativeUnit.create({ 
-    data: { 
-      name: "Mairie de Bafoussam", 
-      administrativeBodyId: mairie.id, 
-      locationId: bafoussam.id, 
-    }, 
-  }); 
-
-  const prefectureBafoussam = await prisma.administrativeUnit.create({ 
-    data: { 
-      name: "Préfecture de Bafoussam", 
-      administrativeBodyId: prefecture.id, 
-      locationId: bafoussam.id, 
-    }, 
-  }); 
-
-  const tribunalBafoussam = await prisma.administrativeUnit.create({ 
-    data: { 
-      name: "Tribunal de Première Instance de Bafoussam", 
-      administrativeBodyId: tribunal.id, 
-      locationId: bafoussam.id, 
-    }, 
-  }); 
-
-  const tribunalBamenda = await prisma.administrativeUnit.create({ 
-    data: { 
-      name: "Tribunal de Première Instance de Bamenda", 
-      administrativeBodyId: tribunal.id, 
-      locationId: bamenda.id, 
-    }, 
-  }); 
-
-  console.log("✅ Administrative units created"); 
-
-  // ============================================================ 
-  // AREAS SERVED 
-  // ============================================================ 
-
-  await prisma.areaServed.createMany({ 
-    data: [ 
-      { 
-        name: "Bafoussam", 
-        locationId: bafoussam.id, 
-        administrativeUnitId: mairieBafoussam.id, 
-      }, 
-      { 
-        name: "Bafoussam", 
-        locationId: bafoussam.id, 
-        administrativeUnitId: prefectureBafoussam.id, 
-      }, 
-      { 
-        name: "Bafoussam", 
-        locationId: bafoussam.id, 
-        administrativeUnitId: tribunalBafoussam.id, 
-      }, 
-      { 
-        name: "Bamegoum", 
-        locationId: bamegoum.id, 
-        administrativeUnitId: tribunalBafoussam.id, 
-      }, 
-      { 
-        name: "Bamenda", 
-        locationId: bamenda.id, 
-        administrativeUnitId: tribunalBamenda.id, 
-      }, 
-    ], 
-  }); 
-
-  console.log("✅ Areas served created"); 
-
-  // ============================================================ 
-  // CATEGORIES 
-  // ============================================================ 
-
-  const civilStatusCategory = await prisma.category.create({ 
-    data: { 
-      name: "État civil", 
-      slug: "etat-civil", 
-      description: 
-        "Démarches administratives relatives aux actes et documents d'état civil.", 
-      isActive: true, 
-    }, 
-  }); 
-
-  const identityCategory = await prisma.category.create({ 
-    data: { 
-      name: "Identité", 
-      slug: "identite", 
-      description: 
-        "Démarches relatives aux documents et justificatifs d'identité.", 
-      isActive: true, 
-    }, 
-  }); 
-
-  const residenceCategory = await prisma.category.create({ 
-    data: { 
-      name: "Résidence et administration", 
-      slug: "residence-administration", 
-      description: 
-        "Démarches liées à la résidence et aux formalités administratives.", 
-      isActive: true, 
-    }, 
-  }); 
-
-  console.log("✅ Categories created"); 
-
-  // ============================================================ 
-  // PROCEDURES 
-  // ============================================================ 
-
-  const birthProcedure = await prisma.procedure.create({ 
-    data: { 
-      title: "Démarche concernant un acte de naissance", 
-      description: 
-        "Répondez aux questions afin d'identifier la démarche adaptée à votre situation.", 
-      legalBasis: "Législation camerounaise relative à l'état civil.", 
-      categoryId: civilStatusCategory.id, 
-      isActive: true, 
-    }, 
-  }); 
-
-  const identityProcedure = await prisma.procedure.create({ 
-    data: { 
-      title: "Obtenir ou renouveler un document d'identité", 
-      description: 
-        "Ce questionnaire permet d'identifier la démarche correspondant à votre situation.", 
-      legalBasis: 
-        "Législation camerounaise relative aux documents d'identité.", 
-      categoryId: identityCategory.id, 
-      isActive: true, 
-    }, 
-  }); 
-
-  const residenceProcedure = await prisma.procedure.create({ 
-    data: { 
-      title: "Effectuer une démarche liée à la résidence", 
-      description: 
-        "Identifiez la démarche administrative correspondant à votre besoin.", 
-      legalBasis: 
-        "Réglementation applicable aux démarches administratives locales.", 
-      categoryId: residenceCategory.id, 
-      isActive: true, 
-    }, 
-  }); 
-
-  console.log("✅ Procedures created"); 
-
-  // ============================================================ 
-  // PROCESSES 
-  // ============================================================ 
-
-  const birthCertificateProcess = await prisma.process.create({ 
-    data: { 
-      title: "Obtenir une copie d'acte de naissance", 
-      description: 
-        "Démarche permettant d'obtenir une copie ou un extrait d'acte de naissance.", 
-    }, 
-  }); 
-
-  const birthCertificationProcess = await prisma.process.create({ 
-    data: { 
-      title: "Faire certifier un acte de naissance", 
-      description: 
-        "Démarche permettant de faire certifier une copie d'acte de naissance.", 
-    }, 
-  }); 
-
-  const firstIdentityProcess = await prisma.process.create({ 
-    data: { 
-      title: "Première demande de document d'identité", 
-      description: 
-        "Démarche pour effectuer une première demande de document d'identité.", 
-    }, 
-  }); 
-
-  const renewalIdentityProcess = await prisma.process.create({ 
-    data: { 
-      title: "Renouvellement d'un document d'identité", 
-      description: 
-        "Démarche pour renouveler un document d'identité existant.", 
-    }, 
-  }); 
-
-  const residenceCertificateProcess = await prisma.process.create({ 
-    data: { 
-      title: "Obtenir une attestation de résidence", 
-      description: 
-        "Démarche permettant d'obtenir une attestation de résidence.", 
-    }, 
-  }); 
-
-  console.log("✅ Processes created"); 
-
-  /// ============================================================ 
-// QUESTIONS - BIRTH PROCEDURE 
-// ============================================================ 
-
-const birthQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Quel est votre besoin concernant votre acte de naissance ?", 
-    description: 
-      "Sélectionnez la situation qui correspond le mieux à votre besoin.", 
-    procedureId: birthProcedure.id, 
-  }, 
-}); 
-
-const birthCopyQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Possédez-vous déjà une copie de votre acte de naissance ?", 
-    description: 
-      "Cette information permet de déterminer la démarche adaptée à votre situation.", 
-    procedureId: birthProcedure.id, 
-  }, 
-}); 
-
-const birthCopyAgeQuestion = await prisma.question.create({ 
-  data: { 
-    title: "L'acte de naissance est-il encore lisible et exploitable ?", 
-    description: 
-      "Vérifiez que les informations présentes sur votre copie sont lisibles et peuvent être utilisées.", 
-    procedureId: birthProcedure.id, 
-  }, 
-}); 
-
-const birthMissingQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Savez-vous dans quelle commune votre naissance a été enregistrée ?", 
-    description: 
-      "Cette information permet d'orienter votre demande vers le service compétent.", 
-    procedureId: birthProcedure.id, 
-  }, 
-}); 
-
-const birthCertificationQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Pourquoi souhaitez-vous faire certifier votre acte ?", 
-    description: 
-      "Indiquez l'utilisation prévue de l'acte afin de déterminer la démarche correspondante.", 
-    procedureId: birthProcedure.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 1 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Je souhaite obtenir une copie de mon acte", 
-    questionId: birthQuestion.id, 
-    nextQuestionId: birthCopyQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Je souhaite faire certifier mon acte", 
-    questionId: birthQuestion.id, 
-    nextQuestionId: birthCertificationQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 2 - Possession de l'acte 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, j'en possède une", 
-    questionId: birthCopyQuestion.id, 
-    nextQuestionId: birthCopyAgeQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, je n'en possède pas", 
-    questionId: birthCopyQuestion.id, 
-    nextQuestionId: birthMissingQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 3 - État de la copie 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, elle est lisible", 
-    questionId: birthCopyAgeQuestion.id, 
-    processId: birthCertificateProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, elle est détériorée ou difficilement lisible", 
-    questionId: birthCopyAgeQuestion.id, 
-    processId: birthCertificateProcess.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 4 - Localisation de l'acte 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, je connais la commune", 
-    questionId: birthMissingQuestion.id, 
-    processId: birthCertificateProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, je ne connais pas la commune", 
-    questionId: birthMissingQuestion.id, 
-    processId: birthCertificateProcess.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 5 - Certification 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour une démarche administrative", 
-    questionId: birthCertificationQuestion.id, 
-    processId: birthCertificationProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour fournir un document à une administration", 
-    questionId: birthCertificationQuestion.id, 
-    processId: birthCertificationProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour une autre raison", 
-    questionId: birthCertificationQuestion.id, 
-    processId: birthCertificationProcess.id, 
-  }, 
-}); 
-
-
-// ============================================================ 
-// QUESTIONS - IDENTITY PROCEDURE 
-// ============================================================ 
-
-const identityQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Quel est votre besoin concernant votre document d'identité ?", 
-    description: 
-      "Sélectionnez la situation qui correspond à votre besoin.", 
-    procedureId: identityProcedure.id, 
-  }, 
-}); 
-
-const identityTypeQuestion = await prisma.question.create({ 
-  data: { 
-    title: "S'agit-il de votre première demande de document d'identité ?", 
-    description: 
-      "Cette information permet de déterminer le parcours administratif adapté.", 
-    procedureId: identityProcedure.id, 
-  }, 
-}); 
-
-const identityExistingQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Votre document d'identité actuel est-il toujours valide ?", 
-    description: 
-      "Indiquez l'état actuel de votre document d'identité.", 
-    procedureId: identityProcedure.id, 
-  }, 
-}); 
-
-const identityLostQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Votre document d'identité a-t-il été perdu ou volé ?", 
-    description: 
-      "Cette information permet de déterminer les démarches supplémentaires nécessaires.", 
-    procedureId: identityProcedure.id, 
-  }, 
-}); 
-
-const identityModificationQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Souhaitez-vous modifier certaines informations présentes sur votre document ?", 
-    description: 
-      "Par exemple, une modification concernant votre nom ou une autre information administrative.", 
-    procedureId: identityProcedure.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 1 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Je souhaite faire une première demande", 
-    questionId: identityQuestion.id, 
-    nextQuestionId: identityTypeQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Je souhaite renouveler mon document", 
-    questionId: identityQuestion.id, 
-    nextQuestionId: identityExistingQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 2 - Première demande 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, c'est ma première demande", 
-    questionId: identityTypeQuestion.id, 
-    processId: firstIdentityProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non", 
-    questionId: identityTypeQuestion.id, 
-    processId: firstIdentityProcess.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 3 - Validité 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, mon document est encore valide", 
-    questionId: identityExistingQuestion.id, 
-    nextQuestionId: identityModificationQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, mon document n'est plus valide", 
-    questionId: identityExistingQuestion.id, 
-    nextQuestionId: identityLostQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 4 - Perte / vol 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, il a été perdu ou volé", 
-    questionId: identityLostQuestion.id, 
-    processId: renewalIdentityProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, je possède toujours mon document", 
-    questionId: identityLostQuestion.id, 
-    processId: renewalIdentityProcess.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 5 - Modification 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, je souhaite modifier des informations", 
-    questionId: identityModificationQuestion.id, 
-    processId: renewalIdentityProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, je ne souhaite rien modifier", 
-    questionId: identityModificationQuestion.id, 
-    processId: renewalIdentityProcess.id, 
-  }, 
-}); 
-
-// ============================================================ 
-// QUESTIONS - RESIDENCE PROCEDURE 
-// ============================================================ 
-
-const residenceQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Quelle démarche souhaitez-vous effectuer ?", 
-    description: 
-      "Sélectionnez la démarche correspondant à votre situation.", 
-    procedureId: residenceProcedure.id, 
-  }, 
-}); 
-
-const residenceLocationQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Résidez-vous actuellement dans la commune concernée ?", 
-    description: 
-      "Cette information permet de vérifier le parcours administratif adapté.", 
-    procedureId: residenceProcedure.id, 
-  }, 
-}); 
-
-const residenceDurationQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Depuis combien de temps résidez-vous dans cette commune ?", 
-    description: 
-      "Indiquez approximativement la durée de votre résidence dans la commune.", 
-    procedureId: residenceProcedure.id, 
-  }, 
-}); 
-
-const residencePreviousCertificateQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Avez-vous déjà obtenu une attestation de résidence ?", 
-    description: 
-      "Cette information permet de déterminer si vous effectuez une première demande ou une nouvelle demande.", 
-    procedureId: residenceProcedure.id, 
-  }, 
-}); 
-
-const residenceReasonQuestion = await prisma.question.create({ 
-  data: { 
-    title: "Pour quelle raison avez-vous besoin de cette attestation ?", 
-    description: 
-      "Sélectionnez l'utilisation prévue pour votre attestation de résidence.", 
-    procedureId: residenceProcedure.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 1 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Je souhaite obtenir une attestation de résidence", 
-    questionId: residenceQuestion.id, 
-    nextQuestionId: residenceLocationQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 2 - Commune 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui", 
-    questionId: residenceLocationQuestion.id, 
-    nextQuestionId: residenceDurationQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non", 
-    questionId: residenceLocationQuestion.id, 
-    processId: residenceCertificateProcess.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 3 - Durée 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Moins de 3 mois", 
-    questionId: residenceDurationQuestion.id, 
-    nextQuestionId: residencePreviousCertificateQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Entre 3 mois et 1 an", 
-    questionId: residenceDurationQuestion.id, 
-    nextQuestionId: residencePreviousCertificateQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Plus d'un an", 
-    questionId: residenceDurationQuestion.id, 
-    nextQuestionId: residencePreviousCertificateQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 4 - Attestation précédente 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Oui, j'en ai déjà obtenu une", 
-    nextQuestionId: residenceReasonQuestion.id, 
-    questionId: residencePreviousCertificateQuestion.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Non, c'est ma première demande", 
-    nextQuestionId: residenceReasonQuestion.id, 
-    questionId: residencePreviousCertificateQuestion.id, 
-  }, 
-}); 
-
-// ------------------------------------------------------------ 
-// Question 5 - Motif 
-// ------------------------------------------------------------ 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour une démarche administrative", 
-    questionId: residenceReasonQuestion.id, 
-    processId: residenceCertificateProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour constituer un dossier", 
-    questionId: residenceReasonQuestion.id, 
-    processId: residenceCertificateProcess.id, 
-  }, 
-}); 
-
-await prisma.answerOption.create({ 
-  data: { 
-    label: "Pour une autre raison", 
-    questionId: residenceReasonQuestion.id, 
-    processId: residenceCertificateProcess.id, 
-  }, 
-}); 
-
-console.log("✅ Questions and answer trees created"); 
-
-  // ============================================================ 
-  // DOCUMENTS 
-  // ============================================================ 
-
-  const birthCertificateForm = await prisma.document.create({ 
-    data: { 
-      name: "Formulaire de demande d'acte de naissance", 
-      price: 1000, 
-      customizable: true, 
-      legalWarning: 
-        "Vérifiez attentivement les informations avant d'utiliser ce document.", 
-    }, 
-  }); 
-
-  const certificationForm = await prisma.document.create({ 
-    data: { 
-      name: "Formulaire de demande de certification", 
-      price: 1500, 
-      customizable: true, 
-      legalWarning: 
-        "Les informations renseignées doivent correspondre aux documents officiels.", 
-    }, 
-  }); 
-
-  const identityForm = await prisma.document.create({ 
-    data: { 
-      name: "Formulaire de demande de document d'identité", 
-      price: 2000, 
-      customizable: true, 
-    }, 
-  }); 
-
-  const residenceForm = await prisma.document.create({ 
-    data: { 
-      name: "Demande d'attestation de résidence", 
-      price: 500, 
-      customizable: true, 
-    }, 
-  }); 
-
-  console.log("✅ Documents created"); 
-
-  // ============================================================ 
-  // STEPS 
-  // ============================================================ 
-
-  const certificationStep = await prisma.step.create({ 
-    data: { 
-      title: "Préparer les documents nécessaires", 
-      description: 
-        "Rassemblez les documents requis avant de vous rendre au service compétent.", 
-      processId: birthCertificationProcess.id, 
-      administrativeBodyId: mairie.id, 
-      documents: { 
-        connect: [{ id: certificationForm.id }], 
-      }, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Se rendre au service compétent", 
-      description: 
-        "Présentez-vous à la mairie ou auprès du service compétent.", 
-      processId: birthCertificationProcess.id, 
-      administrativeBodyId: mairie.id, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Préparer votre demande", 
-      description: 
-        "Préparez les informations et documents nécessaires à la demande.", 
-      processId: birthCertificateProcess.id, 
-      administrativeBodyId: mairie.id, 
-      documents: { 
-        connect: [{ id: birthCertificateForm.id }], 
-      }, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Déposer la demande", 
-      description: 
-        "Déposez votre demande auprès du service administratif compétent.", 
-      processId: birthCertificateProcess.id, 
-      administrativeBodyId: mairie.id, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Préparer les pièces requises", 
-      description: 
-        "Rassemblez les pièces justificatives nécessaires pour votre demande.", 
-      processId: firstIdentityProcess.id, 
-      administrativeBodyId: prefecture.id, 
-      documents: { 
-        connect: [{ id: identityForm.id }], 
-      }, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Déposer votre première demande", 
-      description: 
-        "Présentez-vous auprès du service compétent pour déposer votre dossier.", 
-      processId: firstIdentityProcess.id, 
-      administrativeBodyId: prefecture.id, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Préparer le dossier de renouvellement", 
-      description: 
-        "Préparez les documents nécessaires au renouvellement.", 
-      processId: renewalIdentityProcess.id, 
-      administrativeBodyId: prefecture.id, 
-      documents: { 
-        connect: [{ id: identityForm.id }], 
-      }, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Déposer la demande de renouvellement", 
-      description: 
-        "Déposez votre dossier auprès du service administratif compétent.", 
-      processId: renewalIdentityProcess.id, 
-      administrativeBodyId: prefecture.id, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Remplir la demande", 
-      description: 
-        "Complétez les informations nécessaires pour votre attestation de résidence.", 
-      processId: residenceCertificateProcess.id, 
-      administrativeBodyId: mairie.id, 
-      documents: { 
-        connect: [{ id: residenceForm.id }], 
-      }, 
-    }, 
-  }); 
-
-  await prisma.step.create({ 
-    data: { 
-      title: "Faire viser la demande", 
-      description: 
-        "Présentez votre demande au service compétent.", 
-      processId: residenceCertificateProcess.id, 
-      administrativeBodyId: mairie.id, 
-    }, 
-  }); 
-
-  console.log("✅ Steps created"); 
-
-  // ============================================================ 
-  // FRAUD ALERT 
-  // ============================================================ 
-
-  await prisma.fraudAlert.create({ 
-    data: { 
-      title: "Attention aux intermédiaires non officiels", 
-      description: 
-        "Ne versez pas d'argent à une personne qui prétend pouvoir accélérer votre démarche sans justificatif officiel.", 
-      stepId: certificationStep.id, 
-    }, 
-  }); 
-
-  console.log("✅ Fraud alert created"); 
-
-  // ============================================================ 
-  // USER FOLDER 
-  // ============================================================ 
-
-  const folder = await prisma.folder.create({ 
-    data: { 
-      name: "Certification de mon acte de naissance", 
-      status: FolderStatus.PENDING, 
-      userId: user.id, 
-      procedureId: birthProcedure.id, 
-      processId: birthCertificationProcess.id, 
-      locationId: bafoussam.id, 
-    }, 
-  }); 
-
-
-  await prisma.progression.create({ 
-    data: { 
-      folderId: folder.id, 
-      currentQuestionId: birthQuestion.id, 
-    }, 
-  }); 
-
-  console.log("✅ Folder, answer and progression created"); 
-
-  // ============================================================ 
-  // DOCUMENT PURCHASE 
-  // ============================================================ 
-
-  const purchase = await prisma.documentPurchase.create({ 
-    data: { 
-      amount: certificationForm.price, 
-      userId: user.id, 
-      documentId: certificationForm.id, 
-    }, 
-  }); 
-
-  await prisma.transaction.create({ 
-    data: { 
-      reference: "TX-SEED-001", 
-      amount: purchase.amount, 
-      paymentMethod: "MOBILE_MONEY", 
-      status: TransactionStatus.SUCCESS, 
-      documentPurchaseId: purchase.id, 
-    }, 
-  }); 
-
-  console.log("✅ Document purchase created"); 
-
-  // ============================================================ 
-  // DONATION 
-  // ============================================================ 
-
-  const donation = await prisma.donation.create({ 
-    data: { 
-      amount: 500, 
-      userId: user.id, 
-    }, 
-  }); 
-
-  await prisma.transaction.create({ 
-    data: { 
-      reference: "DON-SEED-001", 
-      amount: donation.amount, 
-      paymentMethod: "MOBILE_MONEY", 
-      status: TransactionStatus.SUCCESS, 
-      donationId: donation.id, 
-    }, 
-  }); 
-
-  console.log("✅ Donation created"); 
-
-  console.log("\n🎉 Seed completed successfully!"); 
-  console.log(`👤 User: ${user.email}`); 
-  console.log(`👤 Admin: ${adminUser.email}`); 
-  console.log(`📁 Folder: ${folder.name}`); 
-} 
-
-main() 
-  .catch((error) => { 
-    console.error("❌ Seed failed:"); 
-    console.error(error); 
-    process.exit(1); 
-  }) 
-  .finally(async () => { 
-    await prisma.$disconnect(); 
-  }); 
+/**
+ * TurtleGuide — seed.ts
+ * ============================================================
+ * Ce seed ne crée AUCUN compte (ni utilisateur, ni administrateur).
+ * Il ne peuple que le référentiel "métier" : catégories, procédures,
+ * questions/options, démarches (processes), étapes, documents,
+ * corps administratifs, unités administratives, localisations et
+ * zones desservies.
+ *
+ * SOURCES UTILISÉES (aucune donnée juridique inventée) :
+ * - Loi n°2024/016 du 23 décembre 2024 portant organisation du système
+ *   d'enregistrement des faits d'état civil au Cameroun.
+ * - Ordonnance n°81/02 du 29 juin 1981 portant organisation de l'état
+ *   civil, modifiée et complétée par la Loi n°2011/011 du 6 mai 2011.
+ * - Décret présidentiel du 4 août 2016 fixant les caractéristiques et
+ *   modalités d'établissement et de délivrance de la Carte Nationale
+ *   d'Identité (CNI), et décret portant régime des titres identitaires
+ *   (définition de la "demande tardive" de CNI : première demande
+ *   introduite après 30 ans).
+ * - Loi n°2019/024 du 24 décembre 2019 portant Code Général des
+ *   Collectivités Territoriales Décentralisées (attributions des
+ *   communes).
+ *
+ * NOTE SUR LES IMAGES : les liens utilisent picsum.photos (CDN public,
+ * gratuit, sans clé API, garanti disponible) plutôt que des IDs de
+ * photos Unsplash devinés à la main — je n'ai pas pu vérifier
+ * individuellement que des IDs Unsplash choisis "à l'aveugle"
+ * résolvent réellement. Remplacez `image` par de vraies URLs
+ * `https://images.unsplash.com/photo-...` si vous en sélectionnez
+ * vous-même depuis unsplash.com.
+ *
+ * NOTE SUR LES PRIX (Document.price) : ce sont des tarifs de SERVICE
+ * proposés par la plateforme TurtleGuide pour la préparation d'un
+ * document (formulaire pré-rempli, modèle de requête, etc.) — ce ne
+ * sont PAS les frais administratifs officiels (timbres, greffe...),
+ * qui restent dus séparément par l'utilisateur auprès de l'administration.
+ * ============================================================
+ */
+
+import { PrismaClient } from "../generated/prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
+});
+
+const prisma = new PrismaClient({ adapter });
+
+function img(seed: string) {
+  return `https://picsum.photos/seed/turtleguide-${seed}/900/600`;
+}
+
+async function main() {
+  console.log("🌱 Starting seed (procedures only — no accounts)...");
+
+  // ============================================================
+  // CLEAN DATABASE
+  // ============================================================
+  // Ordre inverse des dépendances, y compris les tables liées aux
+  // comptes : on nettoie tout pour garantir un état reproductible,
+  // même si ce seed ne recrée ensuite aucun compte.
+
+  await prisma.transaction.deleteMany();
+  await prisma.documentPurchase.deleteMany();
+  await prisma.donation.deleteMany();
+
+  await prisma.fraudAlert.deleteMany();
+  await prisma.step.deleteMany();
+  await prisma.document.deleteMany();
+
+  await prisma.answer.deleteMany();
+  await prisma.progression.deleteMany();
+  await prisma.folder.deleteMany();
+
+  await prisma.answerOption.deleteMany();
+  await prisma.question.deleteMany();
+
+  await prisma.process.deleteMany();
+  await prisma.procedure.deleteMany();
+  await prisma.category.deleteMany();
+
+  await prisma.areaServed.deleteMany();
+  await prisma.administrativeUnit.deleteMany();
+  await prisma.administrativeBody.deleteMany();
+  await prisma.location.deleteMany();
+
+  await prisma.account.deleteMany();
+  await prisma.session.deleteMany();
+  await prisma.verification.deleteMany();
+  await prisma.administrator.deleteMany();
+  await prisma.user.deleteMany();
+
+  console.log("🗑️  Database cleaned");
+
+  // ============================================================
+  // LOCATIONS — villes réelles du Cameroun (coordonnées approximatives
+  // des centres-villes)
+  // ============================================================
+
+  const cities = [
+    { key: "yaounde", city: "Yaoundé", address: "Centre-ville de Yaoundé", latitude: 3.848, longitude: 11.5021 },
+    { key: "douala", city: "Douala", address: "Centre-ville de Douala", latitude: 4.0511, longitude: 9.7679 },
+    { key: "bafoussam", city: "Bafoussam", address: "Centre administratif de Bafoussam", latitude: 5.4781, longitude: 10.4176 },
+    { key: "bamenda", city: "Bamenda", address: "Centre administratif de Bamenda", latitude: 5.9631, longitude: 10.1591 },
+  ] as const;
+
+  const locations: Record<string, { id: string }> = {};
+  for (const c of cities) {
+    locations[c.key] = await prisma.location.create({
+      data: {
+        address: c.address,
+        city: c.city,
+        latitude: c.latitude,
+        longitude: c.longitude,
+      },
+    });
+  }
+
+  console.log("✅ Locations created");
+
+  // ============================================================
+  // ADMINISTRATIVE BODIES (corps administratifs génériques)
+  // ============================================================
+
+  const mairie = await prisma.administrativeBody.create({
+    data: { name: "Mairie (Centre d'état civil)" },
+  });
+
+  const tribunal = await prisma.administrativeBody.create({
+    data: { name: "Tribunal de Première Instance" },
+  });
+
+  const dgsn = await prisma.administrativeBody.create({
+    data: { name: "Délégation Générale à la Sûreté Nationale (DGSN)" },
+  });
+
+  const commissariat = await prisma.administrativeBody.create({
+    data: { name: "Commissariat de Police" },
+  });
+
+  console.log("✅ Administrative bodies created");
+
+  // ============================================================
+  // ADMINISTRATIVE UNITS + AREAS SERVED
+  // (une antenne par corps administratif et par ville, desservant
+  // sa propre ville — permet la résolution dynamique par localisation)
+  // ============================================================
+
+  const bodies = [
+    { body: mairie, label: "Mairie" },
+    { body: tribunal, label: "Tribunal de Première Instance" },
+    { body: dgsn, label: "Centre d'enrôlement DGSN" },
+    { body: commissariat, label: "Commissariat de Police" },
+  ];
+
+  for (const { body, label } of bodies) {
+    for (const c of cities) {
+      const unit = await prisma.administrativeUnit.create({
+        data: {
+          name: `${label} de ${c.city}`,
+          administrativeBodyId: body.id,
+          locationId: locations[c.key].id,
+        },
+      });
+
+      await prisma.areaServed.create({
+        data: {
+          name: c.city,
+          locationId: locations[c.key].id,
+          administrativeUnitId: unit.id,
+        },
+      });
+    }
+  }
+
+  console.log("✅ Administrative units and areas served created");
+
+  // ============================================================
+  // CATEGORIES
+  // ============================================================
+
+  const civilStatusCategory = await prisma.category.create({
+    data: {
+      name: "État civil",
+      slug: "etat-civil",
+      description:
+        "Démarches relatives aux actes et documents d'état civil : naissance, déclaration, jugement supplétif, rectification.",
+      isActive: true,
+    },
+  });
+
+  const identityCategory = await prisma.category.create({
+    data: {
+      name: "Identité",
+      slug: "identite",
+      description:
+        "Démarches relatives à la Carte Nationale d'Identité (première demande, renouvellement, perte ou vol).",
+      isActive: true,
+    },
+  });
+
+  const residenceCategory = await prisma.category.create({
+    data: {
+      name: "Résidence et administration",
+      slug: "residence-administration",
+      description:
+        "Démarches liées à la résidence et aux formalités administratives locales.",
+      isActive: true,
+    },
+  });
+
+  console.log("✅ Categories created");
+
+  // ============================================================
+  // PROCEDURE 1 — ÉTAT CIVIL / ACTE DE NAISSANCE
+  // ============================================================
+
+  const birthProcedure = await prisma.procedure.create({
+    data: {
+      title: "Acte de naissance",
+      description:
+        "Ce questionnaire identifie la démarche exacte à suivre selon votre situation : naissance jamais déclarée, copie d'un acte existant, ou correction d'un acte comportant une erreur.",
+      image: img("acte-naissance"),
+      legalBasis:
+        "Loi n°2024/016 du 23 décembre 2024 portant organisation du système d'enregistrement des faits d'état civil au Cameroun ; Ordonnance n°81/02 du 29 juin 1981 portant organisation de l'état civil, modifiée et complétée par la Loi n°2011/011 du 6 mai 2011.",
+      categoryId: civilStatusCategory.id,
+      isActive: true,
+    },
+  });
+
+  // --- Processes (démarches identifiées à l'issue du diagnostic) ---
+
+  const normalDeclarationProcess = await prisma.process.create({
+    data: {
+      title: "Déclaration normale de naissance",
+      description:
+        "La naissance est déclarée dans le délai légal de quatre-vingt-dix (90) jours suivant l'accouchement. La déclaration et la première délivrance de l'acte sont gratuites dans ce délai.",
+    },
+  });
+
+  const lateDeclarationProcess = await prisma.process.create({
+    data: {
+      title: "Déclaration tardive par réquisition du Procureur",
+      description:
+        "La naissance n'a pas été déclarée dans le délai légal de 90 jours mais a moins de six (6) mois. L'enregistrement se fait sur réquisition du Procureur de la République, conformément à la loi.",
+    },
+  });
+
+  const suppletiveJudgmentProcess = await prisma.process.create({
+    data: {
+      title: "Jugement supplétif d'acte de naissance",
+      description:
+        "La naissance n'a pas été déclarée dans les six (6) mois suivant l'accouchement : passé ce délai, l'acte ne peut être établi que par un jugement rendu par le Tribunal de Première Instance compétent.",
+    },
+  });
+
+  const birthCopyProcess = await prisma.process.create({
+    data: {
+      title: "Copie d'un acte de naissance existant",
+      description:
+        "Un acte de naissance a déjà été dressé pour la personne concernée : il s'agit d'obtenir une copie ou un extrait certifié conforme auprès du centre d'état civil où l'acte a été enregistré.",
+    },
+  });
+
+  const birthRectificationProcess = await prisma.process.create({
+    data: {
+      title: "Rectification d'un acte de naissance",
+      description:
+        "L'acte de naissance existe mais comporte une erreur matérielle (nom, filiation, date...) qui doit être corrigée par un jugement supplétif de rectification.",
+    },
+  });
+
+  // --- Documents ---
+
+  const birthDeclarationForm = await prisma.document.create({
+    data: {
+      name: "Fiche de déclaration de naissance pré-remplie",
+      price: 500,
+      customizable: true,
+      legalWarning:
+        "Ce document est une aide à la préparation de votre dossier. La déclaration de naissance elle-même reste gratuite et doit être faite en personne auprès de l'officier d'état civil.",
+    },
+  });
+
+  const requisitionRequestForm = await prisma.document.create({
+    data: {
+      name: "Modèle de demande de réquisition au Procureur de la République",
+      price: 1500,
+      customizable: true,
+      legalWarning:
+        "Ce modèle facilite la constitution du dossier. Il ne remplace ni le certificat de non-inscription délivré par la mairie, ni la décision du Procureur de la République.",
+    },
+  });
+
+  const suppletiveRequestForm = await prisma.document.create({
+    data: {
+      name: "Modèle de requête en jugement supplétif d'acte de naissance",
+      price: 2000,
+      customizable: true,
+      legalWarning:
+        "Ce modèle de requête est une aide à la rédaction. Il ne se substitue pas à une consultation juridique et ne garantit pas l'issue de la procédure devant le tribunal.",
+    },
+  });
+
+  const birthCopyRequestForm = await prisma.document.create({
+    data: {
+      name: "Formulaire de demande de copie d'acte de naissance",
+      price: 500,
+      customizable: true,
+      legalWarning:
+        "Des frais de timbre (fiscal et communal) restent dus directement à la mairie, en plus du tarif de préparation de ce formulaire.",
+    },
+  });
+
+  const rectificationRequestForm = await prisma.document.create({
+    data: {
+      name: "Modèle de requête en rectification d'acte de naissance",
+      price: 2000,
+      customizable: true,
+      legalWarning:
+        "Ce modèle reprend les mentions habituellement exigées (identité du requérant, filiation, motifs détaillés) mais ne remplace pas une assistance juridique.",
+    },
+  });
+
+  // --- Question tree ---
+
+  const birthQuestion = await prisma.question.create({
+    data: {
+      title: "Quelle est votre situation concernant l'acte de naissance ?",
+      description: "Sélectionnez la situation qui correspond le mieux à votre besoin.",
+      procedureId: birthProcedure.id,
+    },
+  });
+
+  const birthNeverDeclaredQuestion = await prisma.question.create({
+    data: {
+      title: "Depuis combien de temps la naissance n'a-t-elle pas été déclarée ?",
+      description:
+        "Cette durée détermine la procédure applicable (déclaration normale, déclaration tardive ou jugement supplétif).",
+      procedureId: birthProcedure.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "La naissance n'a jamais été déclarée à l'état civil",
+      questionId: birthQuestion.id,
+      nextQuestionId: birthNeverDeclaredQuestion.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "L'acte existe déjà et je souhaite en obtenir une copie",
+      questionId: birthQuestion.id,
+      processId: birthCopyProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "L'acte existe mais contient une erreur à corriger",
+      questionId: birthQuestion.id,
+      processId: birthRectificationProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Moins de 90 jours",
+      questionId: birthNeverDeclaredQuestion.id,
+      processId: normalDeclarationProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Entre 90 jours et 6 mois",
+      questionId: birthNeverDeclaredQuestion.id,
+      processId: lateDeclarationProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Plus de 6 mois",
+      questionId: birthNeverDeclaredQuestion.id,
+      processId: suppletiveJudgmentProcess.id,
+    },
+  });
+
+  // --- Steps ---
+
+  await prisma.step.create({
+    data: {
+      title: "Réunir les pièces justificatives de la naissance",
+      description:
+        "Préparez les informations relatives à la naissance (lieu, date, identité des parents) nécessaires à la déclaration.",
+      processId: normalDeclarationProcess.id,
+      administrativeBodyId: mairie.id,
+      documents: { connect: [{ id: birthDeclarationForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Déclarer la naissance au centre d'état civil du lieu de naissance",
+      description:
+        "La déclaration doit être faite dans les 90 jours suivant l'accouchement ; elle est gratuite dans ce délai.",
+      processId: normalDeclarationProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Retirer le premier exemplaire de l'acte de naissance",
+      description: "Récupérez l'acte de naissance délivré par l'officier d'état civil.",
+      processId: normalDeclarationProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  const requisitionStep = await prisma.step.create({
+    data: {
+      title: "Obtenir un certificat de non-inscription",
+      description:
+        "Ce certificat, délivré par la mairie du lieu de naissance, atteste que la naissance n'a pas encore été enregistrée.",
+      processId: lateDeclarationProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Saisir le Procureur de la République pour obtenir une réquisition",
+      description:
+        "La demande est adressée au Procureur de la République près le Tribunal de Première Instance compétent.",
+      processId: lateDeclarationProcess.id,
+      administrativeBodyId: tribunal.id,
+      documents: { connect: [{ id: requisitionRequestForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Présenter la réquisition à l'officier d'état civil",
+      description:
+        "Une fois la réquisition obtenue, elle permet à l'officier d'état civil d'enregistrer la naissance.",
+      processId: lateDeclarationProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Obtenir un certificat de non-inscription",
+      description:
+        "Ce certificat, délivré par la mairie du lieu de naissance, est une pièce obligatoire du dossier de jugement supplétif.",
+      processId: suppletiveJudgmentProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Obtenir un certificat d'âge apparent",
+      description:
+        "Ce certificat médical, établi par un médecin, est requis lorsque la date de naissance exacte n'est pas connue avec certitude.",
+      processId: suppletiveJudgmentProcess.id,
+    },
+  });
+
+  const suppletiveTribunalStep = await prisma.step.create({
+    data: {
+      title: "Déposer la requête en jugement supplétif",
+      description:
+        "La requête est déposée devant le Tribunal de Première Instance du ressort du centre d'état civil où l'acte aurait dû être dressé.",
+      processId: suppletiveJudgmentProcess.id,
+      administrativeBodyId: tribunal.id,
+      documents: { connect: [{ id: suppletiveRequestForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Assister à l'audience et obtenir le jugement",
+      description: "Le tribunal statue et rend le jugement supplétif d'acte de naissance.",
+      processId: suppletiveJudgmentProcess.id,
+      administrativeBodyId: tribunal.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Faire transcrire le jugement à la mairie",
+      description:
+        "Le jugement rendu doit être transcrit dans les registres d'état civil de la mairie concernée pour donner lieu à un acte de naissance.",
+      processId: suppletiveJudgmentProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Se présenter au centre d'état civil avec les références de l'acte",
+      description:
+        "Munissez-vous du nom, de la date de naissance et, si possible, du numéro de l'acte déjà enregistré.",
+      processId: birthCopyProcess.id,
+      administrativeBodyId: mairie.id,
+      documents: { connect: [{ id: birthCopyRequestForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Payer les frais de timbre et retirer la copie",
+      description:
+        "Les frais de timbre fiscal et communal sont réglés directement à la mairie avant la remise de la copie certifiée conforme.",
+      processId: birthCopyProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Constituer le dossier de demande de rectification",
+      description:
+        "Le dossier doit préciser l'identité du requérant, la filiation de la personne concernée par la rectification, et les motifs détaillés de la demande.",
+      processId: birthRectificationProcess.id,
+      documents: { connect: [{ id: rectificationRequestForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Déposer la requête devant le Tribunal de Première Instance",
+      description:
+        "La requête est déposée devant la juridiction du ressort du centre d'état civil où l'acte a été dressé.",
+      processId: birthRectificationProcess.id,
+      administrativeBodyId: tribunal.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Faire transcrire la mention rectificative",
+      description:
+        "Une fois le jugement supplétif de rectification obtenu, la mention rectificative est transcrite sur l'acte à la mairie.",
+      processId: birthRectificationProcess.id,
+      administrativeBodyId: mairie.id,
+    },
+  });
+
+  console.log("✅ Procedure 1 (Acte de naissance) created");
+
+  // ============================================================
+  // PROCEDURE 2 — IDENTITÉ / CARTE NATIONALE D'IDENTITÉ
+  // ============================================================
+
+  const identityProcedure = await prisma.procedure.create({
+    data: {
+      title: "Carte Nationale d'Identité",
+      description:
+        "Ce questionnaire identifie la démarche correspondant à votre situation : première demande, renouvellement, ou perte/vol de votre Carte Nationale d'Identité (CNI).",
+      image: img("carte-identite"),
+      legalBasis:
+        "Décret présidentiel du 4 août 2016 fixant les caractéristiques et modalités d'établissement et de délivrance de la Carte Nationale d'Identité ; décret portant régime des titres identitaires (pré-enrôlement en ligne et enrôlement biométrique par la Délégation Générale à la Sûreté Nationale).",
+      categoryId: identityCategory.id,
+      isActive: true,
+    },
+  });
+
+  const firstRequestProcess = await prisma.process.create({
+    data: {
+      title: "Première demande de Carte Nationale d'Identité",
+      description:
+        "Démarche de première demande pour un citoyen n'ayant jamais possédé de Carte Nationale d'Identité.",
+    },
+  });
+
+  const lateFirstRequestProcess = await prisma.process.create({
+    data: {
+      title: "Première demande tardive de Carte Nationale d'Identité",
+      description:
+        "Au sens du décret présidentiel relatif au régime des titres identitaires, est qualifiée de « demande tardive » toute première demande de Carte Nationale d'Identité introduite au-delà de trente (30) ans. La procédure d'enrôlement reste identique, avec un suivi spécifique du dossier.",
+    },
+  });
+
+  const renewalProcess = await prisma.process.create({
+    data: {
+      title: "Renouvellement de la Carte Nationale d'Identité",
+      description:
+        "Démarche de renouvellement pour un titulaire possédant déjà une Carte Nationale d'Identité (durée de validité : 10 ans).",
+    },
+  });
+
+  const lostStolenProcess = await prisma.process.create({
+    data: {
+      title: "Déclaration de perte ou de vol et nouvelle demande de CNI",
+      description:
+        "Démarche à suivre lorsque la Carte Nationale d'Identité a été perdue ou volée, nécessitant une déclaration préalable auprès de la police avant tout nouvel enrôlement.",
+    },
+  });
+
+  const preEnrollmentForm = await prisma.document.create({
+    data: {
+      name: "Fiche de pré-enrôlement CNI pré-remplie",
+      price: 500,
+      customizable: true,
+      legalWarning:
+        "Le pré-enrôlement officiel s'effectue exclusivement sur la plateforme idcam.cm ; ce document est une aide à la préparation des informations à y renseigner.",
+    },
+  });
+
+  const identityQuestion = await prisma.question.create({
+    data: {
+      title: "Quelle est votre situation concernant la Carte Nationale d'Identité ?",
+      description: "Sélectionnez la situation qui correspond à votre besoin.",
+      procedureId: identityProcedure.id,
+    },
+  });
+
+  const identityAgeQuestion = await prisma.question.create({
+    data: {
+      title: "Quel est votre âge ?",
+      description:
+        "Une première demande introduite après 30 ans est administrativement qualifiée de « demande tardive ».",
+      procedureId: identityProcedure.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "C'est ma première demande",
+      questionId: identityQuestion.id,
+      nextQuestionId: identityAgeQuestion.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Je dois renouveler ma carte actuelle",
+      questionId: identityQuestion.id,
+      processId: renewalProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Ma carte a été perdue ou volée",
+      questionId: identityQuestion.id,
+      processId: lostStolenProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "J'ai moins de 30 ans",
+      questionId: identityAgeQuestion.id,
+      processId: firstRequestProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "J'ai plus de 30 ans",
+      questionId: identityAgeQuestion.id,
+      processId: lateFirstRequestProcess.id,
+    },
+  });
+
+  for (const process of [firstRequestProcess, lateFirstRequestProcess]) {
+    await prisma.step.create({
+      data: {
+        title: "Effectuer le pré-enrôlement en ligne sur idcam.cm",
+        description:
+          "Le pré-enrôlement se fait au moyen d'une adresse électronique, avec prise de rendez-vous à un poste d'enrôlement après paiement du droit de timbre correspondant.",
+        processId: process.id,
+        documents: { connect: [{ id: preEnrollmentForm.id }] },
+      },
+    });
+
+    await prisma.step.create({
+      data: {
+        title: "Se présenter au poste d'enrôlement de la DGSN",
+        description:
+          "Présentez-vous avec les pièces requises (acte de naissance, et le cas échéant certificat de nationalité).",
+        processId: process.id,
+        administrativeBodyId: dgsn.id,
+      },
+    });
+
+    await prisma.step.create({
+      data: {
+        title: "Effectuer l'enrôlement biométrique",
+        description: "Vos données biométriques et d'identité sont enregistrées au poste d'enrôlement.",
+        processId: process.id,
+        administrativeBodyId: dgsn.id,
+      },
+    });
+
+    await prisma.step.create({
+      data: {
+        title: "Retirer la Carte Nationale d'Identité",
+        description: "Retirez votre carte au centre indiqué lors de l'enrôlement.",
+        processId: process.id,
+        administrativeBodyId: dgsn.id,
+      },
+    });
+  }
+
+  await prisma.step.create({
+    data: {
+      title: "Effectuer le pré-enrôlement en ligne en précisant un renouvellement",
+      description: "Indiquez sur idcam.cm qu'il s'agit d'un renouvellement et non d'une première demande.",
+      processId: renewalProcess.id,
+      documents: { connect: [{ id: preEnrollmentForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Se présenter au poste d'enrôlement avec l'ancienne carte",
+      description: "L'ancienne carte doit être restituée lors du dépôt du dossier de renouvellement.",
+      processId: renewalProcess.id,
+      administrativeBodyId: dgsn.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Effectuer le nouvel enrôlement biométrique",
+      description: "Vos données biométriques sont mises à jour.",
+      processId: renewalProcess.id,
+      administrativeBodyId: dgsn.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Retirer la nouvelle carte",
+      description: "Retirez la nouvelle Carte Nationale d'Identité au centre indiqué.",
+      processId: renewalProcess.id,
+      administrativeBodyId: dgsn.id,
+    },
+  });
+
+  const lossDeclarationStep = await prisma.step.create({
+    data: {
+      title: "Faire une déclaration de perte ou de vol",
+      description:
+        "Rendez-vous au commissariat de police le plus proche pour obtenir un récépissé de déclaration de perte ou de vol.",
+      processId: lostStolenProcess.id,
+      administrativeBodyId: commissariat.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Effectuer un nouveau pré-enrôlement sur idcam.cm",
+      description: "Renseignez les informations de votre nouvelle demande en ligne.",
+      processId: lostStolenProcess.id,
+      documents: { connect: [{ id: preEnrollmentForm.id }] },
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Se présenter au poste d'enrôlement de la DGSN avec le récépissé",
+      description: "Le récépissé de déclaration de perte ou de vol est indispensable au dépôt du dossier.",
+      processId: lostStolenProcess.id,
+      administrativeBodyId: dgsn.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Retirer la nouvelle carte",
+      description: "Retirez votre nouvelle Carte Nationale d'Identité au centre indiqué.",
+      processId: lostStolenProcess.id,
+      administrativeBodyId: dgsn.id,
+    },
+  });
+
+  console.log("✅ Procedure 2 (Carte Nationale d'Identité) created");
+
+  // ============================================================
+  // PROCEDURE 3 — RÉSIDENCE / ATTESTATION DE RÉSIDENCE
+  // ============================================================
+
+  const residenceProcedure = await prisma.procedure.create({
+    data: {
+      title: "Attestation de résidence",
+      description:
+        "Démarche permettant d'obtenir une attestation de résidence auprès de la mairie de son lieu de résidence.",
+      image: img("attestation-residence"),
+      legalBasis:
+        "Loi n°2019/024 du 24 décembre 2019 portant Code Général des Collectivités Territoriales Décentralisées, relative notamment aux attributions des communes en matière de services à la population.",
+      categoryId: residenceCategory.id,
+      isActive: true,
+    },
+  });
+
+  const residenceCertificateProcess = await prisma.process.create({
+    data: {
+      title: "Obtenir une attestation de résidence",
+      description:
+        "Démarche à suivre auprès de la mairie du lieu de résidence pour obtenir une attestation de résidence.",
+    },
+  });
+
+  const residenceForm = await prisma.document.create({
+    data: {
+      name: "Formulaire de demande d'attestation de résidence",
+      price: 500,
+      customizable: true,
+      legalWarning:
+        "Le formulaire ne dispense pas des démarches préalables usuellement requises (visa du chef de quartier) avant présentation à la mairie.",
+    },
+  });
+
+  const residenceQuestion = await prisma.question.create({
+    data: {
+      title: "Résidez-vous actuellement dans la commune concernée ?",
+      description: "Cette information permet de confirmer la mairie compétente pour votre demande.",
+      procedureId: residenceProcedure.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Oui, j'y réside actuellement",
+      questionId: residenceQuestion.id,
+      processId: residenceCertificateProcess.id,
+    },
+  });
+
+  await prisma.answerOption.create({
+    data: {
+      label: "Non, mais j'y ai résidé récemment",
+      questionId: residenceQuestion.id,
+      processId: residenceCertificateProcess.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Faire viser la demande par le chef de quartier",
+      description:
+        "Dans la pratique administrative courante, la demande d'attestation de résidence est habituellement visée par l'autorité du quartier avant d'être présentée à la mairie.",
+      processId: residenceCertificateProcess.id,
+    },
+  });
+
+  await prisma.step.create({
+    data: {
+      title: "Se présenter à la mairie avec une pièce d'identité",
+      description:
+        "Présentez la demande visée, accompagnée d'une pièce d'identité, au service compétent de la mairie de votre lieu de résidence.",
+      processId: residenceCertificateProcess.id,
+      administrativeBodyId: mairie.id,
+      documents: { connect: [{ id: residenceForm.id }] },
+    },
+  });
+
+  console.log("✅ Procedure 3 (Attestation de résidence) created");
+
+  // ============================================================
+  // FRAUD ALERTS
+  // (mises en garde génériques, cohérentes avec le CDC, sans
+  // statistique inventée)
+  // ============================================================
+
+  await prisma.fraudAlert.create({
+    data: {
+      title: "Attention aux intermédiaires non officiels",
+      description:
+        "Ne versez jamais d'argent à une personne qui prétend pouvoir accélérer ou garantir l'obtention d'une réquisition, d'un jugement supplétif ou d'un titre identitaire en dehors des services officiels.",
+      stepId: requisitionStep.id,
+    },
+  });
+
+  await prisma.fraudAlert.create({
+    data: {
+      title: "Aucun paiement en dehors des guichets officiels",
+      description:
+        "Le dépôt d'une requête devant le Tribunal de Première Instance ne nécessite aucun paiement à un tiers en dehors des frais de greffe officiels.",
+      stepId: suppletiveTribunalStep.id,
+    },
+  });
+
+  await prisma.fraudAlert.create({
+    data: {
+      title: "Le pré-enrôlement CNI est gratuit sur idcam.cm",
+      description:
+        "Méfiez-vous de toute personne proposant, contre paiement, de réaliser à votre place un pré-enrôlement qui reste accessible directement et gratuitement sur idcam.cm (hors droit de timbre officiel).",
+      stepId: lossDeclarationStep.id,
+    },
+  });
+
+  console.log("✅ Fraud alerts created");
+
+  console.log("\n🎉 Seed completed successfully!");
+  console.log(`📂 Categories: État civil, Identité, Résidence et administration`);
+  console.log(`📄 Procedures: Acte de naissance, Carte Nationale d'Identité, Attestation de résidence`);
+  console.log(`🏛️  Administrative bodies: Mairie, Tribunal de Première Instance, DGSN, Commissariat`);
+  console.log(`📍 Locations: Yaoundé, Douala, Bafoussam, Bamenda`);
+}
+
+main()
+  .catch((error) => {
+    console.error("❌ Seed failed:");
+    console.error(error);
+    process.exit(1);
+  })
+  .finally(async () => {
+    await prisma.$disconnect();
+  });
