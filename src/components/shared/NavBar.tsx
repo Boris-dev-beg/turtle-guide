@@ -44,7 +44,10 @@ export const NavBar = ({
   // ! Render
   return (
     <div className="flex items-center gap-2">
-      <nav className="hidden items-center gap-1 md:flex lg:gap-2 px-10">
+      <nav
+        aria-label="Navigation principale"
+        className="hidden items-center gap-1 px-6 md:flex lg:gap-2"
+      >
         {links.map((link, index) => (
           <Link_
             key={index}
@@ -63,9 +66,9 @@ export const NavBar = ({
             onClick={() => setShowProfile((prev) => !prev)}
             aria-label="Ouvrir le menu du profil"
             aria-expanded={showProfile}
-            className="flex items-center gap-2.5 rounded-md px-2 py-1.5 transition-colors hover:bg-muted/70 cursor-pointer"
+            className="flex min-h-12 items-center gap-2.5 rounded-sm px-2 py-1.5 transition-colors hover:bg-muted cursor-pointer"
           >
-            <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-full border border-border bg-muted">
+            <div className="flex size-9 shrink-0 items-center justify-center overflow-hidden rounded-sm border border-border bg-muted">
               {user.image ? (
                 <Image
                   src={user.image}
@@ -84,10 +87,10 @@ export const NavBar = ({
 
           {/* Popup */}
           {showProfile && (
-            <div className="absolute right-0 top-[calc(100%+10px)] z-50 w-64 overflow-hidden rounded-xs border border-border bg-background shadow-xl animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 space-y-4">
+            <div className="absolute right-0 top-[calc(100%+8px)] z-50 w-64 overflow-hidden rounded-sm border border-border bg-background shadow-md animate-in fade-in-0 zoom-in-95 slide-in-from-top-2 space-y-4">
               <div className="border-b border-border p-4">
                 <div className="flex items-center gap-3">
-                  <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full bg-primary/10">
+                  <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-secondary">
                     {user.image ? (
                       <Image
                         src={user.image}
@@ -97,14 +100,14 @@ export const NavBar = ({
                         className="size-full object-cover"
                       />
                     ) : (
-                      <span className="text-sm font-semibold uppercase text-primary">
+                      <span className="text-sm font-semibold uppercase text-brand-green">
                         {user.name.slice(0, 2)}
                       </span>
                     )}
                   </div>
 
                   <div className="min-w-0">
-                    <p className="truncate font-semibold text-primary text-lg">
+                    <p className="truncate font-semibold text-brand-ink text-lg">
                       {user.name}
                     </p>
 
@@ -119,7 +122,7 @@ export const NavBar = ({
                 <Link
                   href="/profile"
                   onClick={() => setShowProfile(false)}
-                  className="flex items-center justify-between rounded-xs p-3 transition-colors hover:bg-muted btn text-muted-foreground text-base btn"
+                  className="flex min-h-12 items-center justify-between rounded-xs p-3 text-base text-brand-ink-muted transition-colors hover:bg-muted"
                 >
                   <span>Mon profil</span>
                   <User className="text-muted-foreground size-5" />
@@ -128,7 +131,7 @@ export const NavBar = ({
                 <button
                   type="button"
                   onClick={logout}
-                  className="flex w-full items-center justify-between p-3 text-base btn btn-destructive"
+                  className="flex min-h-12 w-full items-center justify-between rounded-xs p-3 text-base text-destructive transition-colors hover:bg-brand-danger-bg"
                 >
                   <span>Déconnexion</span>
                   <LogOut className="size-5" />
@@ -140,7 +143,7 @@ export const NavBar = ({
       ) : (
         <Link
           href="/login"
-          className="btn btn-outline ml-1 px-3 py-2 font-medium sm:px-4"
+          className="ml-1 flex min-h-12 items-center rounded-xs border border-brand-green px-3 py-2 font-medium text-brand-green transition-colors hover:bg-brand-green hover:text-primary-foreground sm:px-4"
         >
           Se connecter
         </Link>
@@ -164,12 +167,12 @@ const Link_ = ({
   return (
     <Link
       href={href}
-      className={`relative flex items-center gap-0.5 px-2.5 py-1 font-medium whitespace-nowrap transition-all duration-200 lg:px-3 text-sm ${isActive ? "text-primary" : "hover:text-primary"}`}
+      className={`relative flex min-h-12 items-center gap-0.5 px-2.5 py-1 text-sm font-medium whitespace-nowrap transition-colors duration-200 lg:px-3 ${isActive ? "text-brand-green" : "text-brand-ink-muted hover:text-brand-ink"}`}
     >
       <span>{label}</span>
 
       {isActive && (
-        <span className="absolute inset-x-2 -bottom-1 h-0.5 rounded-full bg-primary" />
+        <span className="absolute inset-x-2 bottom-0 h-px bg-brand-green" />
       )}
     </Link>
   );

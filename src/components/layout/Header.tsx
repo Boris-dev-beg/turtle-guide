@@ -13,12 +13,12 @@ export default function Header({
     | undefined;
 }) {
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-white/10 bg-primary-foreground text-brand-ink shadow-sm backdrop-blur-xl">
-      <div className="wrapper flex h-16 w-full items-center justify-between">
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background text-brand-ink">
+      <div className="wrapper flex min-h-16 w-full items-center justify-between py-2">
         {/* Logo */}
         <Link
           href="/"
-          className="group flex items-center justify-center w-15 md:w-55 min-w-15 gap-2 transition-opacity hover:opacity-90"
+          className="group flex min-w-15 items-center justify-center gap-2 transition-opacity hover:opacity-80 w-15 md:w-55"
         >
           <Image
             src={logo_mobile}

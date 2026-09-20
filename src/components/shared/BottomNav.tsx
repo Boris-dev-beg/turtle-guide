@@ -9,7 +9,10 @@ export default function BottomNav() {
 
   return (
     <footer className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-background md:hidden">
-      <nav className="mx-auto grid h-16 w-full max-w-lg grid-cols-4">
+      <nav
+        aria-label="Navigation mobile"
+        className="mx-auto grid min-h-16 w-full max-w-lg grid-cols-4"
+      >
         {links.map((link) => (
           <Link_
             key={link.href}
@@ -41,16 +44,13 @@ const Link_ = ({
   return (
     <Link
       href={href}
-      className={`flex h-full min-w-0 w-full flex-col items-center justify-center gap-1 border-t-2 px-2 py-1.5 text-center transition-colors duration-200 ${
+      className={`flex min-h-16 min-w-0 w-full flex-col items-center justify-center gap-1 px-2 py-1.5 text-center transition-colors duration-200 ${
         isActive
-          ? "border-primary text-primary"
-          : "border-transparent text-muted-foreground hover:text-foreground"
+          ? "bg-secondary text-brand-green"
+          : "text-brand-ink-muted hover:bg-muted hover:text-brand-ink"
       }`}
     >
-      <Icon
-        className="size-6 shrink-0"
-        strokeWidth={isActive ? 2.3 : 1.9}
-      />
+      <Icon className="size-6 shrink-0" strokeWidth={isActive ? 2.3 : 1.9} />
 
       <span className="w-full truncate text-sm font-medium leading-4">
         {label}

@@ -27,7 +27,7 @@ export default function HowDoesItWork() {
         ))}
       </div>
 
-      <div className="flex items-start justify-start gap-4 rounded-[1.125rem] border border-brand-yellow/30 bg-brand-yellow-bg p-5 sm:items-center">
+      <div className="flex flex-col md:flex-row items-start justify-start gap-4 rounded-sm border border-brand-yellow/30 bg-brand-yellow-bg p-5">
         <AlertTriangle className="size-8 shrink-0 text-brand-yellow" />
 
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
@@ -42,7 +42,7 @@ export default function HowDoesItWork() {
 
           <Link
             href=""
-            className="inline-flex items-center gap-1 text-sm font-medium text-brand-yellow transition-colors hover:underline"
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-yellow transition-colors hover:underline text-nowrap"
           >
             En savoir plus
             <ArrowRight className="size-4" />
