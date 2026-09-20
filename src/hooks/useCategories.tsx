@@ -1,40 +1,31 @@
-"use client"; 
-import { Category } from "@/generated/prisma/client"; 
-import { useEffect, useState } from "react"; 
+"use client";
+import { getAll } from "@/lib/categories";
+import { useQuery } from "@tanstack/react-query";
 
-export function useCategories() { 
-  // ! States 
-  const [categories, setCategories] = useState<Category[]>([]); 
+type CategoryWithProcedureCount = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  isActive: boolean;
+  _count: {
+    procedures: number;
+  };
+};
 
-  const [loading, setLoading] = useState(true); 
+export function useCategories() {
+  const {
+    data: categories = [],
+    isLoading,
+    isError,
+  } = useQuery<CategoryWithProcedureCount[]>({
+    queryKey: ["categories"],
+    queryFn: async () => await getAll(),
+  });
 
-  // ! Functions 
-  useEffect(() => { 
-
-    async function fetchCategories() { 
-      try { 
-        setLoading(true); 
-        const response = await fetch("/api/categories"); 
-
-        if (!response.ok) throw new Error(`HTTP ${response.status}`); 
-
-        const data: Category[] = await response.json(); 
-
-        setCategories(data); 
-      } catch (err) { 
-        console.error("Erreur lors de la récupération des Categories:", err); 
-      } finally { 
-        setLoading(false); 
-      } 
-    } 
-
-    fetchCategories(); 
-  }, []); 
-
-
-  return { 
-    categories, 
-    loading, 
-
-  }; 
-} 
+  return {
+    categories,
+    loading: isLoading,
+    error: isError,
+  };
+}

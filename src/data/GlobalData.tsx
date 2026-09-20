@@ -94,7 +94,7 @@ export const Procedures_infos = {
   title: "Démarches populaires",
   link: {
     label: "Voir toute les démarches",
-    href: "/proceduces",
+    href: "/categories",
   },
 };
 

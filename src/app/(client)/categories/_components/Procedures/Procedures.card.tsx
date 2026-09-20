@@ -1,22 +1,20 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "../../../../../components/ui/card";
-import { RightIcon } from "./icons";
-import { NeededProcedure } from "@/app/api/procedures/_types/type";
+import { Card, CardDescription } from "../../../../../components/ui/card";
 import { useRouter } from "next/navigation";
 import { useFolderStore } from "@/store/folder.store";
+import Image from "next/image";
 
 export const Procedure_card = ({
   procedure,
 }: {
-  procedure: NeededProcedure;
+  procedure: {
+    title: string;
+    category: { name: string };
+    description: string;
+    image: string;
+  };
 }) => {
   // ! States
   const category = procedure.category?.name?.toLocaleLowerCase() || "";
@@ -34,38 +32,43 @@ export const Procedure_card = ({
   return (
     <Card
       onClick={handleClick}
-      className="group flex min-h-55 w-full cursor-pointer flex-col overflow-hidden rounded-2xl border-border/60 bg-card shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg"
+      className="group turtle-procedure-card py-0 rounded-sm"
     >
-      {/* Header */}
-      <CardHeader className="flex flex-row items-center gap-3 p-5 pb-3">
-        <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-all duration-300 group-hover:bg-primary group-hover:text-primary-foreground">
-          <RightIcon
-            title={title}
-            category={category}
-            className="size-6 transition-transform duration-300 group-hover:scale-110"
-          />
-        </span>
+      <div className="relative aspect-video w-full overflow-hidden rounded-t-sm">
+        <Image
+          src={procedure.image}
+          alt={title}
+          width={800}
+          height={450}
+          className="h-full w-full object-cover"
+        />
+      </div>
 
-        <CardTitle className="line-clamp-2 text-base font-bold leading-snug sm:text-lg">
-          {procedure.title}
-        </CardTitle>
-      </CardHeader>
+      <div className="flex flex-col gap-3 p-4">
+        <p className="text-sm leading-5 text-brand-ink-muted uppercase">
+          {category}
+        </p>
 
-      {/* Description */}
-      <CardDescription className="px-5 text-base leading-6 text-muted-foreground">
-        {procedure.description}
-      </CardDescription>
+        <div className="space-y-2">
+          <h1 className="font-display line-clamp-2 text-[1.4rem] leading-[1.2] text-brand-ink">
+            {title}
+          </h1>
 
-      {/* Footer */}
-      <CardFooter className="mt-auto flex items-center gap-3 p-5 pt-4">
-        <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
-          {procedure.category?.name}
-        </span>
+          <CardDescription className="line-clamp-2 text-[0.98rem] leading-6 text-brand-ink-muted">
+            {procedure.description.split(":")[1] || procedure.description}
+          </CardDescription>
+        </div>
 
-        <span className="ml-auto flex size-9 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-all duration-300 group-hover:border-primary group-hover:bg-primary group-hover:text-primary-foreground">
-          <ChevronRight className="size-4 transition-transform duration-300 group-hover:translate-x-0.5" />
-        </span>
-      </CardFooter>
+        <div className="flex items-center justify-between gap-3 border-t border-brand-line pt-3">
+          <p className="text-[0.9rem] leading-6 text-brand-ink-muted">
+            Commencer le diagnostic
+          </p>
+
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-brand-ink-muted transition-colors duration-200 group-hover:border-brand-green group-hover:bg-brand-green group-hover:text-white">
+            <ChevronRight className="size-4" />
+          </span>
+        </div>
+      </div>
     </Card>
   );
 };

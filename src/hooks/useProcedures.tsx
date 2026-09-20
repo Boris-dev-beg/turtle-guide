@@ -1,36 +1,44 @@
 "use client";
 import { getAllProcedures, getByCategory, getPopular } from "@/lib/procedures";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
 export function useProcedures() {
-  // ! States
-  // ? All Procedures
-  const { data: procedures, isLoading: proceduresLoading } = useQuery({
+  const {
+    data: procedures,
+    isLoading: proceduresLoading,
+    isError: proceduresError,
+  } = useQuery({
     queryKey: ["procedures"],
     queryFn: async () => await getAllProcedures(),
   });
-  
-  // ? Popular procedures
-  const { data: PopularProcedures, isLoading: popularLoading } = useQuery({
+
+  const {
+    data: PopularProcedures,
+    isLoading: popularLoading,
+    isError: popularError,
+  } = useQuery({
     queryKey: ["Popular Procedures"],
     queryFn: async () => await getPopular(),
   });
 
-  // ? Getting By Category
-  const { data: proceduresByCategory } = useQuery({
-    queryKey: ["Procedure by category"],
-    queryFn: async () => await getByCategory(""),
-  });
+  const [category, setCategory] = useState<string>("");
+  const { data: proceduresByCategory, isLoading: proceduresByCategoryLoading } =
+    useQuery({
+      queryKey: ["Procedure by category", category],
+      queryFn: async () => await getByCategory(category),
+      enabled: !!category,
+    });
 
-  // ! Functions
-  // ! Render
   return {
     procedures,
     PopularProcedures,
-    isLoading: proceduresLoading ,
+    isLoading: proceduresLoading,
     proceduresByCategory,
+    proceduresByCategoryLoading,
     popularLoading,
-
-    getByCategory,
+    popularError,
+    proceduresError,
+    setCategory,
   };
 }

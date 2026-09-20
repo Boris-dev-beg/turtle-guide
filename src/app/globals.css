@@ -12,6 +12,7 @@
 
 @theme inline {
   --font-body: "Inter";
+  --font-display: "Fraunces", Georgia, serif;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -267,7 +268,15 @@
   /* ! ---- CARDS ---- */
 
   .turtle-card {
-    @apply bg-card border border-border rounded-sm p-6 shadow-sm transition-all hover:border-brand-green-light/40 hover:shadow-md;
+    @apply flex flex-row items-start gap-4 rounded-sm border border-border bg-card;
+  }
+
+  .turtle-category-card{
+    @apply relative flex min-h-48 cursor-pointer flex-col justify-between overflow-hidden border border-border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-green-light/40 hover:shadow-[0_8px_22px_rgba(34,32,27,0.06)]
+  }
+
+  .turtle-procedure-card {
+    @apply flex cursor-pointer flex-col overflow-hidden border border-border bg-card transition-all duration-200 hover:-translate-y-0.5 hover:border-brand-green-light/40 hover:shadow-[0_8px_22px_rgba(34,32,27,0.06)];
   }
 
   /* ! ---- RADIO / ANSWERS ---- */

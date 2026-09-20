@@ -1,63 +1,55 @@
-import { Card, CardDescription, CardTitle } from "@/components/ui/card"; 
-import { HowDoesItWork_infos } from "@/data/GlobalData"; 
-import { AlertTriangle, ArrowRight } from "lucide-react"; 
+
+import { HowDoesItWork_infos } from "@/data/GlobalData";
+import { AlertTriangle, ArrowRight } from "lucide-react";
 import Link from "next/link";
+import { Card_ } from "./cards/HowDoesItWork.card";
 
-export default function HowDoesItWork() { 
-  return ( 
-    <section className="wrapper relative space-y-5"> 
-      <div className="space-y-1">
-        <h2 className="text-2xl sm:text-3xl font-bold uppercase tracking-wider"> 
-        {HowDoesItWork_infos.title} 
-      </h2>
-      <p className="text-muted-foreground max-w-md">
-        {HowDoesItWork_infos.subtitle}
-      </p>
+export default function HowDoesItWork() {
+  return (
+    <section className="wrapper relative space-y-6 py-6">
+      <div className="space-y-2">
+        <h2 className="font-display text-3xl text-brand-ink sm:text-4xl">
+          {HowDoesItWork_infos.title}
+        </h2>
+        <p className="max-w-xl text-base leading-7 text-brand-ink-muted">
+          {HowDoesItWork_infos.subtitle}
+        </p>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
-        {HowDoesItWork_infos.element.map((elt, index) => ( 
-          <Card_ 
-            key={index} 
-            id={elt.id} 
-            title={elt.title} 
-            description={elt.description} 
-          /> 
-        ))} 
-      </div> 
-      <div className="py-6 px-5 border-0 rounded-none bg-brand-yellow-bg flex gap-4 items-start sm:items-center justify-start border-l-6 border-brand-yellow"> 
-          <AlertTriangle className="size-10 min-w-10 text-brand-yellow" /> 
-          <span className="flex flex-col md:flex-row gap-4"> 
-            <span>
-              <h3 className="font-semibold text-lg md:text-[20px] text-brand-yellow"> 
-              {HowDoesItWork_infos.alert.title} 
-            </h3> 
-            <p className="line-clamp-2 text-sm md:text-base">{HowDoesItWork_infos.alert.description}</p> 
-            </span>
-            <Link href={""} className="text-brand-yellow flex gap-1 items-center text-sm hover:underline w-fit text-nowrap" >En savoir plus <ArrowRight className="size-5" /></Link>
-          </span> 
-      </div> 
-    </section> 
-  ); 
-} 
 
-const Card_ = ({ 
-  title, 
-  description, 
-  id, 
-}: { 
-  title: string; 
-  description: string; 
-  id: number; 
-}) => { 
-  return ( 
-    <Card className="flex flex-row items-start gap-3 px-4 rounded-xs sm:bg-muted bg-transparent border-0 ring-0"> 
-      <span className="py-2 px-3 bg-brand-green-text rounded-full text-primary-foreground text-xl font-black"> 
-        0{id} 
-      </span> 
-      <span className="flex flex-col"> 
-        <CardTitle className="font-bold text-[20px]">{title}</CardTitle> 
-        <CardDescription className="sm:text-base">{description}</CardDescription> 
-      </span> 
-    </Card> 
-  ); 
-}; 
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {HowDoesItWork_infos.element.map((elt) => (
+          <Card_
+            key={elt.id}
+            id={elt.id}
+            title={elt.title}
+            description={elt.description}
+          />
+        ))}
+      </div>
+
+      <div className="flex items-start justify-start gap-4 rounded-[1.125rem] border border-brand-yellow/30 bg-brand-yellow-bg p-5 sm:items-center">
+        <AlertTriangle className="size-8 shrink-0 text-brand-yellow" />
+
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div className="space-y-1">
+            <h3 className="font-display text-[1.4rem] leading-tight text-brand-yellow">
+              {HowDoesItWork_infos.alert.title}
+            </h3>
+            <p className="max-w-2xl text-sm leading-6 text-brand-ink-muted md:text-base">
+              {HowDoesItWork_infos.alert.description}
+            </p>
+          </div>
+
+          <Link
+            href=""
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-yellow transition-colors hover:underline"
+          >
+            En savoir plus
+            <ArrowRight className="size-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+

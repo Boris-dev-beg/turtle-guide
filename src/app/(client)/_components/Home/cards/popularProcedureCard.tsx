@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardDescription, CardHeader } from "@/components/ui/card";
+import { Card, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 // import { useProcedures } from "@/hooks/useProcedures";
 import { useFolderStore } from "@/store/folder.store";
@@ -12,9 +12,11 @@ export function Card_({
   title,
   categoryName,
   image,
+  description,
 }: {
   title: string;
   categoryName: string;
+  description: string;
   image: string;
 }) {
   // ! States
@@ -35,44 +37,64 @@ export function Card_({
   return (
     <Card
       onClick={handleClick}
-      className="group flex min-h-30 items-center gap-4 rounded-xs border-border/60 bg-card p-4 shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md cursor-pointer"
+      className="group turtle-procedure-card py-0 rounded-sm"
     >
-      <div className="relative w-full h-50">
+      <div className="relative aspect-video w-full overflow-hidden rounded-t-sm">
         <Image
           src={image}
           alt={title}
-          width={500}
-          height={500}
-          className="object-cover w-full h-full"
+          width={800}
+          height={450}
+          className="h-full w-full object-cover"
         />
       </div>
-      <CardDescription className="flex flex-col mt-auto w-full gap-2">
-        <span className="truncate font-semibold text-brand-green bg-brand-green-soft py-1 px-2 border-2 border-brand-green-light rounded-full text-sm w-fit">
-          {categoryName}
-        </span>
-        <span className="flex items-center">
-          <h1 className="line-clamp-2 text-lg font-semibold leading-snug w-full text-foreground">
+
+      <div className="flex flex-col gap-3 p-4">
+        <p className="text-sm leading-5 text-brand-ink-muted">{categoryName}</p>
+
+        <div className="space-y-2">
+          <h1 className="font-display line-clamp-2 text-[1.4rem] leading-[1.2] text-brand-ink">
             {title}
           </h1>
 
-          <ChevronRight className="ml-auto size-5 shrink-0 transition-transform duration-200 group-hover:translate-x-1" />
-        </span>
-      </CardDescription>
+          <CardDescription className="line-clamp-2 text-[0.98rem] leading-6 text-brand-ink-muted">
+            {description.split(":")[1] || description}
+          </CardDescription>
+        </div>
+
+        <div className="flex items-center justify-between gap-3 border-t border-brand-line pt-3">
+          <p className="text-[0.9rem] leading-6 text-brand-ink-muted">
+            Commencer le diagnostic
+          </p>
+
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-border bg-muted text-brand-ink-muted transition-colors duration-200 group-hover:border-brand-green group-hover:bg-brand-green group-hover:text-white">
+            <ChevronRight className="size-4" />
+          </span>
+        </div>
+      </div>
     </Card>
   );
 }
 
 export function Card_loader() {
   return (
-    <Card className="flex min-h-30 flex-row items-center gap-4 rounded-xs border-border/60 p-4">
-      <CardHeader className="w-full space-y-2 p-0">
-        <Skeleton className="h-5 w-4/5" />
+    <Card className="group flex animate-pulse cursor-pointer flex-col overflow-hidden rounded-[1.125rem] border border-border bg-card border-l-[3px] border-l-brand-yellow">
+      <Skeleton className="aspect-video w-full rounded-none" />
 
-        <div className="flex items-center justify-between">
-          <Skeleton className="h-4 w-1/2" />
-          <Skeleton className="size-4 rounded-full" />
+      <div className="flex flex-col gap-3 p-4">
+        <Skeleton className="h-4 w-24 rounded-md" />
+
+        <div className="space-y-2">
+          <Skeleton className="h-7 w-3/5 rounded-md" />
+          <Skeleton className="h-4 w-full rounded-md" />
+          <Skeleton className="h-4 w-4/5 rounded-md" />
         </div>
-      </CardHeader>
+
+        <div className="flex items-center justify-between gap-3 border-t border-brand-line pt-3">
+          <Skeleton className="h-4 w-20 rounded-md" />
+          <Skeleton className="size-9 rounded-full" />
+        </div>
+      </div>
     </Card>
   );
 }

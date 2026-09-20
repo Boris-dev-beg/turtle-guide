@@ -3,31 +3,29 @@ import { ArrowRight, Headphones } from "lucide-react";
 
 export default function Contact() {
   return (
-    <section>
-      <div className="wrapper overflow-hidden rounded-xs border border-border/60 bg-secondary shadow-sm">
-        <div className="inset-0 flex items-end p-5 sm:p-8 lg:items-center lg:p-12 w-full">
-          <div className="w-full space-y-4 flex flex-col lg:flex-row gap-3 items-center">
-            <div className="space-y-2 w-full">
-              <h2 className="text-2xl font-bold tracking-tight">
-                {Contact_infos.title}
-              </h2>
+    <section className="wrapper pb-10">
+      <div className="overflow-hidden rounded-[1.25rem] border border-border bg-card p-5 shadow-[0_8px_22px_rgba(34,32,27,0.04)] sm:p-8 lg:p-10">
+        <div className="flex w-full flex-col items-start gap-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="w-full max-w-2xl space-y-2">
+            <h2 className="font-display text-3xl leading-tight text-brand-ink">
+              {Contact_infos.title}
+            </h2>
 
-              <p className="max-w-lg text-sm leading-6 text-muted-foreground sm:text-base backdrop-blur-sm font-medium">
-                {Contact_infos.description}
-              </p>
-            </div>
+            <p className="max-w-lg text-base leading-7 text-brand-ink-muted">
+              {Contact_infos.description}
+            </p>
+          </div>
 
-            <div className="flex flex-col gap-3 pt-2 sm:flex-row *:text-base w-full">
-              <button className="btn btn-primary w-full gap-2 sm:w-auto">
-                Consulter les guides
-                <ArrowRight className="size-5" />
-              </button>
+          <div className="flex w-full flex-col gap-3 sm:flex-row lg:w-auto">
+            <button className="btn btn-primary w-full gap-2 text-nowrap">
+              Consulter les guides
+              <ArrowRight className="size-5" />
+            </button>
 
-              <button className="btn btn-outline w-full gap-2 sm:w-auto">
-                <Headphones className="size-5" />
-                Contacter le support
-              </button>
-            </div>
+            <button className="btn btn-outline w-full gap-2 text-nowrap">
+              <Headphones className="size-5" />
+              Contacter le support
+            </button>
           </div>
         </div>
       </div>

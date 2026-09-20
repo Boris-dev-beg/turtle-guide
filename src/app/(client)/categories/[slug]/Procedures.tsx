@@ -8,7 +8,6 @@ import {
   FoundedProceduces,
 } from "../_components/Procedures/Cards";
 import { FilterForm } from "../_components/Procedures/Form";
-import { NeededProcedure } from "@/app/api/procedures/_types/type";
 
 // ? Normalize the value
 const deleteAccent = (text: string) => {
@@ -20,17 +19,16 @@ const deleteAccent = (text: string) => {
 
 export function Procedures_Zone({ title }: { title: string }) {
   // ! States
-  const { proceduresByCategory, getByCategory, loading } = useProcedures();
-  const [proceduresToShow, setProceduresToShow] = useState<NeededProcedure[]>(
-    [],
-  );
+  const { proceduresByCategory, setCategory, isLoading } = useProcedures();
+  const [proceduresToShow, setProceduresToShow] =
+    useState(proceduresByCategory);
   const [procedureNotFound, setProcedureNotFound] = useState(false);
 
   // ! Functions
   // ? Update Procedure To Show
   useEffect(() => {
-    getByCategory(title);
-  }, [title, getByCategory]);
+    setCategory(title);
+  }, [title, setCategory]);
 
   useEffect(() => {
     const updateProcedureToShow = () => {
@@ -41,7 +39,7 @@ export function Procedures_Zone({ title }: { title: string }) {
 
   // ? Filter Procedures
   const filter = (searchElt: string) => {
-    if (searchElt.trim() === "") {
+    if (searchElt.trim() === "" || !proceduresByCategory) {
       setProceduresToShow(proceduresByCategory);
       setProcedureNotFound(false);
       return;
@@ -82,13 +80,13 @@ export function Procedures_Zone({ title }: { title: string }) {
       <main className="flex gap-3 border-t border-turtle-border pt-4">
         <div className="flex flex-col gap-4 w-full">
           <FoundedProceduces
-            loading={loading}
-            length={proceduresByCategory.length}
+            loading={isLoading}
+            length={proceduresByCategory?.length ?? 0}
           />
-          {procedureNotFound ? (
+          {procedureNotFound || !proceduresToShow ? (
             <ProceduresNotFound />
           ) : (
-            <Procedures loading={loading} procedures={proceduresToShow} />
+            <Procedures loading={isLoading} procedures={proceduresToShow} />
           )}
         </div>
       </main>
@@ -100,7 +98,14 @@ export function Procedures({
   procedures,
   loading,
 }: {
-  procedures: NeededProcedure[];
+  procedures: {
+    title: string;
+    category: {
+      name: string;
+    };
+    description: string;
+    image: string;
+  }[];
   loading: boolean;
 }) {
   console.log("Procedures:", procedures);
