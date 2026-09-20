@@ -7,6 +7,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 export const NavBar = ({
   user,
@@ -18,6 +19,7 @@ export const NavBar = ({
   // ! States
   const profileRef = useRef<HTMLDivElement>(null);
   const [showProfile, setShowProfile] = useState(false);
+  const [showLogoutConfirmation, setShowLogoutConfirmation] = useState(false);
   const pathName = usePathname();
   const { logout } = useAuth();
 
@@ -130,20 +132,67 @@ export const NavBar = ({
 
                 <button
                   type="button"
-                  onClick={logout}
+                  onClick={() => setShowLogoutConfirmation(true)}
                   className="flex min-h-12 w-full items-center justify-between rounded-xs p-3 text-base text-destructive transition-colors hover:bg-brand-danger-bg"
                 >
                   <span>Déconnexion</span>
                   <LogOut className="size-5" />
                 </button>
               </div>
+
+              {showLogoutConfirmation && (
+                <div
+                  className="border-t border-border bg-muted p-4"
+                  role="alertdialog"
+                  aria-modal="true"
+                  aria-labelledby="logout-title"
+                >
+                  <p id="logout-title" className="font-semibold text-brand-ink">
+                    Confirmer la déconnexion ?
+                  </p>
+                  <p className="mt-1 text-sm text-brand-ink-muted">
+                    Votre session sera fermée sur cet appareil.
+                  </p>
+                  <div className="mt-3 flex gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowLogoutConfirmation(false)}
+                      className="min-h-12 flex-1 rounded-sm border border-border bg-background px-3 text-sm text-brand-ink"
+                    >
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        toast.loading("Déconnexion en cours...", {
+                          id: "logout",
+                        });
+                        try {
+                          await logout();
+                          toast.success("Vous êtes déconnecté.", {
+                            id: "logout",
+                          });
+                        } catch (error) {
+                          toast.error("La déconnexion a échoué. Réessayez.", {
+                            id: "logout",
+                          });
+                          console.error(error);
+                        }
+                      }}
+                      className="min-h-12 flex-1 rounded-sm bg-destructive px-3 text-sm text-destructive-foreground"
+                    >
+                      Confirmer
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
       ) : (
         <Link
           href="/login"
-          className="ml-1 flex min-h-12 items-center rounded-xs border border-brand-green px-3 py-2 font-medium text-brand-green transition-colors hover:bg-brand-green hover:text-primary-foreground sm:px-4"
+          className="ml-1 flex min-h-12 items-center rounded-xs border border-brand-green px-3 py-2 font-medium text-brand-green transition-colors hover:bg-brand-green hover:text-primary-foreground sm:px-4 active:scale-95"
         >
           Se connecter
         </Link>

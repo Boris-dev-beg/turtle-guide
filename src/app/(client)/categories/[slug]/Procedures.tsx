@@ -1,6 +1,7 @@
 "use client";
 import { SearchX } from "lucide-react";
 import { Procedure_card } from "@/app/(client)/categories/_components/Procedures/Procedures.card";
+import { EmptyState } from "@/components/shared/EmptyState";
 import { useProcedures } from "@/hooks/useProcedures";
 import { useEffect, useState } from "react";
 import {
@@ -19,7 +20,12 @@ const deleteAccent = (text: string) => {
 
 export function Procedures_Zone({ title }: { title: string }) {
   // ! States
-  const { proceduresByCategory, setCategory, isLoading } = useProcedures();
+  const {
+    proceduresByCategory,
+    proceduresByCategoryError,
+    proceduresByCategoryLoading,
+    setCategory,
+  } = useProcedures();
   const [proceduresToShow, setProceduresToShow] =
     useState(proceduresByCategory);
   const [procedureNotFound, setProcedureNotFound] = useState(false);
@@ -31,10 +37,11 @@ export function Procedures_Zone({ title }: { title: string }) {
   }, [title, setCategory]);
 
   useEffect(() => {
-    const updateProcedureToShow = () => {
+    const setter = () => {
       setProceduresToShow(proceduresByCategory);
+      setProcedureNotFound(false);
     };
-    updateProcedureToShow();
+    setter();
   }, [proceduresByCategory]);
 
   // ? Filter Procedures
@@ -80,13 +87,28 @@ export function Procedures_Zone({ title }: { title: string }) {
       <main className="flex gap-3 border-t border-turtle-border pt-4">
         <div className="flex flex-col gap-4 w-full">
           <FoundedProceduces
-            loading={isLoading}
+            loading={proceduresByCategoryLoading}
             length={proceduresByCategory?.length ?? 0}
           />
-          {procedureNotFound || !proceduresToShow ? (
+          {proceduresByCategoryError ? (
+            <EmptyState
+              title="Données indisponibles"
+              description="Les procédures de cette catégorie ne sont pas disponibles pour le moment. Merci de réessayer un peu plus tard."
+              actionLabel="Réessayer"
+              onAction={() => window.location.reload()}
+            />
+          ) : procedureNotFound ? (
             <ProceduresNotFound />
+          ) : !proceduresByCategoryLoading && proceduresToShow?.length === 0 ? (
+            <EmptyState
+              title="Aucune procédure disponible"
+              description="Aucune procédure n’est actuellement proposée dans cette catégorie."
+            />
           ) : (
-            <Procedures loading={isLoading} procedures={proceduresToShow} />
+            <Procedures
+              loading={proceduresByCategoryLoading}
+              procedures={proceduresToShow ?? []}
+            />
           )}
         </div>
       </main>
@@ -108,7 +130,6 @@ export function Procedures({
   }[];
   loading: boolean;
 }) {
-  console.log("Procedures:", procedures);
   // ! Render
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 max-md:w-full gap-4">

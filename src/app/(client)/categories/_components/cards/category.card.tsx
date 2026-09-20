@@ -34,7 +34,7 @@ export function Category_card({
   return (
     <Card
       onClick={handleClick}
-      className="group p-4 pl-4 rounded-sm"
+      className="group p-4 pl-4 rounded-sm turtle-category-card"
     >
       <div className="flex min-h-12 items-start justify-between gap-3">
         <div className="flex-1">

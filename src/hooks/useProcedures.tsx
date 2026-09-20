@@ -23,12 +23,15 @@ export function useProcedures() {
   });
 
   const [category, setCategory] = useState<string>("");
-  const { data: proceduresByCategory, isLoading: proceduresByCategoryLoading } =
-    useQuery({
-      queryKey: ["Procedure by category", category],
-      queryFn: async () => await getByCategory(category),
-      enabled: !!category,
-    });
+  const {
+    data: proceduresByCategory,
+    isLoading: proceduresByCategoryLoading,
+    isError: proceduresByCategoryError,
+  } = useQuery({
+    queryKey: ["Procedure by category", category],
+    queryFn: async () => await getByCategory(category),
+    enabled: !!category,
+  });
 
   return {
     procedures,
@@ -36,6 +39,7 @@ export function useProcedures() {
     isLoading: proceduresLoading,
     proceduresByCategory,
     proceduresByCategoryLoading,
+    proceduresByCategoryError,
     popularLoading,
     popularError,
     proceduresError,
