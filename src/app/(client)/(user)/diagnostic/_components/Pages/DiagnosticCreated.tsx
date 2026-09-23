@@ -18,7 +18,7 @@ export function DiagnosticCreated({ folder, onStart }: DiagnosticCreatedProps) {
   return (
     <DiagnocticLayout
       folder={folder}
-      title="Votre dossier a été créé"
+      title="Votre dossier vient d'être créé."
       description="Votre dossier est prêt. Vous pouvez maintenant commencer le diagnostic pour déterminer les démarches à suivre."
     >
       {/* Action */}

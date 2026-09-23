@@ -1,12 +1,7 @@
 "use client";
 
-// import { HelpBox } from "@/app/(client)/(user)/diagnostic/_components/cards/HelpBox";
-// import { Back } from "@/components/shared/links";
+import { QuestionsSide } from "../Questions/questionSide";
 import { useFolderStore } from "@/store/folder.store";
-// import {
-//   FileText,
-//   Link2,
-// } from "lucide-react";
 import { DiagnosticLoading } from "../states/Loaders";
 import { useFolder } from "@/hooks/useFolder";
 import { DiagnosticError } from "../states/Errors";
@@ -14,6 +9,8 @@ import { DiagnosticCreated } from "../Pages/DiagnosticCreated";
 import { DiagnosticExisting } from "../Pages/DiagnosticExisting";
 import { DiagnosticCompleted } from "../Pages/DiagnosticCompleted";
 import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
+import { EmptyState } from "@/components/shared/EmptyState";
 
 type User = {
   id: string;
@@ -56,19 +53,34 @@ export default function Diagnostic({ user }: { user: User }) {
   // ! states
   const router = useRouter();
   const { procedure, category } = useFolderStore();
+  const [showQuestions, setShowQuestions] = useState(false);
+  const initializedSelection = useRef("");
 
-  const { useCreateOrGetFolder } = useFolder(user.id);
+  const { useCreateOrGetFolder, delFolder } = useFolder(user.id);
 
   // ! Functions
   // ? Initialisation of te folder
-  const {
-    data: result,
-    isLoading,
-    isError,
-    error,
-    refetch,
-    isRefetching,
-  } = useCreateOrGetFolder({ procedureName: procedure, category });
+  const folderInitialization = useCreateOrGetFolder({
+    procedureName: procedure,
+    category,
+  });
+  const { data: result, isPending, isError, error } = folderInitialization;
+
+  const selectionKey = `${user.id}:${category}:${procedure}`;
+
+  useEffect(() => {
+    if (
+      !user.id ||
+      !category ||
+      !procedure ||
+      initializedSelection.current === selectionKey
+    ) {
+      return;
+    }
+
+    initializedSelection.current = selectionKey;
+    folderInitialization.mutate();
+  }, [category, folderInitialization, procedure, selectionKey, user.id]);
 
   // const handleStartDiagnostic = () => {
   //   return null;
@@ -98,23 +110,32 @@ export default function Diagnostic({ user }: { user: User }) {
   //   }
   // };
 
-  // ! Render
-  console.log("result:", result)
+  if (showQuestions && result?.folder) {
+    return <QuestionsSide userId={user.id} folderId={result.folder.id} />;
+  }
+
   // ? Loading
-  if (isLoading) return <DiagnosticLoading />;
+  if (isPending) return <DiagnosticLoading />;
 
   // ? Error
   if (isError || error)
-    return <DiagnosticError onRetry={refetch} isRetrying={isRefetching} />;
+    return (
+      <DiagnosticError
+        onRetry={() => {
+          initializedSelection.current = "";
+          folderInitialization.reset();
+          folderInitialization.mutate();
+        }}
+        isRetrying={folderInitialization.isPending}
+      />
+    );
 
   // ? Everything is OK
   if (result?.status === "CREATED") {
     return (
       <DiagnosticCreated
         folder={result.folder}
-        onStart={() => {
-          // ici tu passes réellement à la première question
-        }}
+        onStart={() => setShowQuestions(true)}
       />
     );
   }
@@ -123,9 +144,8 @@ export default function Diagnostic({ user }: { user: User }) {
     return (
       <DiagnosticExisting
         folder={result.folder}
-        onContinue={() => {
-          // Reprendre le diagnostic
-        }}
+        onContinue={() => setShowQuestions(true)}
+        onChooseAnother={() => router.push("/categories")}
       />
     );
   }
@@ -135,17 +155,28 @@ export default function Diagnostic({ user }: { user: User }) {
       <DiagnosticCompleted
         folder={result.folder}
         onViewFolder={() => {
-          router.push(`/dossiers/${result.folder.id}`);
+          router.push(`/folders/${result.folder.id}`);
         }}
-        onRestart={() => {
-          // supprimer l'ancien dossier
-          // puis créer un nouveau diagnostic
+        onRestart={async () => {
+          await delFolder.mutateAsync({
+            userId: user.id,
+            id: result.folder.id,
+          });
+          initializedSelection.current = "";
+          folderInitialization.reset();
+          folderInitialization.mutate();
         }}
+        isRestarting={delFolder.isPending || folderInitialization.isPending}
       />
     );
   }
   return (
-    <></>
+    <EmptyState
+      title="Dossier indisponible"
+      description="Nous n'avons pas reçu un état valide pour ce dossier. Réessayez ou choisissez une autre démarche."
+      actionLabel="Choisir une autre démarche"
+      actionHref="/categories"
+    />
     // <>
     //   {/* First Side */}
     //   <FirstSide

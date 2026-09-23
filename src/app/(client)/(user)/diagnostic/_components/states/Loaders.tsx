@@ -1,5 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"; 
-
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function DiagnosticLoading() {
   return (
@@ -8,11 +7,9 @@ export function DiagnosticLoading() {
       aria-live="polite"
       className="mx-auto w-full max-w-3xl py-5"
     >
-
       <div className="mb-6 flex items-start gap-4">
-
         <div>
-          <h1 className="font-body text-3xl md:text-4xl font-semibold text-brand-ink">
+          <h1 className="font-display text-3xl font-semibold text-brand-ink md:text-4xl">
             Préparation de votre dossier
           </h1>
 
@@ -22,8 +19,7 @@ export function DiagnosticLoading() {
         </div>
       </div>
 
-      <div className="rounded-sm border border-border bg-card p-7 sm:p-8">
-
+      <div className="relative overflow-hidden rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-6 sm:p-8">
         <div className="flex items-center gap-3 border-b border-border pb-5">
           <Skeleton className="size-12 md:size-15 rounded-lg" />
 
@@ -39,25 +35,19 @@ export function DiagnosticLoading() {
 
         <div className="mt-5 space-y-5">
           <div className="flex items-center justify-between gap-6">
-            <span className="text-brand-ink-muted">
-              Nom
-            </span>
+            <span className="text-brand-ink-muted">Nom</span>
 
             <Skeleton className="h-5 w-36" />
           </div>
 
           <div className="flex items-center justify-between gap-6">
-            <span className="text-brand-ink-muted">
-              Statut
-            </span>
+            <span className="text-brand-ink-muted">Statut</span>
 
             <Skeleton className="h-7 w-24 rounded-full" />
           </div>
 
           <div className="flex items-center justify-between gap-6">
-            <span className="text-brand-ink-muted">
-              Créé le
-            </span>
+            <span className="text-brand-ink-muted">Créé le</span>
 
             <Skeleton className="h-5 w-28" />
           </div>

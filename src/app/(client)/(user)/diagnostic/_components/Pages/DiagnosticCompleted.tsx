@@ -13,24 +13,31 @@ type DiagnosticCompletedProps = {
   };
   onViewFolder: () => void;
   onRestart: () => void;
+  isRestarting?: boolean;
 };
 
 export function DiagnosticCompleted({
   folder,
   onViewFolder,
   onRestart,
+  isRestarting = false,
 }: DiagnosticCompletedProps) {
   return (
     <DiagnocticLayout
       folder={folder}
-      title="Un dossier existe déjà"
-      description="Nous avons retrouvé un ancien dossier pour cette démarche. Vous pouvez consulter ce dossier ou le supprimer et commencer un nouveau diagnostic."
+      title="Votre dossier a déjà été terminé ou archivé."
+      description="Ce dossier ne peut plus être repris. Vous pouvez consulter son contenu ou recommencer cette démarche avec un nouveau dossier."
     >
       {/* Action */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
-        <button type="button" onClick={onRestart} className="btn btn-outline">
+        <button
+          type="button"
+          onClick={onRestart}
+          disabled={isRestarting}
+          className="btn btn-outline disabled:cursor-not-allowed disabled:opacity-60"
+        >
           <RotateCcw className="size-4" />
-          Recommencer
+          {isRestarting ? "Préparation..." : "Recommencer le dossier"}
         </button>
 
         <button

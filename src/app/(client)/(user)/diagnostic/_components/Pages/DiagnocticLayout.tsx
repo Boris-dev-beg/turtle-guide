@@ -27,7 +27,7 @@ export default function DiagnocticLayout({
     <section className="mx-auto w-full max-w-2xl">
       <div className="mb-6 flex items-start gap-2 md:gap-4">
         <div>
-          <h1 className="font-body text-3xl md:text-4xl font-semibold text-brand-ink">
+          <h1 className="font-display text-3xl md:text-4xl font-semibold text-brand-ink">
             {title}
           </h1>
 
@@ -38,7 +38,7 @@ export default function DiagnocticLayout({
       </div>
 
       {/* Folder details */}
-      <div className="turtle-card">
+      <div className="turtle-card relative flex-col overflow-hidden border-l-4 border-l-brand-yellow p-5 sm:p-6">
         <div className="flex items-center gap-3 border-b border-border pb-5">
           <div className="flex items-center justify-center">
             <FileText className="size-8 text-brand-green" />
@@ -70,7 +70,7 @@ export default function DiagnocticLayout({
           <div className="flex items-center justify-between gap-6">
             <span className="text-brand-ink font-medium">Statut</span>
 
-            <span className="inline-flex rounded-full bg-brand-green-soft px-3 py-1 text-sm font-medium text-brand-green">
+            <span className="inline-flex rounded-sm bg-brand-yellow-bg px-3 py-1 text-sm font-medium text-brand-ink">
               {DicFolder[folder.status]}
             </span>
           </div>

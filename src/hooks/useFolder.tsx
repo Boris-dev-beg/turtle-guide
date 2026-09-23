@@ -37,28 +37,23 @@ export function useFolder(userId: string, id?: string) {
     enabled: !!userId && !!folderId,
   });
 
-  // ! Create or get folder
-  // ! Get or create the active folder for a procedure
+  // ! Create or get folder once for the current diagnostic selection
   function useCreateOrGetFolder(data: {
     procedureName?: string;
     category?: string;
   }) {
-    return useQuery({
-      queryKey: [
-        "folder",
-        "create-or-get",
-        userId,
-        data.procedureName,
-        data.category,
-      ],
-      queryFn: async () =>
-        await createOrGetFolderAction({
+    return useMutation({
+      mutationFn: async () => {
+        if (!userId || !data.procedureName || !data.category) {
+          throw new Error("Sélection de diagnostic incomplète");
+        }
+
+        return await createOrGetFolderAction({
           procedureName: data.procedureName!,
           userId,
           category: data.category!,
-        }),
-      enabled: !!userId && !!data.procedureName && !!data.category,
-      retry: false,
+        });
+      },
     });
   }
 
@@ -101,7 +96,7 @@ export function useFolder(userId: string, id?: string) {
     },
   });
 
-   return {
+  return {
     folders,
     folder,
 

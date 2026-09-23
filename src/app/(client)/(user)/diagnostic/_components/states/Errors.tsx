@@ -12,14 +12,14 @@ export function DiagnosticError({
   isRetrying = false,
 }: DiagnosticErrorProps) {
   return (
-    <section className="mx-auto flex w-full max-w-2xl flex-col items-center px-4 py-12 text-center">
+    <section className="mx-auto flex w-full max-w-2xl flex-col items-center rounded-sm border border-border border-l-4 border-l-brand-danger bg-card px-4 py-12 text-center">
       {/* Icon */}
-      <div className="mb-5 flex size-18 items-center justify-center rounded-full bg-destructive/10">
-        <AlertCircle className="size-14 text-destructive" />
+      <div className="mb-5 flex size-14 items-center justify-center rounded-sm bg-brand-danger-bg">
+        <AlertCircle className="size-8 text-destructive" />
       </div>
 
       {/* Message */}
-      <h1 className="font-heading text-2xl sm:text-3xl font-semibold text-foreground">
+      <h1 className="font-display text-2xl font-semibold text-brand-ink sm:text-3xl">
         Impossible de préparer votre dossier
       </h1>
 
@@ -35,9 +35,7 @@ export function DiagnosticError({
         disabled={isRetrying}
         className="btn btn-primary mt-6"
       >
-        <RefreshCw
-          className={`size-5 ${isRetrying ? "animate-spin" : ""}`}
-        />
+        <RefreshCw className={`size-5 ${isRetrying ? "animate-spin" : ""}`} />
 
         {isRetrying ? "Nouvelle tentative..." : "Réessayer"}
       </button>
