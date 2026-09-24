@@ -7,11 +7,10 @@ import {
 } from "lucide-react";
 import { Step } from "../../types/types";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 
 export function ProcesSteps({
   process,
-  currentStep,
+  status,
 }: {
   process?: {
     id: string;
@@ -19,7 +18,7 @@ export function ProcesSteps({
     description: string;
     steps: Step[];
   } | null;
-  currentStep: Step | undefined;
+  status: "CREATED" | "PENDING" | "ENDED" | "CLOSED";
 }) {
   return (
     <div>
@@ -34,13 +33,13 @@ export function ProcesSteps({
       </CardHeader>
 
       <CardContent className="px-5 pb-5 sm:px-6 sm:pb-6">
-        {!process?.steps ? (
+        {!process?.steps?.length ? (
           <DiagnosticIncomplete />
         ) : (
           <div className="space-y-0">
-            {process?.steps.map((step, index) => {
-              const isCurrent = step.id === currentStep?.id;
-              const isLast = index === (process?.steps.length ?? 0) - 1;
+            {process.steps.map((step, index) => {
+              const isCompleted = status === "ENDED" || status === "CLOSED";
+              const isLast = index === process.steps.length - 1;
 
               return (
                 <div key={step.id} className="relative flex gap-4">
@@ -54,14 +53,12 @@ export function ProcesSteps({
 
                   <div
                     className={`relative z-10 flex size-10 shrink-0 items-center justify-center rounded-full border-2 text-base font-bold ${
-                      isCurrent
-                        ? "border-primary bg-primary text-primary-foreground"
-                        : index < 1
-                          ? "border-primary bg-brand-green-soft text-brand-green"
-                          : "border-border bg-card text-brand-ink-muted"
+                      isCompleted
+                        ? "border-primary bg-brand-green-soft text-brand-green"
+                        : "border-border bg-card text-brand-ink-muted"
                     }`}
                   >
-                    {index < 1 ? (
+                    {isCompleted ? (
                       <Check className="size-5" strokeWidth={3} />
                     ) : (
                       index + 1
@@ -70,25 +67,13 @@ export function ProcesSteps({
 
                   {/* Content */}
 
-                  <div
-                    className={`min-w-0 flex-1 pb-7 ${
-                      isCurrent
-                        ? "rounded-lg border border-brand-green/20 bg-brand-green-soft/30 p-4"
-                        : ""
-                    }`}
-                  >
+                  <div className="min-w-0 flex-1 pb-7">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
                           <h3 className="text-base sm:text-lg font-semibold text-brand-ink">
                             {step.title}
                           </h3>
-
-                          {isCurrent && (
-                            <Badge className="rounded-full py-3 bg-primary text-primary-foreground hover:bg-primary text-sm">
-                              Étape actuelle
-                            </Badge>
-                          )}
                         </div>
 
                         <p className="mt-1 text-base leading-6 text-brand-ink-muted">
@@ -102,7 +87,21 @@ export function ProcesSteps({
                     {step.administrativeBody && (
                       <div className="mt-3 flex items-center gap-2 text-base text-brand-ink-muted font-medium">
                         <Building2 className="size-6 shrink-0 text-brand-green" />
-                        <span>{step.administrativeBody.name}</span>
+                        <span>
+                          {step.administrativeBody.name}
+                          {step.administrativeBody.administrativeUnits.length >
+                            0 && (
+                            <span className="block text-sm font-normal">
+                              {step.administrativeBody.administrativeUnits
+                                .map((unit) =>
+                                  [unit.name, unit.location.city]
+                                    .filter(Boolean)
+                                    .join(" - "),
+                                )
+                                .join(", ")}
+                            </span>
+                          )}
+                        </span>
                       </div>
                     )}
 
@@ -178,19 +177,21 @@ export function DiagnosticIncomplete() {
   return (
     <div className="mb-6 rounded-sm border border-brand-green/10 bg-brand-green-soft/20 p-5 sm:p-6">
       <div className="flex flex-col gap-5 items-center justify-between">
-        
-          <div className="min-w-0">
-            <h2 className="font-heading text-xl md:text-2xl font-semibold text-brand-ink text-center">
-              Votre diagnostic n&apos;est pas terminé
-            </h2>
+        <div className="min-w-0">
+          <h2 className="font-display text-xl font-semibold text-brand-ink text-center md:text-2xl">
+            Votre diagnostic n&apos;est pas terminé
+          </h2>
 
-            <p className="mt-1 max-w-2xl text-base leading-6 text-brand-ink-muted text-center">
-              Il reste quelques questions à compléter avant de pouvoir
-              déterminer précisément les étapes de votre démarche.
-            </p>
-          </div>
+          <p className="mt-1 max-w-2xl text-base leading-6 text-brand-ink-muted text-center">
+            Il reste quelques questions à compléter avant de pouvoir déterminer
+            précisément les étapes de votre démarche.
+          </p>
+        </div>
 
-        <button type="button" className="btn btn-primary rounded-sm py-3 text-base shrink-0">
+        <button
+          type="button"
+          className="btn btn-primary rounded-sm py-3 text-base shrink-0"
+        >
           Reprendre le diagnostic
           <ArrowRight className="size-4" />
         </button>

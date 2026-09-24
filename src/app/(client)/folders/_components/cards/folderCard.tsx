@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   ArrowRight,
@@ -10,18 +9,16 @@ import {
   FolderPlus,
   Plus,
 } from "lucide-react";
-import { FolderType } from "../../types/types";
+import { FolderListType } from "../../types/types";
 import { Badge } from "@/components/ui/badge";
 import { FolderStatus } from "@/generated/prisma/enums";
 import Link from "next/link";
 
-const formatDateTime = (date: Date) => {
+const formatDate = (date: Date) => {
   return new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
     month: "long",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   }).format(date);
 };
 
@@ -34,7 +31,7 @@ const statusConfig: Record<
   }
 > = {
   CREATED: {
-    label: "Commencer",
+    label: "Créé",
     className: "border-brand-info/20 bg-brand-info-bg text-brand-info",
     icon: FileText,
   },
@@ -54,7 +51,7 @@ const statusConfig: Record<
   },
 
   CLOSED: {
-    label: "Fermé",
+    label: "Archivé",
     className: "border-border bg-muted text-muted-foreground",
     icon: FolderOpen,
   },
@@ -66,34 +63,35 @@ function FolderStatusBadge({ status }: { status: FolderStatus }) {
   return (
     <Badge
       variant="outline"
-      className={`gap-1.5 rounded-full px-2.5 py-1 text-sm font-semibold ${config.className} h-6`}
+      className={`gap-1.5 rounded-sm px-2.5 py-1 text-sm font-semibold ${config.className} h-8`}
     >
       {config.label}
     </Badge>
   );
 }
 
-export function FolderCard({ folder }: { folder: FolderType }) {
-  const isFinished = folder.status === "ENDED" || folder.status === "CLOSED";
-
+export function FolderCard({ folder }: { folder: FolderListType }) {
   const actionLabel =
-    folder.status === "CREATED" ? "Reprendre la démarche" : "Voir le dossier";
+    folder.status === "CREATED"
+      ? "Continuer le diagnostic"
+      : folder.status === "PENDING"
+        ? "Consulter le dossier"
+        : "Voir le dossier";
 
   return (
     <Link href={`/folders/${folder.id}`}>
-      <Card className="group rounded-sm border-border bg-card shadow-none transition-all hover:border-brand-green-light/40 hover:shadow-sm">
-        <CardContent className="p-3">
+      <Card className="group relative rounded-sm border-border border-l-4 border-l-brand-yellow bg-card shadow-none transition-colors hover:border-brand-green-light/40">
+        <CardContent className="p-4 sm:p-5">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-
             {/* Folder's Information */}
             <div className="flex min-w-0 gap-4">
-              <div className="hidden sm:flex size-15 shrink-0 items-center justify-center rounded-full bg-brand-green-soft text-brand-green">
-                <BriefcaseBusiness className="size-9" />
+              <div className="hidden sm:flex size-12 shrink-0 items-center justify-center rounded-sm bg-brand-yellow-bg text-brand-ink">
+                <BriefcaseBusiness className="size-6" />
               </div>
 
               <div className="min-w-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <h2 className="font-heading text-2xl font-semibold text-brand-ink">
+                  <h2 className="font-display text-2xl font-semibold text-brand-ink">
                     {folder.name}
                   </h2>
 
@@ -105,45 +103,23 @@ export function FolderCard({ folder }: { folder: FolderType }) {
                 </p>
 
                 <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-base text-brand-ink-muted leading-5">
-                  <span>Créé le {formatDateTime(folder.createdAt)}</span>
+                  <span>Mis à jour le {formatDate(folder.updatedAt)}</span>
 
                   <span aria-hidden="true" className="hidden sm:inline">
                     •
                   </span>
 
-                  <span>Mis à jour le {formatDateTime(folder.updatedAt)}</span>
+                  <span>{folder.procedure.category.name}</span>
                 </div>
               </div>
             </div>
 
             {/* Action */}
-            <Button
-              variant="outline"
-              className="shrink-0 gap-2 btn bg-card text-base font-semibold hover:border-brand-green-light/10 hover:bg-brand-green-soft/20 py-5 px-3 cursor-pointer"
-            >
+            <span className="flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm border border-brand-green px-3 text-base font-semibold text-brand-green transition-colors group-hover:bg-brand-green group-hover:text-primary-foreground">
               {actionLabel}
               <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
-            </Button>
+            </span>
           </div>
-
-          {isFinished && (
-            <div className="mt-5 border-t border-border pt-4">
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-brand-ink-muted">Démarche terminée</span>
-
-                <span className="font-semibold text-brand-green-text">
-                  100%
-                </span>
-              </div>
-
-              <div className="mt-2 turtle-progress-track">
-                <div
-                  className="turtle-progress-fill"
-                  style={{ width: "100%" }}
-                />
-              </div>
-            </div>
-          )}
         </CardContent>
       </Card>
     </Link>
@@ -152,12 +128,12 @@ export function FolderCard({ folder }: { folder: FolderType }) {
 
 export function EmptyFolders() {
   return (
-    <div className="flex min-h-90 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-12 text-center">
-      <div className="mb-5 flex size-18 items-center justify-center rounded-full bg-brand-green-soft">
-        <FolderPlus className="size-10 text-brand-green" strokeWidth={1.8} />
+    <div className="flex min-h-90 flex-col items-center justify-center rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card px-6 py-12 text-center">
+      <div className="mb-5 flex size-14 items-center justify-center rounded-sm bg-brand-yellow-bg">
+        <FolderPlus className="size-8 text-brand-ink" strokeWidth={1.8} />
       </div>
 
-      <h2 className="font-heading text-3xl font-semibold text-brand-ink">
+      <h2 className="font-display text-3xl font-semibold text-brand-ink">
         Aucun dossier pour le moment
       </h2>
 

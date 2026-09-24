@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function FoldersLoading() {
   return (
@@ -6,17 +6,17 @@ export function FoldersLoading() {
       {Array.from({ length: 3 }).map((_, index) => (
         <div
           key={index}
-          className="rounded-xl border border-border bg-card/80 p-5"
+          className="rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5"
         >
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             {/* Informations du dossier */}
             <div className="flex min-w-0 gap-4">
-              <Skeleton className="size-12 shrink-0 rounded-full" />
+              <Skeleton className="size-12 shrink-0 rounded-sm" />
 
               <div className="min-w-0 flex-1 space-y-2">
                 <div className="flex items-center gap-2">
                   <Skeleton className="h-6 w-40" />
-                  <Skeleton className="h-6 w-20 rounded-full" />
+                  <Skeleton className="h-8 w-20 rounded-sm" />
                 </div>
 
                 <Skeleton className="h-4 w-64" />
@@ -26,14 +26,13 @@ export function FoldersLoading() {
             </div>
 
             {/* Action */}
-            <Skeleton className="h-10 w-44 shrink-0 rounded-lg" />
+            <Skeleton className="h-12 w-44 shrink-0 rounded-sm" />
           </div>
         </div>
       ))}
     </div>
-  )
+  );
 }
-
 
 export function FolderDetailsLoading() {
   return (
@@ -62,7 +61,7 @@ export function FolderDetailsLoading() {
         {/* Left */}
         <div className="min-w-0 space-y-5">
           {/* Steps */}
-          <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <div className="rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5 sm:p-6">
             <Skeleton className="h-6 w-48" />
             <Skeleton className="mt-2 h-4 w-80 max-w-full" />
 
@@ -82,7 +81,7 @@ export function FolderDetailsLoading() {
           </div>
 
           {/* Informations */}
-          <div className="rounded-xl border border-border bg-card p-5 sm:p-6">
+          <div className="rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5 sm:p-6">
             <Skeleton className="h-6 w-56" />
 
             <div className="mt-6 grid gap-6 sm:grid-cols-2">
@@ -102,12 +101,12 @@ export function FolderDetailsLoading() {
 
         {/* Right */}
         <aside className="min-w-0 space-y-5">
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5">
             <Skeleton className="h-5 w-40" />
             <Skeleton className="mt-5 h-20 w-full rounded-lg" />
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-5">
+          <div className="rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5">
             <Skeleton className="h-5 w-40" />
 
             <div className="mt-5 space-y-3">
@@ -117,7 +116,7 @@ export function FolderDetailsLoading() {
             </div>
           </div>
 
-          <Skeleton className="h-32 w-full rounded-xl" />
+          <Skeleton className="h-32 w-full rounded-sm" />
         </aside>
       </div>
     </main>

@@ -4,9 +4,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  Building2,
   CalendarDays,
-  ChevronDown,
   Clock3,
   FileText,
   Flag,
@@ -14,28 +12,23 @@ import {
   LucideIcon,
   MapPin,
   Play,
-  RefreshCcw,
+  RotateCcw,
   Trash2,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { useFolder } from "@/hooks/useFolder";
 import { FolderDetailsLoading } from "../cards/FoldersLoading";
 import { FolderDetailsError } from "../cards/FoldersError";
-import { FolderType, Step } from "../../types/types";
+import { FolderType } from "../../types/types";
 import { FolderStatus } from "@/generated/prisma/enums";
 import { ProcesSteps } from "../cards/Steps";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
+import { useFolderStore } from "@/store/folder.store";
 
 const statusConfig: Record<
   FolderStatus,
@@ -45,8 +38,8 @@ const statusConfig: Record<
   }
 > = {
   CREATED: {
-    label: "Commencé",
-    className: "border-blue-200 bg-blue-50 text-blue-700",
+    label: "Créé",
+    className: "border-brand-info/20 bg-brand-info-bg text-brand-info",
   },
 
   PENDING: {
@@ -62,7 +55,7 @@ const statusConfig: Record<
   },
 
   CLOSED: {
-    label: "Fermé",
+    label: "Archivé",
     className: "border-border bg-muted text-brand-ink-muted",
   },
 };
@@ -81,7 +74,7 @@ function FolderStatusBadge({ status }: { status: FolderStatus }) {
   return (
     <Badge
       variant="outline"
-      className={`p-3 font-medium text-sm ${config.className}`}
+      className={`rounded-sm px-3 py-1.5 font-medium text-sm ${config.className}`}
     >
       <span className="size-2 rounded-full bg-current" />
       {config.label}
@@ -99,6 +92,7 @@ export default function FolderDetailsPage({
   // ! States
   const router = useRouter();
   const [isDeleting, setIsDeleting] = useState(false);
+  const { setCategory, setProcedure } = useFolderStore();
   const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
     useFolder(userId, id);
 
@@ -116,17 +110,24 @@ export default function FolderDetailsPage({
   if (!folder) {
     return <FolderDetailsError />;
   }
-  const currentStep = folder.process?.steps[1];
+  const currentQuestion = folder.progression?.currentQuestion;
+  const answerCount = folder.answers.length;
 
   // ! Functions
 
-  const handleDelete = () => {
+  const openDiagnostic = () => {
+    setCategory(folder.procedure.category.name);
+    setProcedure(folder.procedure.title);
+    router.push("/diagnostic");
+  };
+
+  const handleDelete = async () => {
     if (isDeleting) return;
 
     try {
       setIsDeleting(true);
 
-      delFolder.mutate({ id: folder.id, userId });
+      await delFolder.mutateAsync({ id: folder.id, userId });
 
       toast.success("Dossier supprimé", {
         description: "Votre dossier a été supprimé avec succès.",
@@ -141,6 +142,23 @@ export default function FolderDetailsPage({
       });
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  const handleRestart = async () => {
+    if (delFolder.isPending) return;
+
+    try {
+      await delFolder.mutateAsync({ id: folder.id, userId });
+      setCategory(folder.procedure.category.name);
+      setProcedure(folder.procedure.title);
+      toast.success("Un nouveau dossier va être préparé.");
+      router.push("/diagnostic");
+    } catch (error) {
+      toast.error("Impossible de recommencer le dossier", {
+        description: "Le dossier existant n'a pas pu être supprimé.",
+      });
+      console.error("Erreur lors du redémarrage du dossier:", error);
     }
   };
 
@@ -172,6 +190,16 @@ export default function FolderDetailsPage({
               </div>
 
               <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-brand-ink-muted">
+                <span className="font-medium text-brand-ink">
+                  {folder.procedure.title}
+                </span>
+
+                <span aria-hidden="true">•</span>
+
+                <span>{folder.procedure.category.name}</span>
+
+                <span aria-hidden="true">•</span>
+
                 <span>Créé le {formatDate(folder.createdAt)}</span>
 
                 <span>•</span>
@@ -185,70 +213,62 @@ export default function FolderDetailsPage({
             </div>
           </div>
 
-          {/* Actions */}
-
-          <DropdownMenu>
-            <DropdownMenuTrigger className="w-full shrink-0 flex btn btn-outline py-2 justify-between rounded-sm sm:w-auto text-base">
-              Actions
-              <ChevronDown className="size-5" />
-            </DropdownMenuTrigger>
-
-            <DropdownMenuContent align="end" className="w-60 *:text-base">
-              {folder.status === "PENDING" && (
-                <DropdownMenuItem>
-                  <Link href="/categories" className="btn flex gap-2">
-                    <RefreshCcw className="size-5" />
-                    Reprendre la démarche
-                  </Link>
-                </DropdownMenuItem>
-              )}
-
-              {folder.status === "CREATED" && (
-                <DropdownMenuItem>
-                  <Link href="/categories" className="btn gap-2 flex ">
-                    <Play className="size-5" />
-                    Continuer le diagnostic
-                  </Link>
-                </DropdownMenuItem>
-              )}
-
-              <DropdownMenuItem
-                variant="destructive"
-                className="gap-2 text-destructive font-medium"
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+            {(folder.status === "CREATED" || folder.status === "PENDING") && (
+              <button
+                type="button"
+                onClick={openDiagnostic}
+                className="btn btn-primary min-h-12 text-base"
               >
-                <button
-                  type="button"
-                  onClick={handleDelete}
-                  disabled={isDeleting}
-                  className="btn hover:text-destructive! disabled:cursor-not-allowed disabled:opacity-60"
-                >
-                  {isDeleting ? (
-                    <>
-                      <Loader2 className="size-5 animate-spin" />
-                      Suppression...
-                    </>
-                  ) : (
-                    <>
-                      <Trash2 className="size-5 hover:text-current!" />
-                      Supprimer le dossier
-                    </>
-                  )}
-                </button>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+                <Play className="size-5" />
+                {folder.status === "CREATED"
+                  ? "Continuer le diagnostic"
+                  : "Reprendre la démarche"}
+              </button>
+            )}
+            {(folder.status === "ENDED" || folder.status === "CLOSED") && (
+              <button
+                type="button"
+                onClick={handleRestart}
+                disabled={delFolder.isPending}
+                className="btn btn-primary min-h-12 text-base"
+              >
+                <RotateCcw className="size-5" />
+                {delFolder.isPending
+                  ? "Préparation..."
+                  : "Recommencer le dossier"}
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={handleDelete}
+              disabled={isDeleting}
+              className="btn btn-outline min-h-12 text-base disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {isDeleting ? (
+                <Loader2 className="size-5 animate-spin" />
+              ) : (
+                <Trash2 className="size-5" />
+              )}
+              {isDeleting ? "Suppression..." : "Supprimer le dossier"}
+            </button>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-        <div className="min-w-0 space-y-5 turtle-card shadow-none hover:border-border">
+        <div className="min-w-0 space-y-5">
           {/*  Steps */}
-          <ProcesSteps process={folder.process} currentStep={currentStep} />
+          <ProcesSteps process={folder.process} status={folder.status} />
+
+          <ProgressSummary
+            answerCount={answerCount}
+            currentQuestion={currentQuestion}
+            status={folder.status}
+          />
 
           {/* Infos */}
-          {folder.process?.steps && (
-            <ProcessInfos folder={folder} currentStep={currentStep} />
-          )}
+          {folder.process?.steps && <ProcessInfos folder={folder} />}
 
           <div className="turtle-alert-info border-brand-info/50 w-fit">
             <div>
@@ -264,8 +284,8 @@ export default function FolderDetailsPage({
           </div>
         </div>
 
-        <aside className="min-w-0 space-y-5 turtle-card shadow-none hover:border-border">
-          {currentStep && (
+        <aside className="min-w-0 space-y-5">
+          {currentQuestion && (
             <Card className="border-none shadow-none ring-0">
               <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
                 <CardTitle className="flex items-center gap-3 text-lg text-brand-ink">
@@ -278,15 +298,19 @@ export default function FolderDetailsPage({
 
               <CardContent className="px-5 pb-5 sm:px-6 sm:pb-6">
                 <h3 className="text-base font-semibold text-brand-ink">
-                  {currentStep.title}
+                  {currentQuestion.title}
                 </h3>
 
                 <p className="mt-1 text-sm leading-5 text-brand-ink-muted">
-                  {currentStep.description}
+                  {currentQuestion.description ||
+                    "Répondez à cette question pour continuer votre démarche."}
                 </p>
 
-                <Button className="btn btn-primary mt-4 w-full justify-between text-base rounded-sm p-5">
-                  Voir les détails
+                <Button
+                  onClick={openDiagnostic}
+                  className="btn btn-primary mt-4 w-full justify-between text-base rounded-sm p-5"
+                >
+                  Continuer le diagnostic
                   <ArrowRight className="size-5" />
                 </Button>
               </CardContent>
@@ -310,12 +334,22 @@ export default function FolderDetailsPage({
             </CardHeader>
 
             <CardContent className="space-y-2 px-2 pb-5 sm:px-3 sm:pb-6">
-              {folder?.process?.steps
-                .flatMap((step) => step.documents)
-                .map((document) => (
+              {(() => {
+                const documents =
+                  folder.process?.steps.flatMap((step) => step.documents) ?? [];
+
+                if (documents.length === 0) {
+                  return (
+                    <p className="px-3 text-base font-medium text-brand-ink">
+                      Aucun document n&apos;est associé à cette démarche.
+                    </p>
+                  );
+                }
+
+                return documents.map((document) => (
                   <div
                     key={document.id}
-                    className="flex items-start gap-3 rounded-lg border border-border p-3"
+                    className="flex items-start gap-3 rounded-sm border border-border p-3"
                   >
                     <div className="flex shrink-0 items-center justify-center">
                       <FileText className="size-8 text-brand-green" />
@@ -326,16 +360,15 @@ export default function FolderDetailsPage({
                         {document.name}
                       </p>
 
-                      <p className="text-brand-ink-muted">
-                        {document.price.toString()}
-                      </p>
+                      {document.customizable && (
+                        <p className="mt-1 text-sm text-brand-ink-muted">
+                          Document personnalisable
+                        </p>
+                      )}
                     </div>
                   </div>
-                )) ?? (
-                <p className="text-base font-medium text-brand-ink px-3">
-                  Pas de documents disponibles
-                </p>
-              )}
+                ));
+              })()}
             </CardContent>
           </Card>
 
@@ -351,14 +384,6 @@ export default function FolderDetailsPage({
                     Consultez notre centre d&apos;aide ou contactez notre équipe
                     si vous avez besoin d&apos;assistance.
                   </p>
-
-                  <Button
-                    variant="outline"
-                    className="mt-3 h-10 rounded-sm border-brand-green/30 bg-card text-base text-brand-green hover:bg-brand-green-soft"
-                  >
-                    Voir l&apos;aide et le support
-                    <ArrowRight className="size-5" />
-                  </Button>
                 </div>
               </div>
             </CardContent>
@@ -369,13 +394,7 @@ export default function FolderDetailsPage({
   );
 }
 
-const ProcessInfos = ({
-  folder,
-  currentStep,
-}: {
-  folder: FolderType;
-  currentStep?: Step;
-}) => {
+const ProcessInfos = ({ folder }: { folder: FolderType }) => {
   return (
     <div>
       <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
@@ -428,15 +447,6 @@ const ProcessInfos = ({
         />
 
         <InfoItem
-          icon={Building2}
-          label="Administration compétente"
-          value={
-            currentStep?.administrativeBody?.name ??
-            "Voir les étapes de la démarche"
-          }
-        />
-
-        <InfoItem
           icon={FileText}
           label="Base légale"
           value={folder.procedure.legalBasis}
@@ -445,6 +455,58 @@ const ProcessInfos = ({
     </div>
   );
 };
+
+function ProgressSummary({
+  answerCount,
+  currentQuestion,
+  status,
+}: {
+  answerCount: number;
+  currentQuestion?: {
+    title: string;
+    description: string | null;
+  };
+  status: FolderStatus;
+}) {
+  const isFinished = status === "ENDED" || status === "CLOSED";
+
+  return (
+    <section className="border-y border-border px-5 py-5 sm:px-6">
+      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
+        <h2 className="font-display text-2xl text-brand-ink">
+          Votre progression
+        </h2>
+        <p className="text-base text-brand-ink-muted">
+          {isFinished
+            ? "Démarche terminée"
+            : `${answerCount} réponse${answerCount > 1 ? "s" : ""} enregistrée${answerCount > 1 ? "s" : ""}`}
+        </p>
+      </div>
+
+      {currentQuestion && !isFinished ? (
+        <div className="mt-4 rounded-sm border border-brand-green/20 bg-brand-green-soft/30 p-4">
+          <p className="text-sm font-semibold text-brand-green-dark">
+            Question en cours
+          </p>
+          <p className="mt-1 text-lg font-semibold text-brand-ink">
+            {currentQuestion.title}
+          </p>
+          {currentQuestion.description && (
+            <p className="mt-1 leading-6 text-brand-ink-muted">
+              {currentQuestion.description}
+            </p>
+          )}
+        </div>
+      ) : (
+        <p className="mt-3 leading-6 text-brand-ink-muted">
+          {isFinished
+            ? "Toutes les informations disponibles pour cette démarche sont présentées ci-dessous."
+            : "Votre prochaine question apparaîtra ici lorsque le diagnostic sera commencé."}
+        </p>
+      )}
+    </section>
+  );
+}
 
 function InfoItem({
   icon: Icon,

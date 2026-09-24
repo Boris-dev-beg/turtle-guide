@@ -50,19 +50,6 @@ export const FolderServices = {
         },
         location: true,
         progression: true,
-        process: {
-          include: {
-            steps: {
-              include: {
-                administrativeBody: true,
-
-                documents: true,
-
-                fraudAlerts: true,
-              },
-            },
-          },
-        },
       },
     });
   },
@@ -77,7 +64,6 @@ export const FolderServices = {
     procedureId: string;
     name: string;
   }) {
-
     // ? Search active folder
     const activeFolder = await prisma.folder.findFirst({
       where: {
@@ -139,7 +125,7 @@ export const FolderServices = {
       include: diagnosticFolderInclude,
     });
 
-   // ? Then return it
+    // ? Then return it
     return {
       status: "CREATED" as const,
       folder: newFolder,
@@ -160,12 +146,36 @@ export const FolderServices = {
           },
         },
         location: true,
-        progression: true,
+        progression: {
+          include: {
+            currentQuestion: true,
+          },
+        },
+        answers: {
+          include: {
+            option: {
+              include: {
+                question: true,
+              },
+            },
+          },
+          orderBy: {
+            answeredAt: "asc",
+          },
+        },
         process: {
           include: {
             steps: {
               include: {
-                administrativeBody: true,
+                administrativeBody: {
+                  include: {
+                    administrativeUnits: {
+                      include: {
+                        location: true,
+                      },
+                    },
+                  },
+                },
 
                 documents: true,
 
@@ -198,7 +208,7 @@ export const FolderServices = {
     id: string;
     userId: string;
     processId: string;
-    status: FolderStatus
+    status: FolderStatus;
   }) {
     return await prisma.folder.update({
       where: {

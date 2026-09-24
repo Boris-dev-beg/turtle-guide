@@ -15,7 +15,15 @@ export type Step = {
   description: string;
   processId: string;
   administrativeBodyId: string | null;
-  administrativeBody: AdministrativeBody | null;
+  administrativeBody:
+    | (AdministrativeBody & {
+        administrativeUnits: {
+          id: string;
+          name: string;
+          location: Location;
+        }[];
+      })
+    | null;
   documents: Document[];
   fraudAlerts: FraudAlert[];
 };
@@ -32,6 +40,37 @@ export type FolderType = Folder & {
     category: Category;
   };
   location: Location | null;
-  progression: Progression | null;
   process: ProcessType | null;
+  answers: {
+    id: string;
+    answeredAt: Date;
+    option: {
+      id: string;
+      label: string;
+      question: {
+        id: string;
+        title: string;
+      };
+    };
+  }[];
+  progression:
+    | (Progression & {
+        currentQuestion: {
+          id: string;
+          title: string;
+          description: string | null;
+        };
+      })
+    | null;
+};
+
+export type FolderListType = Pick<
+  Folder,
+  "id" | "name" | "status" | "createdAt" | "updatedAt"
+> & {
+  procedure: Pick<Procedure, "title"> & {
+    category: Pick<Category, "name">;
+  };
+  location: Pick<Location, "city" | "address"> | null;
+  progression: Progression | null;
 };

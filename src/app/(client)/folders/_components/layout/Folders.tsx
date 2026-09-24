@@ -7,10 +7,38 @@ import { useFolder } from "@/hooks/useFolder";
 import { FoldersLoading } from "../cards/FoldersLoading";
 import { FoldersError } from "../cards/FoldersError";
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 export default function Folders({ userId }: { userId: string }) {
   // ! States
   const { folders, isLoading, isError, refetch } = useFolder(userId);
+  const [statusFilter, setStatusFilter] = useState("all");
+  const [search, setSearch] = useState("");
+
+  const visibleFolders = useMemo(() => {
+    if (!folders) return [];
+
+    const normalizedSearch = search.trim().toLocaleLowerCase();
+
+    return folders.filter((folder) => {
+      const matchesStatus =
+        statusFilter === "all" ||
+        (statusFilter === "active" &&
+          (folder.status === "CREATED" || folder.status === "PENDING")) ||
+        (statusFilter === "finished" &&
+          (folder.status === "ENDED" || folder.status === "CLOSED"));
+
+      const searchableText = [
+        folder.name,
+        folder.procedure.title,
+        folder.procedure.category.name,
+      ]
+        .join(" ")
+        .toLocaleLowerCase();
+
+      return matchesStatus && searchableText.includes(normalizedSearch);
+    });
+  }, [folders, search, statusFilter]);
 
   // ! Functions
 
@@ -19,7 +47,7 @@ export default function Folders({ userId }: { userId: string }) {
     <main className="wrapper w-full py-8 lg:py-10">
       {/* Header */}
       <div className="mb-7">
-        <h1 className="text-4xl font-semibold tracking-tight text-brand-ink sm:text-5xl">
+        <h1 className="font-display text-4xl font-semibold tracking-tight text-brand-ink sm:text-5xl">
           Mes dossiers
         </h1>
 
@@ -31,7 +59,7 @@ export default function Folders({ userId }: { userId: string }) {
 
       {/* Filtres */}
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <Tabs defaultValue="all">
+        <Tabs value={statusFilter} onValueChange={setStatusFilter}>
           <TabsList className="h-12! rounded-sm border border-border bg-card p-2">
             <TabsTrigger value="all" className="rounded-sm px-4 text-base h-8">
               Tous ({folders ? folders.length : 0})
@@ -72,6 +100,8 @@ export default function Folders({ userId }: { userId: string }) {
           <Search className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-brand-ink-muted" />
 
           <Input
+            value={search}
+            onChange={(event) => setSearch(event.target.value)}
             placeholder="Rechercher un dossier..."
             className="h-10 bg-card pl-9 text-base! rounded-sm"
           />
@@ -84,23 +114,27 @@ export default function Folders({ userId }: { userId: string }) {
           <FoldersLoading />
         ) : isError || !folders ? (
           <FoldersError onRetry={refetch} />
-        ) : folders.length > 0 ? (
-          folders.map((folder) => (
+        ) : folders.length === 0 ? (
+          <EmptyFolders />
+        ) : visibleFolders.length > 0 ? (
+          visibleFolders.map((folder) => (
             <FolderCard key={folder.id} folder={folder} />
           ))
         ) : (
-          <EmptyFolders />
+          <EmptyFilteredFolders />
         )}
       </div>
 
       {/* Footer de liste */}
       <div className="flex w-full justify-between mt-6 items-center">
         <p className="text-base text-brand-ink-muted">
-          {folders ? folders.length : 0} dossiers au total
+          {visibleFolders.length} dossier{visibleFolders.length > 1 ? "s" : ""}{" "}
+          affiché{visibleFolders.length > 1 ? "s" : ""}
         </p>
 
         {/* CTA */}
-        <Link href="/categories"
+        <Link
+          href="/categories"
           className="rounded-sm gap-2 bg-card text-sm md:text-base btn btn-outline py-3 px-5 cursor-pointer"
         >
           Nouveau dossier
@@ -108,5 +142,18 @@ export default function Folders({ userId }: { userId: string }) {
         </Link>
       </div>
     </main>
+  );
+}
+
+function EmptyFilteredFolders() {
+  return (
+    <div className="rounded-sm border border-border bg-card px-6 py-12 text-center">
+      <h2 className="font-display text-2xl text-brand-ink">
+        Aucun dossier ne correspond à votre recherche
+      </h2>
+      <p className="mx-auto mt-2 max-w-md leading-6 text-brand-ink-muted">
+        Modifiez le terme recherché ou choisissez un autre statut.
+      </p>
+    </div>
   );
 }
