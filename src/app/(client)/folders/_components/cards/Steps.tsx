@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import { Step } from "../../types/types";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FolderStatus } from "@/generated/prisma/enums";
 
 export function ProcesSteps({
   process,
@@ -18,7 +19,7 @@ export function ProcesSteps({
     description: string;
     steps: Step[];
   } | null;
-  status: "CREATED" | "PENDING" | "ENDED" | "CLOSED";
+  status: FolderStatus;
 }) {
   return (
     <div>
@@ -86,7 +87,7 @@ export function ProcesSteps({
 
                     {step.administrativeBody && (
                       <div className="mt-3 flex items-center gap-2 text-base text-brand-ink-muted font-medium">
-                        <Building2 className="size-6 shrink-0 text-brand-green" />
+                        <Building2 className="size-7 shrink-0 text-brand-green mb-auto" />
                         <span>
                           {step.administrativeBody.name}
                           {step.administrativeBody.administrativeUnits.length >
