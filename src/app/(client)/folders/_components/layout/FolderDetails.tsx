@@ -8,7 +8,6 @@ import {
   Clock3,
   FileText,
   Flag,
-  Loader2,
   LucideIcon,
   MapPin,
   Play,
@@ -16,7 +15,6 @@ import {
   Trash2,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFolder } from "@/hooks/useFolder";
@@ -29,58 +27,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useFolderStore } from "@/store/folder.store";
-
-const statusConfig: Record<
-  FolderStatus,
-  {
-    label: string;
-    className: string;
-  }
-> = {
-  CREATED: {
-    label: "Créé",
-    className: "border-brand-info/20 bg-brand-info-bg text-brand-info",
-  },
-
-  PENDING: {
-    label: "En cours",
-    className:
-      "border-brand-green/20 bg-brand-green-soft text-brand-green-dark",
-  },
-
-  ENDED: {
-    label: "Terminé",
-    className:
-      "border-brand-green/20 bg-brand-green-soft text-brand-green-dark",
-  },
-
-  CLOSED: {
-    label: "Archivé",
-    className: "border-border bg-muted text-brand-ink-muted",
-  },
-};
-
-function formatDate(date: Date) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  }).format(date);
-}
-
-function FolderStatusBadge({ status }: { status: FolderStatus }) {
-  const config = statusConfig[status];
-
-  return (
-    <Badge
-      variant="outline"
-      className={`rounded-sm px-3 py-1.5 font-medium text-sm ${config.className}`}
-    >
-      <span className="size-2 rounded-full bg-current" />
-      {config.label}
-    </Badge>
-  );
-}
+import ConfirmDelete from "../cards/ConfirmDelete";
+import { FolderStatusBadge, formatDate } from "../utils/functions/functions";
 
 export default function FolderDetailsPage({
   id,
@@ -91,6 +39,7 @@ export default function FolderDetailsPage({
 }) {
   // ! States
   const router = useRouter();
+  const [wantToDelete, setWantToDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const { setCategory, setProcedure } = useFolderStore();
   const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
@@ -208,12 +157,12 @@ export default function FolderDetailsPage({
               </div>
 
               <p className="mt-1 max-w-3xl leading-6 text-brand-ink-muted">
-                {folder.procedure.description}
+                {folder.process?.description}
               </p>
             </div>
           </div>
 
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+          <div className="flex w-full flex-col gap-2 sm:w-auto">
             {(folder.status === "CREATED" || folder.status === "PENDING") && (
               <button
                 type="button"
@@ -241,20 +190,25 @@ export default function FolderDetailsPage({
             )}
             <button
               type="button"
-              onClick={handleDelete}
-              disabled={isDeleting}
-              className="btn btn-outline min-h-12 text-base disabled:cursor-not-allowed disabled:opacity-60"
+              onClick={setWantToDelete.bind(null, true)}
+              disabled={wantToDelete}
+              className="btn btn-destructive min-h-12 text-base disabled:cursor-not-allowed disabled:opacity-60"
             >
-              {isDeleting ? (
-                <Loader2 className="size-5 animate-spin" />
-              ) : (
-                <Trash2 className="size-5" />
-              )}
-              {isDeleting ? "Suppression..." : "Supprimer le dossier"}
+              <Trash2 className="size-5" />
+              Supprimer le dossier
             </button>
           </div>
         </div>
       </div>
+
+      {wantToDelete && (
+        <ConfirmDelete
+          isDeleting={isDeleting}
+          handleDelete={handleDelete}
+          setIsDeleting={setIsDeleting}
+          setWantToDelete={setWantToDelete}
+        />
+      )}
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-5">
@@ -518,15 +472,15 @@ function InfoItem({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 gap-3">
+    <div className="flex min-w-0 gap-1">
       <div className="flex size-12 shrink-0 items-center justify-center">
-        <Icon className="size-8 text-brand-green" />
+        <Icon className="size-6 text-brand-green" />
       </div>
 
       <div className="min-w-0 leading-4">
-        <p className="text-brand-ink-muted">{label}</p>
+        <p className="text-brand-ink-muted uppercase text-xs">{label}</p>
 
-        <p className="mt-0.5 wrap-break-word text-lg font-medium text-brand-ink leading-6">
+        <p className="mt-0.5 wrap-break-word lg:text-base text-sm font-medium text-brand-ink leading-6 line-clamp-3">
           {value}
         </p>
       </div>

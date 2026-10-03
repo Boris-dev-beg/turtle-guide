@@ -27,7 +27,7 @@ export const Hero_infos = {
   description:
     "TurtleGuide vous aide à identifier et suivre pas à pas vos démarches, en toute simplicité.",
   link: {
-    href: "/demarches",
+    href: "/categories",
     label: "Commencer une démarche",
   },
 };

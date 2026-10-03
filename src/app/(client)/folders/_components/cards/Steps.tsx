@@ -118,7 +118,7 @@ export function ProcesSteps({
                           {step.documents.map((document) => (
                             <div
                               key={document.id}
-                              className="flex items-start gap-3 rounded-lg border border-border bg-card p-3"
+                              className="flex items-start gap-3 rounded-lg border border-brand-green/30 bg-brand-green-soft p-3"
                             >
                               <FileText className="mt-0.5 size-6 shrink-0 text-brand-green" />
 
@@ -128,7 +128,7 @@ export function ProcesSteps({
                                 </p>
 
                                 {document.legalWarning && (
-                                  <p className="mt-1 text-sm leading-5 text-brand-ink-muted">
+                                  <p className="mt-1 text-sm leading-5 text-brand-ink-muted line-clamp-3">
                                     {document.legalWarning}
                                   </p>
                                 )}
