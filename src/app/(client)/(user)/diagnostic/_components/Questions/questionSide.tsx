@@ -224,7 +224,7 @@ export const QuestionsSide = ({
 
 const QuestionsSkeleton = () => {
   return (
-    <div className="flex w-full flex-col gap-5 rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5 sm:p-6">
+    <div className="flex w-full flex-col gap-5 rounded-sm border border-border border-l-4 border-l-brand-green-soft bg-card p-5 sm:p-6">
       {/* Indication */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
