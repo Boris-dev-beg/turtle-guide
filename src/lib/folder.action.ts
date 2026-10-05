@@ -22,7 +22,7 @@ export async function createOrGetFolderAction({
   return await FolderServices.getOrCreateDiagnosticFolder({
     userId,
     procedureId: procedure.id,
-    name: category,
+    name: category + " - " + procedureName,
   });
 }
 

@@ -28,6 +28,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { useFolderStore } from "@/store/folder.store";
 import ConfirmDelete from "../cards/ConfirmDelete";
+import { DiagnosticAnswers } from "../cards/DiagnosticAnswers";
 import { FolderStatusBadge, formatDate } from "../utils/functions/functions";
 
 export default function FolderDetailsPage({
@@ -220,6 +221,8 @@ export default function FolderDetailsPage({
             currentQuestion={currentQuestion}
             status={folder.status}
           />
+
+          <DiagnosticAnswers answers={folder.answers} />
 
           {/* Infos */}
           {folder.process?.steps && <ProcessInfos folder={folder} />}

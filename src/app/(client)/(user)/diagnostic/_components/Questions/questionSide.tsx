@@ -1,32 +1,15 @@
 "use client";
-import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { useFolder } from "@/hooks/useFolder";
 import { useQuestions } from "@/hooks/useQuestions";
-import { ArrowLeft, ArrowRight, ArrowUpRightFromSquare } from "lucide-react";
+import { ArrowLeft, ArrowRight, ArrowUpRightFromSquare, Check } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { QuestionsSkeleton } from "../cards/Skeleton";
+import { CurrentQuestionType } from "./QuestionTypes";
+import QuestionsHeader from "../cards/QuestionsHeader";
 
-type CurrentQuestionType = {
-  id: string;
-  title: string;
-  description: string | null;
-
-  legalBasisLink: {
-    href: string;
-    label: string;
-  };
-
-  answer_options: {
-    id: string;
-    title: string;
-    description: string;
-    questionId: string;
-    nextQuestionId: string | null;
-    processId: string | null;
-  }[];
-};
 
 export const QuestionsSide = ({
   userId,
@@ -108,7 +91,7 @@ export const QuestionsSide = ({
         processId: option.processId,
         status: "PENDING",
       });
-      router.push("/folders");
+      router.push(`/folders/${folderId}`);
     }
   };
 
@@ -134,25 +117,14 @@ export const QuestionsSide = ({
   return (
     <div className="relative flex w-full flex-col gap-5 overflow-hidden rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5 sm:p-6">
       {/* Indication */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center rounded-sm bg-brand-yellow-bg px-3 py-1.5 text-sm font-semibold text-brand-ink">
-            Question {currentIndex + 1}
-          </span>
-          <span className="h-4 w-px bg-border" />
-          <h2 className="text-muted-foreground text-sm font-medium">
-            Diagnostic en cours
-          </h2>
-        </div>
-      </div>
-
+     <QuestionsHeader currentIndex={currentIndex} />
       {/* Question description */}
       <div className="flex flex-col gap-3 pb-2">
         <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-brand-ink">
           {currentQuestion.title}
         </h1>
         <p className="text-muted-foreground leading-6 max-w-3xl">
-          {currentQuestion.description}{" "}
+          {currentQuestion.description}
           <Link
             className="text-primary hover:underline inline-flex items-center gap-1 font-semibold transition-colors"
             href={currentQuestion.legalBasisLink.href}
@@ -173,11 +145,13 @@ export const QuestionsSide = ({
           >
             <span
               className={`turtle-step ${answer.id === selectedOption?.id ? "turtle-step-active" : "turtle-step-inactive"}`}
-            />
+            >
+              {answer.id === selectedOption?.id ?(<Check className="size-6" strokeWidth={3} />) : null}
+            </span>
             <div className="flex flex-col gap-1">
               <h2 className="text-lg font-semibold text-brand-ink">
-                {" "}
-                {answer.title}{" "}
+                
+                {answer.title}
               </h2>
               <p className="text-muted-foreground leading-5">
                 {answer.description}
@@ -222,48 +196,4 @@ export const QuestionsSide = ({
   );
 };
 
-const QuestionsSkeleton = () => {
-  return (
-    <div className="flex w-full flex-col gap-5 rounded-sm border border-border border-l-4 border-l-brand-green-soft bg-card p-5 sm:p-6">
-      {/* Indication */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <Skeleton className="h-9 w-28 rounded-lg" />
-          <span className="h-4 w-px bg-border" />
-          <Skeleton className="h-4 w-32" />
-        </div>
-      </div>
 
-      {/* Question description */}
-      <div className="flex flex-col gap-3 pb-2">
-        <Skeleton className="h-9 w-4/5" />
-        <Skeleton className="h-4 w-full max-w-3xl" />
-        <Skeleton className="h-4 w-3/5 max-w-3xl" />
-      </div>
-
-      {/* Answer options */}
-      <div className="grid gap-3 w-full px-1">
-        {Array.from({ length: 3 }).map((_, index) => (
-          <div
-            key={index}
-            className="flex items-start gap-3 rounded-sm border border-border bg-background p-4"
-          >
-            <Skeleton className="size-6 shrink-0 rounded-full" />
-
-            <div className="flex flex-col gap-2 w-full">
-              <Skeleton className="h-5 w-1/3" />
-              <Skeleton className="h-4 w-4/5" />
-              <Skeleton className="h-4 w-3/5" />
-            </div>
-          </div>
-        ))}
-      </div>
-
-      {/* Actions */}
-      <div className="flex flex-col sm:flex-row w-full items-center justify-between border-t border-border pt-4 mt-1 gap-3">
-        <Skeleton className="h-11 w-full sm:w-52 rounded-lg" />
-        <Skeleton className="h-11 w-full sm:w-40 rounded-lg" />
-      </div>
-    </div>
-  );
-};
