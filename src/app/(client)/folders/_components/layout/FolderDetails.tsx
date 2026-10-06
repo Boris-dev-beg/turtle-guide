@@ -4,12 +4,7 @@ import Link from "next/link";
 import {
   ArrowLeft,
   ArrowRight,
-  CalendarDays,
-  Clock3,
   FileText,
-  Flag,
-  LucideIcon,
-  MapPin,
   Play,
   RotateCcw,
   Trash2,
@@ -20,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFolder } from "@/hooks/useFolder";
 import { FolderDetailsLoading } from "../cards/FoldersLoading";
 import { FolderDetailsError } from "../cards/FoldersError";
-import { FolderType } from "../../types/types";
 import { FolderStatus } from "@/generated/prisma/enums";
 import { ProcesSteps } from "../cards/Steps";
 import { useRouter } from "next/navigation";
@@ -30,6 +24,8 @@ import { useFolderStore } from "@/store/folder.store";
 import ConfirmDelete from "../cards/ConfirmDelete";
 import { DiagnosticAnswers } from "../cards/DiagnosticAnswers";
 import { FolderStatusBadge, formatDate } from "../utils/functions/functions";
+import FolderInfos from "../sections/FolderInfos";
+import { GreatToKnow, HelpBox } from "../cards/SimpleCard";
 
 export default function FolderDetailsPage({
   id,
@@ -40,8 +36,12 @@ export default function FolderDetailsPage({
 }) {
   // ! States
   const router = useRouter();
+
   const [wantToDelete, setWantToDelete] = useState(false);
+  const [wantToSeeDetails, setWantToSeeDetails] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showAnswers, setShowAnswers] = useState(false);
+
   const { setCategory, setProcedure } = useFolderStore();
   const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
     useFolder(userId, id);
@@ -220,25 +220,34 @@ export default function FolderDetailsPage({
             answerCount={answerCount}
             currentQuestion={currentQuestion}
             status={folder.status}
+            setShowAnswers={setShowAnswers}
+            showAnswers={showAnswers}
           />
 
-          <DiagnosticAnswers answers={folder.answers} />
-
+          {showAnswers && <DiagnosticAnswers answers={folder.answers} />}
           {/* Infos */}
-          {folder.process?.steps && <ProcessInfos folder={folder} />}
+          <div className="flex items-center justify-between rounded-sm border border-border bg-card p-5">
+            <h2 className="text-lg font-semibold text-brand-ink">
+              Informations sur la démarche
+            </h2>
 
-          <div className="turtle-alert-info border-brand-info/50 w-fit">
-            <div>
-              <p className="font-semibold text-brand-ink text-lg">
-                Bon à savoir
-              </p>
-
-              <p className="mt-1 leading-5 text-brand-ink-muted sm:text-sm">
-                Vérifiez toujours les informations et les documents demandés
-                avant de vous déplacer auprès de l&apos;administration.
-              </p>
-            </div>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={setWantToSeeDetails.bind(null, true)}
+            >
+              Voir les détails
+            </Button>
           </div>
+
+          {folder.process?.steps && wantToSeeDetails && (
+            <FolderInfos
+              folder={folder}
+              setWantToSeeDetails={setWantToSeeDetails}
+            />
+          )}
+
+          <GreatToKnow />
         </div>
 
         <aside className="min-w-0 space-y-5">
@@ -329,94 +338,19 @@ export default function FolderDetailsPage({
             </CardContent>
           </Card>
 
-          <div className="border-brand-green/20 border bg-brand-green-soft/40 rounded-sm">
-            <CardContent className="p-5">
-              <div className="flex gap-3">
-                <div>
-                  <h3 className="text-lg font-semibold text-brand-green-dark">
-                    Besoin d&apos;aide ?
-                  </h3>
-
-                  <p className="mt-1 leading-5 text-brand-ink-muted text-base">
-                    Consultez notre centre d&apos;aide ou contactez notre équipe
-                    si vous avez besoin d&apos;assistance.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </div>
+          <HelpBox />
         </aside>
       </div>
     </main>
   );
 }
 
-const ProcessInfos = ({ folder }: { folder: FolderType }) => {
-  return (
-    <div>
-      <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
-        <CardTitle className="text-2xl sm:text-3xl text-brand-ink">
-          Informations sur la démarche
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent className="grid gap-5 px-5 pb-5 sm:grid-cols-2 sm:px-6 sm:pb-6">
-        <InfoItem
-          icon={FileText}
-          label="Procédure"
-          value={folder.procedure.title}
-        />
-
-        <InfoItem
-          icon={Flag}
-          label="Catégorie"
-          value={folder.procedure.category.name}
-        />
-
-        {folder.process && (
-          <InfoItem
-            icon={ArrowRight}
-            label="Processus"
-            value={folder.process.title}
-          />
-        )}
-
-        {folder.location && (
-          <InfoItem
-            icon={MapPin}
-            label="Lieu"
-            value={[folder.location.city, folder.location.address]
-              .filter(Boolean)
-              .join(", ")}
-          />
-        )}
-
-        <InfoItem
-          icon={CalendarDays}
-          label="Démarré le"
-          value={formatDate(folder.createdAt)}
-        />
-
-        <InfoItem
-          icon={Clock3}
-          label="Dernière activité"
-          value={formatDate(folder.updatedAt)}
-        />
-
-        <InfoItem
-          icon={FileText}
-          label="Base légale"
-          value={folder.procedure.legalBasis}
-        />
-      </CardContent>
-    </div>
-  );
-};
-
 function ProgressSummary({
   answerCount,
   currentQuestion,
   status,
+  setShowAnswers,
+  showAnswers,
 }: {
   answerCount: number;
   currentQuestion?: {
@@ -424,6 +358,8 @@ function ProgressSummary({
     description: string | null;
   };
   status: FolderStatus;
+  setShowAnswers: (val: boolean) => void;
+  showAnswers: boolean;
 }) {
   const isFinished = status === "ENDED" || status === "CLOSED";
 
@@ -455,38 +391,22 @@ function ProgressSummary({
           )}
         </div>
       ) : (
-        <p className="mt-3 leading-6 text-brand-ink-muted">
-          {isFinished
-            ? "Toutes les informations disponibles pour cette démarche sont présentées ci-dessous."
-            : "Votre prochaine question apparaîtra ici lorsque le diagnostic sera commencé."}
-        </p>
+        <>
+          <p className="mt-3 leading-6 text-brand-ink-muted">
+            {isFinished
+              ? "Toutes les informations disponibles pour cette démarche sont présentées ci-dessous."
+              : "Votre prochaine question apparaîtra ici lorsque le diagnostic sera commencé."}
+          </p>
+          {!isFinished && (
+            <Button
+              onClick={setShowAnswers.bind(null, !showAnswers)}
+              className="mt-4 btn-primary btn w-full justify-between text-base rounded-sm p-5 sm:w-auto"
+            >
+              {showAnswers ? "Masquer les réponses" : "Voir les réponses"}
+            </Button>
+          )}
+        </>
       )}
     </section>
-  );
-}
-
-function InfoItem({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: LucideIcon;
-  label: string;
-  value: string;
-}) {
-  return (
-    <div className="flex min-w-0 gap-1">
-      <div className="flex size-12 shrink-0 items-center justify-center">
-        <Icon className="size-6 text-brand-green" />
-      </div>
-
-      <div className="min-w-0 leading-4">
-        <p className="text-brand-ink-muted uppercase text-xs">{label}</p>
-
-        <p className="mt-0.5 wrap-break-word lg:text-base text-sm font-medium text-brand-ink leading-6 line-clamp-3">
-          {value}
-        </p>
-      </div>
-    </div>
   );
 }
