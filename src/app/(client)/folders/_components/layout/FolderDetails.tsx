@@ -15,7 +15,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useFolder } from "@/hooks/useFolder";
 import { FolderDetailsLoading } from "../cards/FoldersLoading";
 import { FolderDetailsError } from "../cards/FoldersError";
-import { FolderStatus } from "@/generated/prisma/enums";
 import { ProcesSteps } from "../cards/Steps";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -26,6 +25,7 @@ import { DiagnosticAnswers } from "../cards/DiagnosticAnswers";
 import { FolderStatusBadge, formatDate } from "../utils/functions/functions";
 import FolderInfos from "../sections/FolderInfos";
 import { GreatToKnow, HelpBox } from "../cards/SimpleCard";
+import ProgressSummary from "../sections/ProgressSummary";
 
 export default function FolderDetailsPage({
   id,
@@ -34,13 +34,13 @@ export default function FolderDetailsPage({
   id: string;
   userId: string;
 }) {
-  // ! States
+  // ! STATES
   const router = useRouter();
 
   const [wantToDelete, setWantToDelete] = useState(false);
   const [wantToSeeDetails, setWantToSeeDetails] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [showAnswers, setShowAnswers] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const { setCategory, setProcedure } = useFolderStore();
   const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
@@ -63,7 +63,7 @@ export default function FolderDetailsPage({
   const currentQuestion = folder.progression?.currentQuestion;
   const answerCount = folder.answers.length;
 
-  // ! Functions
+  // ! FUNCTIONS
 
   const openDiagnostic = () => {
     setCategory(folder.procedure.category.name);
@@ -71,6 +71,7 @@ export default function FolderDetailsPage({
     router.push("/diagnostic");
   };
 
+  // ! Delete folder
   const handleDelete = async () => {
     if (isDeleting) return;
 
@@ -95,6 +96,7 @@ export default function FolderDetailsPage({
     }
   };
 
+  // ! Restart folder
   const handleRestart = async () => {
     if (delFolder.isPending) return;
 
@@ -112,7 +114,9 @@ export default function FolderDetailsPage({
     }
   };
 
-  // ! Render
+  console.log("Folder Details:", folder)
+
+  // ! RENDER
   return (
     <main className="wrapper w-full py-6 sm:py-8 lg:py-10">
       <div className="mb-6">
@@ -220,6 +224,8 @@ export default function FolderDetailsPage({
             answerCount={answerCount}
             currentQuestion={currentQuestion}
             status={folder.status}
+            // AJOUTÉ - Le process n'est affecté au dossier qu'à la dernière réponse du diagnostic.
+            diagnosticComplete={Boolean(folder.processId)}
             setShowAnswers={setShowAnswers}
             showAnswers={showAnswers}
           />
@@ -342,71 +348,5 @@ export default function FolderDetailsPage({
         </aside>
       </div>
     </main>
-  );
-}
-
-function ProgressSummary({
-  answerCount,
-  currentQuestion,
-  status,
-  setShowAnswers,
-  showAnswers,
-}: {
-  answerCount: number;
-  currentQuestion?: {
-    title: string;
-    description: string | null;
-  };
-  status: FolderStatus;
-  setShowAnswers: (val: boolean) => void;
-  showAnswers: boolean;
-}) {
-  const isFinished = status === "ENDED" || status === "CLOSED";
-
-  return (
-    <section className="border-y border-border px-5 py-5 sm:px-6">
-      <div className="flex flex-col gap-1 sm:flex-row sm:items-baseline sm:justify-between">
-        <h2 className="font-display text-2xl text-brand-ink">
-          Votre progression
-        </h2>
-        <p className="text-base text-brand-ink-muted">
-          {isFinished
-            ? "Démarche terminée"
-            : `${answerCount} réponse${answerCount > 1 ? "s" : ""} enregistrée${answerCount > 1 ? "s" : ""}`}
-        </p>
-      </div>
-
-      {currentQuestion && !isFinished ? (
-        <div className="mt-4 rounded-sm border border-brand-green/20 bg-brand-green-soft/30 p-4">
-          <p className="text-sm font-semibold text-brand-green-dark">
-            Question en cours
-          </p>
-          <p className="mt-1 text-lg font-semibold text-brand-ink">
-            {currentQuestion.title}
-          </p>
-          {currentQuestion.description && (
-            <p className="mt-1 leading-6 text-brand-ink-muted">
-              {currentQuestion.description}
-            </p>
-          )}
-        </div>
-      ) : (
-        <>
-          <p className="mt-3 leading-6 text-brand-ink-muted">
-            {isFinished
-              ? "Toutes les informations disponibles pour cette démarche sont présentées ci-dessous."
-              : "Votre prochaine question apparaîtra ici lorsque le diagnostic sera commencé."}
-          </p>
-          {!isFinished && (
-            <Button
-              onClick={setShowAnswers.bind(null, !showAnswers)}
-              className="mt-4 btn-primary btn w-full justify-between text-base rounded-sm p-5 sm:w-auto"
-            >
-              {showAnswers ? "Masquer les réponses" : "Voir les réponses"}
-            </Button>
-          )}
-        </>
-      )}
-    </section>
   );
 }

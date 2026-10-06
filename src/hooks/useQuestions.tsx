@@ -1,95 +1,99 @@
-import { 
-  getFirstQuestion, 
-  getNextQuestion, 
-  saveAnswer, 
-} from "@/lib/diagnostic"; 
-import { useFolderStore } from "@/store/folder.store"; 
-import { useQuery } from "@tanstack/react-query"; 
-import { useEffect, useState } from "react"; 
+import {
+  getFirstQuestion,
+  getNextQuestion,
+  submitDiagnosticAnswer,
+} from "@/lib/diagnostic";
+import { useFolderStore } from "@/store/folder.store";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 
-export function useQuestions() { 
-  // ! State 
-  const { procedure, category } = useFolderStore(); 
-  const [nextQuestionId, setNextQuestionId] = useState<string | null>(null); 
-  const [questionHistory, setQuestionHistory] = useState<string[]>([]); 
-  const [currentIndex, setCurrentIndex] = useState(questionHistory.length); 
-  const [data, setData] = useState<{ 
-    folderId: string; 
-    optionId: string; 
-  }>({ folderId: "", optionId: "" }); 
+// MODIFIÉ - Le userId sert à rafraîchir les caches de dossier après une réponse persistée.
+export function useQuestions(userId: string) {
+  // ! State
+  const { procedure, category } = useFolderStore();
+  const [nextQuestionId, setNextQuestionId] = useState<string | null>(null);
+  const [questionHistory, setQuestionHistory] = useState<string[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(questionHistory.length);
+  const queryClient = useQueryClient();
 
-  // ! Get First Question 
-  const { 
-    data: firstQuestion, 
-    isLoading: firstQuestionLoading, 
-    isError, 
-    error, 
-  } = useQuery({ 
-    queryKey: ["questions", procedure], 
-    queryFn: () => getFirstQuestion(procedure), 
-    enabled: !!procedure && !!category, 
-  }); 
+  // ! Get First Question
+  const {
+    data: firstQuestion,
+    isLoading: firstQuestionLoading,
+    isError,
+    error,
+  } = useQuery({
+    queryKey: ["questions", procedure],
+    queryFn: () => getFirstQuestion(procedure),
+    enabled: !!procedure && !!category,
+  });
 
-  // ! Save answer 
-  const { data: answer } = useQuery({ 
-    queryKey: ["answer", data], 
-    queryFn: () => saveAnswer(data), 
-    enabled: !!data.folderId && !!data.optionId, 
-  }); 
+  // AJOUTÉ - Une réponse est une commande, pas une query déclenchée par un changement d'état.
+  const submitAnswer = useMutation({
+    mutationFn: submitDiagnosticAnswer,
+    onSuccess: async (result, variables) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["folder", userId, variables.folderId],
+        }),
+        queryClient.invalidateQueries({ queryKey: ["folders", userId] }),
+      ]);
 
-  // ! Get one 
-  const { data: nextQuestion, isLoading: nextQuestionLoading } = useQuery({ 
-    queryKey: ["question", nextQuestionId], 
-    queryFn: () => getNextQuestion(nextQuestionId!), 
-    enabled: !!nextQuestionId, 
-  }); 
+      return result;
+    },
+  });
 
-  // ! Go to next question 
-  const goToQuestion = (questionId: string) => { 
-    setNextQuestionId(questionId); 
-    setQuestionHistory((prev) => [...prev, questionId]); 
-  }; 
+  // ! Get one
+  const { data: nextQuestion, isLoading: nextQuestionLoading } = useQuery({
+    queryKey: ["question", nextQuestionId],
+    queryFn: () => getNextQuestion(nextQuestionId!),
+    enabled: !!nextQuestionId,
+  });
 
-  // ! Go to previous question 
-  const goToPreviousQuestion = () => { 
-    setQuestionHistory((prev) => { 
-      if (prev.length === 0) return prev; 
+  // ! Go to next question
+  const goToQuestion = (questionId: string) => {
+    setNextQuestionId(questionId);
+    setQuestionHistory((prev) => [...prev, questionId]);
+  };
 
-      const history = [...prev]; 
+  // ! Go to previous question
+  const goToPreviousQuestion = () => {
+    setQuestionHistory((prev) => {
+      if (prev.length === 0) return prev;
 
-      history.pop(); 
+      const history = [...prev];
 
-      const currentQuestionId = history.at(-1); 
-      setNextQuestionId(currentQuestionId || null); 
+      history.pop();
 
-      return history; 
-    }); 
-  }; 
+      const currentQuestionId = history.at(-1);
+      setNextQuestionId(currentQuestionId || null);
 
-  // ! The actual displayed question 
-  const question = nextQuestion ?? firstQuestion; 
+      return history;
+    });
+  };
 
-  // ! History Length 
-  useEffect(() => { 
-    const updateLength = () => { 
-      setCurrentIndex(questionHistory.length); 
-    }; 
-    updateLength(); 
-  }, [questionHistory.length]); 
+  // ! The actual displayed question
+  const question = nextQuestion ?? firstQuestion;
 
-  // ! Render 
-  return { 
-    question, 
-    isLoading: firstQuestionLoading || nextQuestionLoading, 
-    isError, 
-    error, 
-    answer, 
+  // ! History Length
+  useEffect(() => {
+    const updateLength = () => {
+      setCurrentIndex(questionHistory.length);
+    };
+    updateLength();
+  }, [questionHistory.length]);
 
-    goToQuestion, 
-    goToPreviousQuestion, 
-    setData, 
+  // ! Render
+  return {
+    question,
+    isLoading: firstQuestionLoading || nextQuestionLoading,
+    isError,
+    error,
+    goToQuestion,
+    goToPreviousQuestion,
+    submitAnswer,
 
-    canGoBack: questionHistory.length > 0, 
-    currentIndex, 
-  }; 
-} 
+    canGoBack: questionHistory.length > 0,
+    currentIndex,
+  };
+}

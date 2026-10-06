@@ -1,6 +1,7 @@
 "use server";
 
 import { FolderServices } from "@/services/folders.service";
+import { LocationServices } from "@/services/location.service";
 import { proceduresServices } from "@/services/procedure.service";
 
 // ! CREATE OR GET Folder
@@ -44,6 +45,29 @@ export async function updateFolderStatus(data: {
   status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
 }) {
   return await FolderServices.updateFolder(data);
+}
+
+// ! UPDATE FOlder Location
+export async function updateFolderLocation(data: {
+  id: string;
+  userId: string;
+  locationName: string;
+}) {
+  const location = await LocationServices.getOneByName(data.locationName);
+  
+  return await FolderServices.updateFolderLocation({
+    ...data,
+    locationId: location.id,
+  });
+}
+
+// ! UPDATE FOlder Location
+export async function updateFolderProgression(data: {
+  id: string;
+  userId: string;
+  progressionId: string;
+}) {
+  return await FolderServices.updateFolderProgression(data);
 }
 
 // ! Delete folder

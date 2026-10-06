@@ -222,6 +222,40 @@ export const FolderServices = {
     });
   },
 
+  // ! Update folder location
+  async updateFolderLocation(data: {
+    id: string;
+    userId: string;
+    locationId: string;
+  }) {
+    return await prisma.folder.update({
+      where: {
+        id: data.id,
+        userId: data.userId,
+      },
+      data: {
+        locationId: data.locationId,
+      },
+    });
+  },
+
+  // ! Update folder progression
+  async updateFolderProgression(data: {
+    id: string;
+    userId: string;
+    progressionId: string;
+  }) {
+    return await prisma.folder.update({
+      where: {
+        id: data.id,
+        userId: data.userId,
+      },
+      data: {
+        progressionId: data.progressionId,
+      },
+    });
+  },
+
   // ! Delete Folder
   async deleteFolder(id: string, userId: string) {
     return await prisma.folder.delete({

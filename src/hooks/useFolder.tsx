@@ -4,6 +4,7 @@ import {
   deleteFolder,
   getFolder,
   getFolders,
+  updateFolderLocation,
   updateFolderStatus,
 } from "@/lib/folder.action";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -78,6 +79,26 @@ export function useFolder(userId: string, id?: string) {
     },
   });
 
+  // ! Update folder location
+  const updateLocation = useMutation({
+    mutationFn: async (data: {
+      id: string;
+      userId: string;
+      locationName: string;
+    }) => {
+      return await updateFolderLocation(data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+    },
+  });
+
   // ! Delete folder
   const delFolder = useMutation({
     mutationFn: async (data: { userId: string; id: string }) => {
@@ -111,6 +132,7 @@ export function useFolder(userId: string, id?: string) {
     useCreateOrGetFolder, // nouveau
 
     updateStatus,
+    updateLocation,
     delFolder,
   };
 }

@@ -1,15 +1,19 @@
 "use client";
 import { EmptyState } from "@/components/shared/EmptyState";
-import { useFolder } from "@/hooks/useFolder";
 import { useQuestions } from "@/hooks/useQuestions";
-import { ArrowLeft, ArrowRight, ArrowUpRightFromSquare, Check } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRightFromSquare,
+  Check,
+} from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { QuestionsSkeleton } from "../cards/Skeleton";
 import { CurrentQuestionType } from "./QuestionTypes";
 import QuestionsHeader from "../cards/QuestionsHeader";
-
+import { toast } from "sonner";
 
 export const QuestionsSide = ({
   userId,
@@ -20,7 +24,7 @@ export const QuestionsSide = ({
 }) => {
   // ! states
   const router = useRouter();
-  const { updateStatus } = useFolder(userId);
+  // MODIFIÉ - Les réponses et l'état terminal sont écrits par une transaction serveur unique.
   const {
     question,
     isLoading,
@@ -28,10 +32,10 @@ export const QuestionsSide = ({
     error,
     goToQuestion,
     goToPreviousQuestion,
-    setData,
+    submitAnswer,
     currentIndex,
     canGoBack,
-  } = useQuestions();
+  } = useQuestions(userId);
 
   const [currentQuestion, setCurrentQuestion] =
     useState<CurrentQuestionType | null>(null);
@@ -71,27 +75,33 @@ export const QuestionsSide = ({
   }, [question]);
 
   // ? Go to the next Question in the tree
-  const handleNextQuestion = (option: {
+  // MODIFIÉ - Attend la persistance avant d'avancer ou d'ouvrir le détail du dossier.
+  const handleNextQuestion = async (option: {
     id: string;
     nextQuestionId: string | null;
     processId: string | null;
   }) => {
-    setData({ folderId, optionId: option.id });
-    if (option.nextQuestionId) {
-      goToQuestion(option.nextQuestionId);
-      setSelectedOption(null);
-      return;
-    }
-
-    // ! If it's the final question
-    if (option.processId) {
-      updateStatus.mutate({
-        id: folderId,
-        userId,
-        processId: option.processId,
-        status: "PENDING",
+    try {
+      const result = await submitAnswer.mutateAsync({
+        folderId,
+        optionId: option.id,
       });
-      router.push(`/folders/${folderId}`);
+
+      if (result.isDiagnosticComplete && result.processId) {
+        router.push(`/folders/${folderId}`);
+        return;
+      }
+
+      if (result.nextQuestionId) {
+        goToQuestion(result.nextQuestionId);
+        setSelectedOption(null);
+        return;
+      }
+
+      toast.error("La réponse n'a pas permis de poursuivre le diagnostic.");
+    } catch (error) {
+      toast.error("Impossible d'enregistrer votre réponse. Réessayez.");
+      console.error("Erreur lors de l'enregistrement de la réponse:", error);
     }
   };
 
@@ -117,7 +127,7 @@ export const QuestionsSide = ({
   return (
     <div className="relative flex w-full flex-col gap-5 overflow-hidden rounded-sm border border-border border-l-4 border-l-brand-yellow bg-card p-5 sm:p-6">
       {/* Indication */}
-     <QuestionsHeader currentIndex={currentIndex} />
+      <QuestionsHeader currentIndex={currentIndex} />
       {/* Question description */}
       <div className="flex flex-col gap-3 pb-2">
         <h1 className="font-display text-3xl font-semibold leading-tight tracking-tight text-brand-ink">
@@ -146,11 +156,12 @@ export const QuestionsSide = ({
             <span
               className={`turtle-step ${answer.id === selectedOption?.id ? "turtle-step-active" : "turtle-step-inactive"}`}
             >
-              {answer.id === selectedOption?.id ?(<Check className="size-6" strokeWidth={3} />) : null}
+              {answer.id === selectedOption?.id ? (
+                <Check className="size-6" strokeWidth={3} />
+              ) : null}
             </span>
             <div className="flex flex-col gap-1">
               <h2 className="text-lg font-semibold text-brand-ink">
-                
                 {answer.title}
               </h2>
               <p className="text-muted-foreground leading-5">
@@ -172,28 +183,28 @@ export const QuestionsSide = ({
         </button>
         {!selectedOption || selectedOption?.nextQuestionId ? (
           <button
-            disabled={!selectedOption}
+            disabled={!selectedOption || submitAnswer.isPending}
             onClick={
               !selectedOption
                 ? () => null
-                : () => handleNextQuestion(selectedOption)
+                : () => void handleNextQuestion(selectedOption)
             }
             className="btn btn-outline w-full rounded-sm text-base disabled:cursor-not-allowed sm:w-auto"
           >
-            Question suivante
+            {submitAnswer.isPending ? "Enregistrement..." : "Question suivante"}
             <ArrowRight className="size-5" />
           </button>
         ) : (
           <button
-            onClick={() => handleNextQuestion(selectedOption)}
+            onClick={() => void handleNextQuestion(selectedOption)}
+            disabled={submitAnswer.isPending}
             className="btn btn-primary w-full rounded-sm px-5 text-base sm:w-auto"
           >
-            Voir mon resultat <ArrowRight className="size-5" />
+            {submitAnswer.isPending ? "Enregistrement..." : "Voir mon résultat"}
+            <ArrowRight className="size-5" />
           </button>
         )}
       </div>
     </div>
   );
 };
-
-
