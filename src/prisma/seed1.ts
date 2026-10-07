@@ -12,16 +12,19 @@ function img(seed: string) {
 }
 
 // ============================================================
-// ZONES DE LOCALISATION COUVERTES PAR LE RÉFÉRENTIEL ACTUEL
-// IMPORTANT : le diagnostic ne doit jamais proposer une zone qui n'est
-// couverte par aucune unité administrative.
-// Les unités créées plus bas desservent uniquement 4 villes-pivots.
+// 10 régions du Cameroun, au moins 5 villes réelles chacune
 // ============================================================
 const CAMEROON_REGIONS: Record<string, string[]> = {
-  Centre: ["Yaoundé"],
-  Littoral: ["Douala"],
-  Ouest: ["Bafoussam"],
-  "Nord-Ouest": ["Bamenda"],
+  Adamaoua: ["Ngaoundéré", "Meiganga", "Tibati", "Banyo", "Tignère"],
+  Centre: ["Yaoundé", "Mbalmayo", "Obala", "Mfou", "Bafia"],
+  Est: ["Bertoua", "Abong-Mbang", "Batouri", "Yokadouma", "Garoua-Boulaï"],
+  "Extrême-Nord": ["Maroua", "Kousséri", "Mokolo", "Yagoua", "Kaélé"],
+  Littoral: ["Douala", "Nkongsamba", "Edéa", "Loum", "Manjo"],
+  Nord: ["Garoua", "Guider", "Poli", "Pitoa", "Figuil"],
+  "Nord-Ouest": ["Bamenda", "Kumbo", "Wum", "Ndop", "Fundong"],
+  Ouest: ["Bafoussam", "Dschang", "Mbouda", "Foumban", "Bangangté"],
+  Sud: ["Ebolowa", "Sangmélima", "Kribi", "Ambam", "Djoum"],
+  "Sud-Ouest": ["Buea", "Limbe", "Kumba", "Mamfe", "Tiko"],
 };
 
 async function main() {
@@ -64,21 +67,17 @@ async function main() {
   console.log("🗑️  Database cleaned");
 
   // ============================================================
-  // LOCATIONS — uniquement les 4 zones réellement couvertes
-  // (la région est stockée dans `address`, faute de champ dédié sur Location)
-  // Ces mêmes Location sont réutilisées par les unités administratives.
+  // LOCATIONS — 10 régions × 5 villes réelles = 50 Location
+  // (region stockée dans `address`, faute de champ dédié sur Location)
   // ============================================================
 
-  const coveredLocations: Record<string, { id: string }> = {};
   for (const [region, citiesOfRegion] of Object.entries(CAMEROON_REGIONS)) {
     for (const city of citiesOfRegion) {
-      coveredLocations[city] = await prisma.location.create({
-        data: { city, address: region },
-      });
+      await prisma.location.create({ data: { city, address: region } });
     }
   }
 
-  console.log("✅ 4 Locations créées : Yaoundé, Douala, Bafoussam, Bamenda");
+  console.log("✅ 50 Locations created (10 régions × 5 villes)");
 
   // ============================================================
   // ADMINISTRATIVE BODIES (inchangé par rapport à la v2)
@@ -109,9 +108,8 @@ async function main() {
     data: { name: "Campost / Délégation MINT" },
   });
 
-  // Unités administratives : exactement les 4 villes-pivots couvertes par le diagnostic.
-  // IMPORTANT : aucune question de localisation ne doit proposer une autre zone tant
-  // qu'aucune unité administrative ne la dessert.
+  // Unités administratives conservées pour les 4 villes-pivots de la v2
+  // (note de portée en tête de fichier : pas encore étendu aux 50 villes)
   const hubCities = [
     {
       city: "Yaoundé",
@@ -138,9 +136,17 @@ async function main() {
       longitude: 10.1591,
     },
   ];
-  // On réutilise les Location déjà créées pour éviter un second référentiel
-  // de localisation identique uniquement pour les unités administratives.
-  const hubLocations: Record<string, { id: string }> = coveredLocations;
+  const hubLocations: Record<string, { id: string }> = {};
+  for (const c of hubCities) {
+    hubLocations[c.city] = await prisma.location.create({
+      data: {
+        address: c.address,
+        city: c.city,
+        latitude: c.latitude,
+        longitude: c.longitude,
+      },
+    });
+  }
   const bodies = [
     { body: mairie, label: "Mairie" },
     { body: tribunal, label: "Tribunal de Première Instance" },
@@ -170,20 +176,18 @@ async function main() {
     }
   }
 
-  console.log("✅ Administrative bodies + units (4 zones couvertes) created");
+  console.log("✅ Administrative bodies + units (4 villes-pivots) created");
 
   // ============================================================
-  // HELPERS — localisation et questions de contexte
-  // ============================================================
-  // La localisation est volontairement placée en DERNIÈRE étape : le diagnostic
-  // collecte d'abord le contexte nécessaire, puis seulement la zone couverte.
+  // HELPER — sous-arbre région → ville, terminal (processId sur les
+  // options "ville" uniquement)
   // ============================================================
 
   async function buildLocationSubtree(procedureId: string, processId: string) {
     const regionQuestion = await prisma.question.create({
       data: {
         title: "Dans quelle région vous trouvez-vous ?",
-        description: "Les quatre zones couvertes par les unités administratives actuellement référencées.",
+        description: "Les dix régions du Cameroun couvertes par l'application.",
         procedureId,
       },
     });
@@ -221,206 +225,6 @@ async function main() {
 
     return regionQuestion;
   }
-
-  // Construit les questions de contexte puis termine obligatoirement par
-  // le sous-arbre de localisation. Chaque option mène à la question suivante
-  // et chaque parcours finit donc sur le processId fourni.
-  type DiagnosticQuestionSpec = {
-    title: string;
-    options: string[];
-  };
-
-  async function buildProcessContextSubtree(
-    procedureId: string,
-    processId: string,
-    questions: DiagnosticQuestionSpec[],
-  ) {
-    let nextQuestionId = (await buildLocationSubtree(procedureId, processId)).id;
-
-    for (let i = questions.length - 1; i >= 0; i--) {
-      const spec = questions[i];
-      const question = await prisma.question.create({
-        data: { title: spec.title, procedureId },
-      });
-
-      await prisma.answerOption.createMany({
-        data: spec.options.map((label) => ({
-          label,
-          questionId: question.id,
-          nextQuestionId,
-        })),
-      });
-
-      nextQuestionId = question.id;
-    }
-
-    return { id: nextQuestionId };
-  }
-
-  // ============================================================
-  // CONTEXTE DES DIAGNOSTICS — questions uniquement
-  // ============================================================
-  // Les branches existantes continuent d'identifier le process. Ces questions
-  // complètent ensuite le contexte avant la localisation finale.
-  const DIAGNOSTIC_CONTEXTS: Record<string, DiagnosticQuestionSpec[]> = {
-    normalDeclarationProcess: [
-      { title: "La naissance a-t-elle eu lieu dans un établissement de santé ou au domicile ?", options: ["Dans un établissement de santé", "À domicile", "Autre situation"] },
-      { title: "Disposez-vous d'un justificatif ou d'une information permettant d'établir les circonstances de la naissance ?", options: ["Oui", "Non"] },
-    ],
-    lateDeclarationProcess: [
-      { title: "Disposez-vous d'un justificatif permettant d'établir la naissance ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous déjà obtenu un document attestant que la naissance n'est pas inscrite dans les registres ?", options: ["Oui", "Non", "Je ne sais pas"] },
-    ],
-    suppletiveJudgmentProcess: [
-      { title: "Disposez-vous de documents permettant d'établir l'identité et la naissance de la personne concernée ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "La personne concernée peut-elle fournir les informations nécessaires à la constitution de la requête ?", options: ["Oui", "Non"] },
-    ],
-    birthCopyProcess: [
-      { title: "Connaissez-vous les références ou au moins les informations permettant de retrouver l'acte de naissance ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "La demande concerne-t-elle votre propre acte ou celui d'une autre personne ?", options: ["Mon propre acte", "L'acte d'une autre personne"] },
-    ],
-    birthRectificationProcess: [
-      { title: "Quelle information de l'acte comporte l'erreur ?", options: ["Nom ou prénom", "Date ou lieu de naissance", "Filiation", "Autre information"] },
-      { title: "Disposez-vous d'un document permettant de justifier la correction demandée ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    marriageCelebrationProcess: [
-      { title: "Les futurs époux souhaitent-ils tous les deux célébrer un mariage civil ?", options: ["Oui", "Non ou situation à préciser"] },
-      { title: "Les futurs époux disposent-ils des pièces d'identité et documents nécessaires à la constitution du dossier ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Les futurs époux ont-ils déjà réuni les informations d'état civil nécessaires au dossier ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    marriageCopyProcess: [
-      { title: "Connaissez-vous la commune ou le centre d'état civil où le mariage a été célébré ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous des informations permettant d'identifier les époux et la date approximative du mariage ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    deathDeclarationProcess: [
-      { title: "Disposez-vous d'un certificat ou document médical constatant le décès ?", options: ["Oui", "Non", "En cours d'obtention"] },
-      { title: "Le décès doit-il être déclaré pour la première fois à l'état civil ?", options: ["Oui", "Je ne suis pas certain"] },
-    ],
-    deathCopyProcess: [
-      { title: "Connaissez-vous le centre d'état civil où le décès a été enregistré ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous des informations d'identification de la personne décédée et de la date du décès ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    adminRecognitionProcess: [
-      { title: "La naissance de l'enfant est-elle en cours de déclaration ou n'est-elle pas encore déclarée ?", options: ["La naissance est en cours de déclaration", "La situation doit être précisée"] },
-      { title: "La mère peut-elle fournir le consentement nécessaire à la reconnaissance ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Deux témoins peuvent-ils être présents pour la déclaration ?", options: ["Oui", "Non"] },
-    ],
-    judicialRecognitionProcess: [
-      { title: "La naissance de l'enfant est-elle déjà enregistrée à l'état civil ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Disposez-vous de documents ou d'éléments permettant d'établir la filiation invoquée ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    transcriptionProcess: [
-      { title: "L'acte étranger a-t-il été établi par une autorité étrangère compétente ?", options: ["Oui", "Je ne sais pas"] },
-      { title: "Disposez-vous de l'original de l'acte et des formalités de légalisation ou d'authentification disponibles ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Êtes-vous revenu au Cameroun depuis moins de six mois ?", options: ["Oui", "Non", "Je ne sais pas"] },
-    ],
-    firstRequestProcess: [
-      { title: "Avez-vous déjà été titulaire d'une CNI camerounaise ?", options: ["Non, jamais", "Je ne sais pas"] },
-      { title: "Disposez-vous d'un acte de naissance ou d'un document d'état civil permettant d'établir votre identité ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    lateFirstRequestProcess: [
-      { title: "S'agit-il bien de votre toute première demande de CNI ?", options: ["Oui", "Non ou situation à vérifier"] },
-      { title: "Disposez-vous des documents d'état civil et d'identité nécessaires à l'enrôlement ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    renewalProcess: [
-      { title: "Votre CNI actuelle est-elle expirée, proche de l'expiration ou détériorée ?", options: ["Expirée", "Bientôt expirée", "Détériorée", "Autre situation"] },
-      { title: "Vos informations d'état civil sont-elles restées inchangées ?", options: ["Oui", "Non"] },
-    ],
-    lostStolenProcess: [
-      { title: "La CNI a-t-elle été perdue ou volée ?", options: ["Perdue", "Volée"] },
-      { title: "Avez-vous déjà effectué la déclaration auprès d'un commissariat ou d'une autorité de police ?", options: ["Oui", "Non"] },
-    ],
-    passportProcess: [
-      { title: "Le demandeur est-il majeur ou mineur ?", options: ["Majeur", "Mineur"] },
-      { title: "Disposez-vous des documents d'état civil et de la pièce d'identité nécessaires au dossier ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Pour le renouvellement, disposez-vous de l'ancien passeport ?", options: ["Oui", "Non", "Première demande"] },
-    ],
-    pciProcess: [
-      { title: "Votre permis de conduire camerounais est-il actuellement valide ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous de l'original et d'une copie de votre permis ainsi que d'une pièce d'identité ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous besoin du PCI pour une utilisation à l'étranger ?", options: ["Oui", "Non", "Je veux vérifier les conditions"] },
-    ],
-    niuProcess: [
-      { title: "Votre demande de NIU concerne-t-elle une activité professionnelle ou une situation personnelle ?", options: ["Situation personnelle", "Activité professionnelle"] },
-      { title: "Disposez-vous d'une pièce d'identité et des informations nécessaires à votre immatriculation ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    nationalityProcess: [
-      { title: "Sur quel document fondez-vous principalement votre demande ?", options: ["Acte de naissance et filiation", "Document d'acquisition de la nationalité", "Autre justificatif"] },
-      { title: "Pouvez-vous fournir les pièces permettant d'établir le lien avec la nationalité camerounaise invoquée ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    residenceCertificateProcess: [
-      { title: "L'adresse pour laquelle vous demandez l'attestation correspond-elle à votre résidence actuelle ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous d'une pièce d'identité et d'un justificatif ou témoignage permettant d'établir votre résidence ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    hostingProcess: [
-      { title: "Êtes-vous la personne qui héberge effectivement le bénéficiaire du certificat ?", options: ["Oui", "Non, je suis la personne hébergée"] },
-      { title: "Disposez-vous des informations et pièces d'identité de l'hébergeant et de l'hébergé ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    buildingPermitProcess: [
-      { title: "Quel type de projet souhaitez-vous réaliser ?", options: ["Construction d'un bâtiment", "Extension ou modification", "Autre projet soumis à autorisation"] },
-      { title: "Disposez-vous d'un document établissant vos droits sur le terrain ?", options: ["Oui", "Non", "En cours d'obtention"] },
-      { title: "Les plans du projet sont-ils déjà préparés par un professionnel compétent ?", options: ["Oui", "Non", "En cours"] },
-    ],
-    urbanismCertProcess: [
-      { title: "Disposez-vous d'informations permettant d'identifier précisément la parcelle concernée ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Pourquoi souhaitez-vous connaître les règles d'urbanisme applicables à la parcelle ?", options: ["Préparer une construction", "Avant une acquisition", "Autre projet"] },
-    ],
-    patenteProcess: [
-      { title: "Quelle activité souhaitez-vous exercer ou régulariser ?", options: ["Commerce", "Service", "Artisanat", "Autre activité"] },
-      { title: "L'activité est-elle déjà effectivement exercée ?", options: ["Oui", "Non, lancement prochain", "Je suis en cours de création"] },
-      { title: "Disposez-vous déjà d'un NIU professionnel ?", options: ["Oui", "Non", "Je ne sais pas"] },
-    ],
-    transcriptCertProcess: [
-      { title: "Quel établissement a délivré le relevé de notes ?", options: ["Université ou établissement public", "Établissement privé", "Autre établissement"] },
-      { title: "Le relevé de notes est-il complet et lisible ?", options: ["Oui", "Non", "Je dois obtenir une nouvelle copie"] },
-      { title: "Le destinataire exige-t-il une certification officielle particulière ?", options: ["Oui", "Non", "Je ne sais pas"] },
-    ],
-    diplomaCertProcess: [
-      { title: "Quel établissement a délivré le diplôme ?", options: ["Université ou établissement public", "Établissement privé", "Autre établissement"] },
-      { title: "Disposez-vous de l'original ou d'une copie exploitable du diplôme ?", options: ["Oui", "Non"] },
-      { title: "La certification est-elle destinée à une autorité ou un organisme précis ?", options: ["Oui", "Non", "Je ne sais pas"] },
-    ],
-    duplicateProcess: [
-      { title: "Le document a-t-il été perdu, volé ou détérioré ?", options: ["Perdu", "Volé", "Détérioré"] },
-      { title: "Disposez-vous d'une copie, d'un numéro ou d'une référence permettant d'identifier le document ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous déjà déclaré la perte ou le vol lorsque cette déclaration est nécessaire ?", options: ["Oui", "Non", "Non concerné"] },
-    ],
-    correctionProcess: [
-      { title: "Le document à corriger est-il un diplôme ou un relevé de notes ?", options: ["Diplôme", "Relevé de notes"] },
-      { title: "L'erreur porte-t-elle sur l'état civil ou sur les résultats académiques ?", options: ["État civil", "Résultats ou mention", "Autre erreur matérielle"] },
-      { title: "Disposez-vous du document original ou d'une copie permettant de constater l'erreur ?", options: ["Oui", "Non"] },
-    ],
-    successCertProcess: [
-      { title: "Quel diplôme ou niveau de formation concerne l'attestation ?", options: ["Enseignement supérieur", "Autre formation académique"] },
-      { title: "Avez-vous terminé la formation ou validé les conditions de réussite ?", options: ["Oui", "Je suis en attente de confirmation"] },
-      { title: "Le diplôme officiel est-il déjà disponible ?", options: ["Non", "Oui", "Je ne sais pas"] },
-    ],
-    criminalRecordProcess: [
-      { title: "Le casier judiciaire est-il demandé pour vous-même ?", options: ["Oui", "Non, pour une autre personne"] },
-      { title: "Connaissez-vous le lieu de naissance de la personne concernée ?", options: ["Oui", "Non"] },
-      { title: "Le document est-il destiné à une autorité camerounaise ou à une démarche internationale ?", options: ["Autorité camerounaise", "Démarche internationale", "Je ne sais pas"] },
-    ],
-    legalizationProcess: [
-      { title: "Le document à légaliser est-il un original, une copie ou une signature ?", options: ["Original", "Copie", "Signature ou déclaration"] },
-      { title: "Le document sera-t-il utilisé au Cameroun ou à l'étranger ?", options: ["Au Cameroun", "À l'étranger", "Je ne sais pas"] },
-      { title: "Disposez-vous déjà du document original et de la pièce d'identité nécessaire ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    celibacyProcess: [
-      { title: "Le certificat est-il destiné à constituer un dossier de mariage ?", options: ["Oui", "Non"] },
-      { title: "Pouvez-vous fournir les informations d'état civil nécessaires à l'établissement du certificat ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Disposez-vous de deux témoins majeurs pouvant confirmer votre situation ?", options: ["Oui", "Non"] },
-    ],
-    associationProcess: [
-      { title: "Le siège de l'association sera-t-il situé au Cameroun ?", options: ["Oui", "Non"] },
-      { title: "L'association relève-t-elle du régime ordinaire de déclaration ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Disposez-vous déjà des statuts et des informations sur les dirigeants nécessaires à la déclaration ?", options: ["Oui", "Non", "Partiellement"] },
-    ],
-    lossProcess: [
-      { title: "Quel type de document devez-vous déclarer comme perdu ou volé ?", options: ["CNI ou passeport", "Diplôme ou relevé", "Permis de conduire", "Autre document administratif"] },
-      { title: "La perte ou le vol a-t-il déjà été signalé à une autorité ?", options: ["Oui", "Non"] },
-      { title: "Avez-vous besoin du récépissé pour demander ensuite un duplicata ou un remplacement ?", options: ["Oui", "Non", "Je veux seulement formaliser la déclaration"] },
-    ],
-  };
 
   // ============================================================
   // CATEGORIES (5) — inchangées
@@ -481,7 +285,7 @@ async function main() {
   // CATÉGORIE 1 — ÉTAT CIVIL (5 procédures)
   // ============================================================
 
-  // --- 1.1 Acte de naissance (5 branches → 5 sous-arbres avec localisation finale) ---
+  // --- 1.1 Acte de naissance (5 branches → 5 sous-arbres région/ville) ---
 
   const birthProcedure = await prisma.procedure.create({
     data: {
@@ -596,10 +400,9 @@ async function main() {
     },
   });
 
-  const birthCopySubtree = await buildProcessContextSubtree(
+  const birthCopySubtree = await buildLocationSubtree(
     birthProcedure.id,
     birthCopyProcess.id,
-    DIAGNOSTIC_CONTEXTS.birthCopyProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -609,10 +412,9 @@ async function main() {
     },
   });
 
-  const birthRectificationSubtree = await buildProcessContextSubtree(
+  const birthRectificationSubtree = await buildLocationSubtree(
     birthProcedure.id,
     birthRectificationProcess.id,
-    DIAGNOSTIC_CONTEXTS.birthRectificationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -622,10 +424,9 @@ async function main() {
     },
   });
 
-  const normalDeclarationSubtree = await buildProcessContextSubtree(
+  const normalDeclarationSubtree = await buildLocationSubtree(
     birthProcedure.id,
     normalDeclarationProcess.id,
-    DIAGNOSTIC_CONTEXTS.normalDeclarationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -635,10 +436,9 @@ async function main() {
     },
   });
 
-  const lateDeclarationSubtree = await buildProcessContextSubtree(
+  const lateDeclarationSubtree = await buildLocationSubtree(
     birthProcedure.id,
     lateDeclarationProcess.id,
-    DIAGNOSTIC_CONTEXTS.lateDeclarationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -648,10 +448,9 @@ async function main() {
     },
   });
 
-  const suppletiveJudgmentSubtree = await buildProcessContextSubtree(
+  const suppletiveJudgmentSubtree = await buildLocationSubtree(
     birthProcedure.id,
     suppletiveJudgmentProcess.id,
-    DIAGNOSTIC_CONTEXTS.suppletiveJudgmentProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -800,7 +599,7 @@ async function main() {
     },
   });
 
-  console.log("✅ 1.1 Acte de naissance (5 sous-arbres avec localisation finale)");
+  console.log("✅ 1.1 Acte de naissance (5 sous-arbres région/ville)");
 
   // --- 1.2 Acte de mariage (2 branches) ---
 
@@ -853,10 +652,9 @@ async function main() {
     },
   });
 
-  const marriageCelebrationSubtree = await buildProcessContextSubtree(
+  const marriageCelebrationSubtree = await buildLocationSubtree(
     marriageProcedure.id,
     marriageCelebrationProcess.id,
-    DIAGNOSTIC_CONTEXTS.marriageCelebrationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -866,10 +664,9 @@ async function main() {
     },
   });
 
-  const marriageCopySubtree = await buildProcessContextSubtree(
+  const marriageCopySubtree = await buildLocationSubtree(
     marriageProcedure.id,
     marriageCopyProcess.id,
-    DIAGNOSTIC_CONTEXTS.marriageCopyProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -969,10 +766,9 @@ async function main() {
     },
   });
 
-  const deathDeclarationSubtree = await buildProcessContextSubtree(
+  const deathDeclarationSubtree = await buildLocationSubtree(
     deathProcedure.id,
     deathDeclarationProcess.id,
-    DIAGNOSTIC_CONTEXTS.deathDeclarationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -982,10 +778,9 @@ async function main() {
     },
   });
 
-  const deathCopySubtree = await buildProcessContextSubtree(
+  const deathCopySubtree = await buildLocationSubtree(
     deathProcedure.id,
     deathCopyProcess.id,
-    DIAGNOSTIC_CONTEXTS.deathCopyProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1076,10 +871,9 @@ async function main() {
     },
   });
 
-  const adminRecognitionSubtree = await buildProcessContextSubtree(
+  const adminRecognitionSubtree = await buildLocationSubtree(
     recognitionProcedure.id,
     adminRecognitionProcess.id,
-    DIAGNOSTIC_CONTEXTS.adminRecognitionProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1089,10 +883,9 @@ async function main() {
     },
   });
 
-  const judicialRecognitionSubtree = await buildProcessContextSubtree(
+  const judicialRecognitionSubtree = await buildLocationSubtree(
     recognitionProcedure.id,
     judicialRecognitionProcess.id,
-    DIAGNOSTIC_CONTEXTS.judicialRecognitionProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1185,10 +978,9 @@ async function main() {
       procedureId: transcriptionProcedure.id,
     },
   });
-  const transcriptionSubtree = await buildProcessContextSubtree(
+  const transcriptionSubtree = await buildLocationSubtree(
     transcriptionProcedure.id,
     transcriptionProcess.id,
-    DIAGNOSTIC_CONTEXTS.transcriptionProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1224,7 +1016,7 @@ async function main() {
   });
 
   console.log(
-    "✅ 1.5 Transcription (1 parcours partagé avec localisation finale) — État civil complet",
+    "✅ 1.5 Transcription (1 sous-arbre partagé) — État civil complet",
   );
 
   // ============================================================
@@ -1299,10 +1091,9 @@ async function main() {
     },
   });
 
-  const renewalSubtree = await buildProcessContextSubtree(
+  const renewalSubtree = await buildLocationSubtree(
     identityProcedure.id,
     renewalProcess.id,
-    DIAGNOSTIC_CONTEXTS.renewalProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1312,10 +1103,9 @@ async function main() {
     },
   });
 
-  const lostStolenSubtree = await buildProcessContextSubtree(
+  const lostStolenSubtree = await buildLocationSubtree(
     identityProcedure.id,
     lostStolenProcess.id,
-    DIAGNOSTIC_CONTEXTS.lostStolenProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1325,10 +1115,9 @@ async function main() {
     },
   });
 
-  const firstRequestSubtree = await buildProcessContextSubtree(
+  const firstRequestSubtree = await buildLocationSubtree(
     identityProcedure.id,
     firstRequestProcess.id,
-    DIAGNOSTIC_CONTEXTS.firstRequestProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1338,14 +1127,13 @@ async function main() {
     },
   });
 
-  const lateFirstRequestSubtree = await buildProcessContextSubtree(
+  const lateFirstRequestSubtree = await buildLocationSubtree(
     identityProcedure.id,
     lateFirstRequestProcess.id,
-    DIAGNOSTIC_CONTEXTS.lateFirstRequestProcess,
   );
   await prisma.answerOption.create({
     data: {
-      label: "J'ai 30 ans ou plus",
+      label: "J'ai plus de 30 ans",
       questionId: identityAgeQuestion.id,
       nextQuestionId: lateFirstRequestSubtree.id,
     },
@@ -1474,10 +1262,9 @@ async function main() {
       procedureId: passportProcedure.id,
     },
   });
-  const passportSubtree = await buildProcessContextSubtree(
+  const passportSubtree = await buildLocationSubtree(
     passportProcedure.id,
     passportProcess.id,
-    DIAGNOSTIC_CONTEXTS.passportProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1560,25 +1347,21 @@ async function main() {
   const pciQuestion = await prisma.question.create({
     data: {
       title:
-        "Quelle est la situation de votre permis de conduire camerounais ?",
+        "Possédez-vous déjà un permis de conduire camerounais en cours de validité ?",
       procedureId: pciProcedure.id,
     },
   });
-  const pciSubtree = await buildProcessContextSubtree(
-    pciProcedure.id,
-    pciProcess.id,
-    DIAGNOSTIC_CONTEXTS.pciProcess,
-  );
+  const pciSubtree = await buildLocationSubtree(pciProcedure.id, pciProcess.id);
   await prisma.answerOption.create({
     data: {
-      label: "Il est en cours de validité",
+      label: "Oui",
       questionId: pciQuestion.id,
       nextQuestionId: pciSubtree.id,
     },
   });
   await prisma.answerOption.create({
     data: {
-      label: "Il est expiré ou n'est plus valide",
+      label: "Non, je dois d'abord obtenir mon permis national",
       questionId: pciQuestion.id,
       nextQuestionId: pciSubtree.id,
     },
@@ -1646,11 +1429,7 @@ async function main() {
       procedureId: niuProcedure.id,
     },
   });
-  const niuSubtree = await buildProcessContextSubtree(
-    niuProcedure.id,
-    niuProcess.id,
-    DIAGNOSTIC_CONTEXTS.niuProcess,
-  );
+  const niuSubtree = await buildLocationSubtree(niuProcedure.id, niuProcess.id);
   await prisma.answerOption.create({
     data: {
       label: "Contribuable non professionnel (particulier)",
@@ -1727,10 +1506,9 @@ async function main() {
       procedureId: nationalityProcedure.id,
     },
   });
-  const nationalitySubtree = await buildProcessContextSubtree(
+  const nationalitySubtree = await buildLocationSubtree(
     nationalityProcedure.id,
     nationalityProcess.id,
-    DIAGNOSTIC_CONTEXTS.nationalityProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1811,10 +1589,9 @@ async function main() {
       procedureId: residenceProcedure.id,
     },
   });
-  const residenceSubtree = await buildProcessContextSubtree(
+  const residenceSubtree = await buildLocationSubtree(
     residenceProcedure.id,
     residenceCertificateProcess.id,
-    DIAGNOSTIC_CONTEXTS.residenceCertificateProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1825,7 +1602,7 @@ async function main() {
   });
   await prisma.answerOption.create({
     data: {
-      label: "Je ne suis pas certain que ma situation corresponde à cette commune",
+      label: "Non, mais j'y ai résidé récemment",
       questionId: residenceQuestion.id,
       nextQuestionId: residenceSubtree.id,
     },
@@ -1879,10 +1656,9 @@ async function main() {
       procedureId: hostingProcedure.id,
     },
   });
-  const hostingSubtree = await buildProcessContextSubtree(
+  const hostingSubtree = await buildLocationSubtree(
     hostingProcedure.id,
     hostingProcess.id,
-    DIAGNOSTIC_CONTEXTS.hostingProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -1954,10 +1730,9 @@ async function main() {
       procedureId: buildingPermitProcedure.id,
     },
   });
-  const buildingPermitSubtree = await buildProcessContextSubtree(
+  const buildingPermitSubtree = await buildLocationSubtree(
     buildingPermitProcedure.id,
     buildingPermitProcess.id,
-    DIAGNOSTIC_CONTEXTS.buildingPermitProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2031,10 +1806,9 @@ async function main() {
       procedureId: urbanismCertProcedure.id,
     },
   });
-  const urbanismCertSubtree = await buildProcessContextSubtree(
+  const urbanismCertSubtree = await buildLocationSubtree(
     urbanismCertProcedure.id,
     urbanismCertProcess.id,
-    DIAGNOSTIC_CONTEXTS.urbanismCertProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2092,10 +1866,9 @@ async function main() {
       procedureId: patenteProcedure.id,
     },
   });
-  const patenteSubtree = await buildProcessContextSubtree(
+  const patenteSubtree = await buildLocationSubtree(
     patenteProcedure.id,
     patenteProcess.id,
-    DIAGNOSTIC_CONTEXTS.patenteProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2177,10 +1950,9 @@ async function main() {
       procedureId: transcriptCertProcedure.id,
     },
   });
-  const transcriptCertSubtree = await buildProcessContextSubtree(
+  const transcriptCertSubtree = await buildLocationSubtree(
     transcriptCertProcedure.id,
     transcriptCertProcess.id,
-    DIAGNOSTIC_CONTEXTS.transcriptCertProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2237,10 +2009,9 @@ async function main() {
       procedureId: diplomaCertProcedure.id,
     },
   });
-  const diplomaCertSubtree = await buildProcessContextSubtree(
+  const diplomaCertSubtree = await buildLocationSubtree(
     diplomaCertProcedure.id,
     diplomaCertProcess.id,
-    DIAGNOSTIC_CONTEXTS.diplomaCertProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2298,10 +2069,9 @@ async function main() {
       procedureId: duplicateProcedure.id,
     },
   });
-  const duplicateSubtree = await buildProcessContextSubtree(
+  const duplicateSubtree = await buildLocationSubtree(
     duplicateProcedure.id,
     duplicateProcess.id,
-    DIAGNOSTIC_CONTEXTS.duplicateProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2360,10 +2130,9 @@ async function main() {
       procedureId: correctionProcedure.id,
     },
   });
-  const correctionSubtree = await buildProcessContextSubtree(
+  const correctionSubtree = await buildLocationSubtree(
     correctionProcedure.id,
     correctionProcess.id,
-    DIAGNOSTIC_CONTEXTS.correctionProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2421,10 +2190,9 @@ async function main() {
       procedureId: successCertProcedure.id,
     },
   });
-  const successCertSubtree = await buildProcessContextSubtree(
+  const successCertSubtree = await buildLocationSubtree(
     successCertProcedure.id,
     successCertProcess.id,
-    DIAGNOSTIC_CONTEXTS.successCertProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2487,10 +2255,9 @@ async function main() {
       procedureId: criminalRecordProcedure.id,
     },
   });
-  const criminalRecordSubtree = await buildProcessContextSubtree(
+  const criminalRecordSubtree = await buildLocationSubtree(
     criminalRecordProcedure.id,
     criminalRecordProcess.id,
-    DIAGNOSTIC_CONTEXTS.criminalRecordProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2567,10 +2334,9 @@ async function main() {
       procedureId: legalizationProcedure.id,
     },
   });
-  const legalizationSubtree = await buildProcessContextSubtree(
+  const legalizationSubtree = await buildLocationSubtree(
     legalizationProcedure.id,
     legalizationProcess.id,
-    DIAGNOSTIC_CONTEXTS.legalizationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2635,10 +2401,9 @@ async function main() {
       procedureId: celibacyProcedure.id,
     },
   });
-  const celibacySubtree = await buildProcessContextSubtree(
+  const celibacySubtree = await buildLocationSubtree(
     celibacyProcedure.id,
     celibacyProcess.id,
-    DIAGNOSTIC_CONTEXTS.celibacyProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2705,10 +2470,9 @@ async function main() {
       procedureId: associationProcedure.id,
     },
   });
-  const associationSubtree = await buildProcessContextSubtree(
+  const associationSubtree = await buildLocationSubtree(
     associationProcedure.id,
     associationProcess.id,
-    DIAGNOSTIC_CONTEXTS.associationProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2720,7 +2484,7 @@ async function main() {
   await prisma.answerOption.create({
     data: {
       label:
-        "Une association dont le régime juridique doit être vérifié avant la déclaration",
+        "Une association religieuse (régime de l'autorisation — démarche distincte, non couverte ici)",
       questionId: associationQuestion.id,
       nextQuestionId: associationSubtree.id,
     },
@@ -2785,10 +2549,9 @@ async function main() {
       procedureId: lossProcedure.id,
     },
   });
-  const lossSubtree = await buildProcessContextSubtree(
+  const lossSubtree = await buildLocationSubtree(
     lossProcedure.id,
     lossProcess.id,
-    DIAGNOSTIC_CONTEXTS.lossProcess,
   );
   await prisma.answerOption.create({
     data: {
@@ -2856,7 +2619,7 @@ async function main() {
 
   console.log("\n🎉 Seed v3 completed successfully!");
   console.log(
-    "📂 5 catégories, 25 procédures, 35 parcours complets avec localisation finale (4 zones couvertes)",
+    "📂 5 catégories, 25 procédures, 35 sous-arbres région→ville (10 régions × 5 villes réelles)",
   );
 }
 

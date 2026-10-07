@@ -114,7 +114,7 @@ export default function FolderDetailsPage({
     }
   };
 
-  console.log("Folder Details:", folder)
+  console.log("Folder Details:", folder);
 
   // ! RENDER
   return (
@@ -218,13 +218,16 @@ export default function FolderDetailsPage({
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
         <div className="min-w-0 space-y-5">
           {/*  Steps */}
-          <ProcesSteps process={folder.process} status={folder.status} />
+          <ProcesSteps
+            process={folder.process}
+            status={folder.status}
+            folderLocationId={folder.locationId}
+          />
 
           <ProgressSummary
             answerCount={answerCount}
             currentQuestion={currentQuestion}
             status={folder.status}
-            // AJOUTÉ - Le process n'est affecté au dossier qu'à la dernière réponse du diagnostic.
             diagnosticComplete={Boolean(folder.processId)}
             setShowAnswers={setShowAnswers}
             showAnswers={showAnswers}

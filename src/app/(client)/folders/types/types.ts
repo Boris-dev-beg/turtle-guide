@@ -21,6 +21,11 @@ export type Step = {
           id: string;
           name: string;
           location: Location;
+          areaServed: {
+            id: string;
+            name: string;
+            locationId: string;
+          }[];
         }[];
       })
     | null;

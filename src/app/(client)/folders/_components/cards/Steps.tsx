@@ -3,6 +3,7 @@ import {
   Building2,
   Check,
   FileText,
+  MapPin,
   ShieldAlert,
 } from "lucide-react";
 import { Step } from "../../types/types";
@@ -12,6 +13,8 @@ import { FolderStatus } from "@/generated/prisma/enums";
 export function ProcesSteps({
   process,
   status,
+  // AJOUTÉ - Localisation sélectionnée lors du diagnostic; null signifie qu'aucune ville n'est connue.
+  folderLocationId,
 }: {
   process?: {
     id: string;
@@ -20,6 +23,7 @@ export function ProcesSteps({
     steps: Step[];
   } | null;
   status: FolderStatus;
+  folderLocationId: string | null;
 }) {
   return (
     <div>
@@ -41,6 +45,14 @@ export function ProcesSteps({
             {process.steps.map((step, index) => {
               const isCompleted = status === "ENDED" || status === "CLOSED";
               const isLast = index === process.steps.length - 1;
+              // AJOUTÉ - Résout l'unité qui couvre exactement la localisation du dossier.
+              const coveringUnit = folderLocationId
+                ? step.administrativeBody?.administrativeUnits.find((unit) =>
+                    unit.areaServed.some(
+                      (area) => area.locationId === folderLocationId,
+                    ),
+                  )
+                : undefined;
 
               return (
                 <div key={step.id} className="relative flex gap-4">
@@ -90,16 +102,42 @@ export function ProcesSteps({
                         <Building2 className="size-7 shrink-0 text-brand-green mb-auto" />
                         <span>
                           {step.administrativeBody.name}
-                          {step.administrativeBody.administrativeUnits.length >
-                            0 && (
+                          {/* MODIFIÉ - Affiche les détails et Google Maps uniquement pour l'unité couvrant ce dossier. */}
+                          {coveringUnit ? (
+                            <span className="mt-1 flex flex-col items-start gap-2 text-sm font-normal sm:flex-row sm:items-center">
+                              <span>
+                                Unité compétente : {coveringUnit.name}
+                              </span>
+                              <a
+                                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                  coveringUnit.location.latitude != null &&
+                                    coveringUnit.location.longitude != null
+                                    ? `${coveringUnit.location.latitude.toString()},${coveringUnit.location.longitude.toString()}`
+                                    : [
+                                        coveringUnit.name,
+                                        coveringUnit.location.city,
+                                        coveringUnit.location.address,
+                                      ]
+                                        .filter(Boolean)
+                                        .join(", "),
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label={`Localiser ${coveringUnit.name} sur Google Maps`}
+                                className="inline-flex min-h-12 items-center gap-2 rounded-sm border border-border bg-card px-3 font-medium text-brand-green transition-colors hover:bg-brand-green-soft"
+                              >
+                                <MapPin className="size-4" aria-hidden="true" />
+                                Localiser
+                              </a>
+                            </span>
+                          ) : !folderLocationId ? (
                             <span className="block text-sm font-normal">
-                              {step.administrativeBody.administrativeUnits
-                                .map((unit) =>
-                                  [unit.name, unit.location.city]
-                                    .filter(Boolean)
-                                    .join(" - "),
-                                )
-                                .join(", ")}
+                              L&apos;unité compétente dépend de votre ville.
+                            </span>
+                          ) : (
+                            <span className="block text-sm font-normal">
+                              Aucune unité locale n&apos;est renseignée pour
+                              votre ville.
                             </span>
                           )}
                         </span>
