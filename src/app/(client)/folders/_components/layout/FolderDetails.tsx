@@ -43,8 +43,14 @@ export default function FolderDetailsPage({
   const [isDeleting, setIsDeleting] = useState(false);
 
   const { setCategory, setProcedure } = useFolderStore();
-  const { folder, folderIsLoading, folderIsError, folderRefetch, delFolder } =
-    useFolder(userId, id);
+  const {
+    folder,
+    folderIsLoading,
+    folderIsError,
+    folderRefetch,
+    delFolder,
+    restartDiagnostic,
+  } = useFolder(userId, id);
 
   // ! Loading
   if (folderIsLoading) {
@@ -71,6 +77,24 @@ export default function FolderDetailsPage({
     router.push("/diagnostic");
   };
 
+  // ? Restart Folder
+  const handleRestartDiagnostic = async () => {
+    try {
+      await restartDiagnostic.mutateAsync(folder.id);
+      setCategory(folder.procedure.category.name);
+      setProcedure(folder.procedure.title);
+      toast.success("Diagnostic réinitialisé", {
+        description: "Vous pouvez recommencer depuis la première question.",
+      });
+      router.push("/diagnostic?restart=1");
+    } catch (error) {
+      toast.error("Impossible de recommencer le diagnostic", {
+        description: "Vos réponses et votre dossier n'ont pas été modifiés.",
+      });
+      console.error("Erreur lors de la réinitialisation du diagnostic:", error);
+    }
+  };
+
   // ! Delete folder
   const handleDelete = async () => {
     if (isDeleting) return;
@@ -95,26 +119,6 @@ export default function FolderDetailsPage({
       setIsDeleting(false);
     }
   };
-
-  // ! Restart folder
-  const handleRestart = async () => {
-    if (delFolder.isPending) return;
-
-    try {
-      await delFolder.mutateAsync({ id: folder.id, userId });
-      setCategory(folder.procedure.category.name);
-      setProcedure(folder.procedure.title);
-      toast.success("Un nouveau dossier va être préparé.");
-      router.push("/diagnostic");
-    } catch (error) {
-      toast.error("Impossible de recommencer le dossier", {
-        description: "Le dossier existant n'a pas pu être supprimé.",
-      });
-      console.error("Erreur lors du redémarrage du dossier:", error);
-    }
-  };
-
-  console.log("Folder Details:", folder);
 
   // ! RENDER
   return (
@@ -168,29 +172,32 @@ export default function FolderDetailsPage({
           </div>
 
           <div className="flex w-full flex-col gap-2 sm:w-auto">
-            {(folder.status === "CREATED" || folder.status === "PENDING") && (
+            {(folder.status === "CREATED" || folder.status === "PENDING") &&
+              !folder.processId && (
+                <button
+                  type="button"
+                  onClick={openDiagnostic}
+                  className="btn btn-primary min-h-12 text-base"
+                >
+                  <Play className="size-5" />
+                  {folder.status === "CREATED"
+                    ? "Continuer le diagnostic"
+                    : "Reprendre la démarche"}
+                </button>
+              )}
+            {(folder.processId ||
+              folder.status === "ENDED" ||
+              folder.status === "CLOSED") && (
               <button
                 type="button"
-                onClick={openDiagnostic}
-                className="btn btn-primary min-h-12 text-base"
-              >
-                <Play className="size-5" />
-                {folder.status === "CREATED"
-                  ? "Continuer le diagnostic"
-                  : "Reprendre la démarche"}
-              </button>
-            )}
-            {(folder.status === "ENDED" || folder.status === "CLOSED") && (
-              <button
-                type="button"
-                onClick={handleRestart}
-                disabled={delFolder.isPending}
+                onClick={handleRestartDiagnostic}
+                disabled={restartDiagnostic.isPending}
                 className="btn btn-primary min-h-12 text-base"
               >
                 <RotateCcw className="size-5" />
-                {delFolder.isPending
-                  ? "Préparation..."
-                  : "Recommencer le dossier"}
+                {restartDiagnostic.isPending
+                  ? "Réinitialisation..."
+                  : "Recommencer le diagnostic"}
               </button>
             )}
             <button
@@ -222,6 +229,8 @@ export default function FolderDetailsPage({
             process={folder.process}
             status={folder.status}
             folderLocationId={folder.locationId}
+            diagnosticComplete={Boolean(folder.processId)}
+            onResumeDiagnostic={openDiagnostic}
           />
 
           <ProgressSummary
@@ -260,7 +269,7 @@ export default function FolderDetailsPage({
         </div>
 
         <aside className="min-w-0 space-y-5">
-          {currentQuestion && (
+          {currentQuestion && !folder.processId && (
             <Card className="border-none shadow-none ring-0">
               <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6">
                 <CardTitle className="flex items-center gap-3 text-lg text-brand-ink">

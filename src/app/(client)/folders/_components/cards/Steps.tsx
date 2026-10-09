@@ -14,6 +14,8 @@ export function ProcesSteps({
   process,
   status,
   folderLocationId,
+  diagnosticComplete,
+  onResumeDiagnostic,
 }: {
   process?: {
     id: string;
@@ -23,6 +25,8 @@ export function ProcesSteps({
   } | null;
   status: FolderStatus;
   folderLocationId: string | null;
+  diagnosticComplete: boolean;
+  onResumeDiagnostic: () => void;
 }) {
   return (
     <div>
@@ -38,13 +42,16 @@ export function ProcesSteps({
 
       <CardContent className="px-5 pb-5 sm:px-6 sm:pb-6">
         {!process?.steps?.length ? (
-          <DiagnosticIncomplete />
+          <DiagnosticIncomplete
+            onResume={onResumeDiagnostic}
+            diagnosticComplete={diagnosticComplete}
+          />
         ) : (
           <div className="space-y-0">
             {process.steps.map((step, index) => {
               const isCompleted = status === "ENDED" || status === "CLOSED";
               const isLast = index === process.steps.length - 1;
-              
+
               const coveringUnit = folderLocationId
                 ? step.administrativeBody?.administrativeUnits.find((unit) =>
                     unit.areaServed.some(
@@ -101,7 +108,6 @@ export function ProcesSteps({
                         <Building2 className="size-7 shrink-0 text-brand-green mb-auto" />
                         <span>
                           {step.administrativeBody.name}
-                          {/* MODIFIÉ - Affiche les détails et Google Maps uniquement pour l'unité couvrant ce dossier. */}
                           {coveringUnit ? (
                             <span className="mt-1 flex flex-col items-start gap-2 text-sm font-normal sm:flex-row sm:items-center">
                               <span>
@@ -211,28 +217,40 @@ export function ProcesSteps({
   );
 }
 
-export function DiagnosticIncomplete() {
+export function DiagnosticIncomplete({
+  onResume,
+  diagnosticComplete,
+}: {
+  onResume: () => void;
+  diagnosticComplete: boolean;
+}) {
   return (
     <div className="mb-6 rounded-sm border border-brand-green/10 bg-brand-green-soft/20 p-5 sm:p-6">
       <div className="flex flex-col gap-5 items-center justify-between">
         <div className="min-w-0">
           <h2 className="font-display text-xl font-semibold text-brand-ink text-center md:text-2xl">
-            Votre diagnostic n&apos;est pas terminé
+            {diagnosticComplete
+              ? "Votre diagnostic est terminé"
+              : "Votre diagnostic n'est pas terminé"}
           </h2>
 
           <p className="mt-1 max-w-2xl text-base leading-6 text-brand-ink-muted text-center">
-            Il reste quelques questions à compléter avant de pouvoir déterminer
-            précisément les étapes de votre démarche.
+            {diagnosticComplete
+              ? "Vos réponses ont été enregistrées. Les étapes détaillées de cette démarche ne sont pas disponibles pour le moment."
+              : "Il reste quelques questions à compléter avant de pouvoir déterminer précisément les étapes de votre démarche."}
           </p>
         </div>
 
-        <button
-          type="button"
-          className="btn btn-primary rounded-sm py-3 text-base shrink-0"
-        >
-          Reprendre le diagnostic
-          <ArrowRight className="size-4" />
-        </button>
+        {!diagnosticComplete && (
+          <button
+            type="button"
+            onClick={onResume}
+            className="btn btn-primary rounded-sm py-3 text-base shrink-0"
+          >
+            Reprendre le diagnostic
+            <ArrowRight className="size-4" />
+          </button>
+        )}
       </div>
     </div>
   );

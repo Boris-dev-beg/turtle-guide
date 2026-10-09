@@ -4,6 +4,7 @@ import {
   deleteFolder,
   getFolder,
   getFolders,
+  restartFolderDiagnostic,
   updateFolderLocation,
   updateFolderStatus,
 } from "@/lib/folder.action";
@@ -99,6 +100,19 @@ export function useFolder(userId: string, id?: string) {
     },
   });
 
+  // AJOUTÉ - Réinitialise le diagnostic du dossier et rafraîchit les vues concernées.
+  const restartDiagnostic = useMutation({
+    mutationFn: restartFolderDiagnostic,
+    onSuccess: async (_, resetFolderId) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["folder", userId, resetFolderId],
+        }),
+        queryClient.invalidateQueries({ queryKey: ["folders", userId] }),
+      ]);
+    },
+  });
+
   // ! Delete folder
   const delFolder = useMutation({
     mutationFn: async (data: { userId: string; id: string }) => {
@@ -133,6 +147,7 @@ export function useFolder(userId: string, id?: string) {
 
     updateStatus,
     updateLocation,
+    restartDiagnostic,
     delFolder,
   };
 }

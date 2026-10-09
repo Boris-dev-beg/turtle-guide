@@ -1,8 +1,10 @@
 "use server";
 
+import { FolderStatus } from "@/generated/prisma/enums";
 import { FolderServices } from "@/services/folders.service";
 import { LocationServices } from "@/services/location.service";
 import { proceduresServices } from "@/services/procedure.service";
+import { requireSession } from "@/lib/session";
 
 // ! CREATE OR GET Folder
 export async function createOrGetFolderAction({
@@ -42,7 +44,7 @@ export async function updateFolderStatus(data: {
   id: string;
   userId: string;
   processId: string;
-  status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
+  status: FolderStatus;
 }) {
   return await FolderServices.updateFolder(data);
 }
@@ -54,7 +56,7 @@ export async function updateFolderLocation(data: {
   locationName: string;
 }) {
   const location = await LocationServices.getOneByName(data.locationName);
-  
+
   return await FolderServices.updateFolderLocation({
     ...data,
     locationId: location.id,
@@ -68,6 +70,15 @@ export async function updateFolderProgression(data: {
   progressionId: string;
 }) {
   return await FolderServices.updateFolderProgression(data);
+}
+
+export async function restartFolderDiagnostic(folderId: string) {
+  const session = await requireSession();
+
+  return FolderServices.resetDiagnostic({
+    id: folderId,
+    userId: session.user.id,
+  });
 }
 
 // ! Delete folder

@@ -8,9 +8,10 @@ import { DiagnosticError } from "../states/Errors";
 import { DiagnosticCreated } from "../Pages/DiagnosticCreated";
 import { DiagnosticExisting } from "../Pages/DiagnosticExisting";
 import { DiagnosticCompleted } from "../Pages/DiagnosticCompleted";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { EmptyState } from "@/components/shared/EmptyState";
+import { toast } from "sonner";
 
 type User = {
   id: string;
@@ -26,10 +27,11 @@ export default function Diagnostic({ user }: { user: User }) {
   // ! states
   const router = useRouter();
   const { procedure, category } = useFolderStore();
+  const searchParams = useSearchParams();
   const [showQuestions, setShowQuestions] = useState(false);
   const initializedSelection = useRef("");
 
-  const { useCreateOrGetFolder, delFolder } = useFolder(user.id);
+  const { useCreateOrGetFolder, restartDiagnostic } = useFolder(user.id);
 
   // ! Functions
   // ? Initialisation of the folder
@@ -40,8 +42,6 @@ export default function Diagnostic({ user }: { user: User }) {
   const { data: result, isPending, isError, error } = folderInitialization;
 
   const selectionKey = `${user.id}:${category}:${procedure}`;
-
-  console.log("Folder progression:", result?.folder.progression)
 
   useEffect(() => {
     if (
@@ -57,7 +57,27 @@ export default function Diagnostic({ user }: { user: User }) {
     folderInitialization.mutate();
   }, [category, folderInitialization, procedure, selectionKey, user.id]);
 
-  if (showQuestions && result?.folder) {
+  // ? Restart existing folder
+  const handleRestartDiagnostic = async (folderId: string) => {
+    try {
+      await restartDiagnostic.mutateAsync(folderId);
+      toast.success("Diagnostic réinitialisé", {
+        description: "Vous recommencez avec la première question.",
+      });
+      setShowQuestions(true);
+    } catch (error) {
+      toast.error("Impossible de recommencer le diagnostic", {
+        description: "Le dossier et ses réponses n'ont pas été modifiés.",
+      });
+      console.error("Erreur lors de la réinitialisation du diagnostic:", error);
+    }
+  };
+
+  // MODIFIÉ - Le paramètre de redémarrage ouvre les questions directement après reset depuis le détail.
+  if (
+    result?.folder &&
+    (showQuestions || searchParams.get("restart") === "1")
+  ) {
     return <QuestionsSide userId={user.id} folderId={result.folder.id} />;
   }
 
@@ -88,11 +108,29 @@ export default function Diagnostic({ user }: { user: User }) {
   }
 
   if (result?.status === "EXISTING_ACTIVE") {
+    if (result.folder.processId) {
+      return (
+        <DiagnosticExisting
+          folder={result.folder}
+          diagnosticComplete
+          onContinue={() => setShowQuestions(true)}
+          onChooseAnother={() => router.push("/categories")}
+          onViewFolder={() => router.push(`/folders/${result.folder.id}`)}
+          onRestart={() => handleRestartDiagnostic(result.folder.id)}
+          isRestarting={restartDiagnostic.isPending}
+        />
+      );
+    }
+
     return (
       <DiagnosticExisting
         folder={result.folder}
+        diagnosticComplete={false}
         onContinue={() => setShowQuestions(true)}
         onChooseAnother={() => router.push("/categories")}
+        onViewFolder={() => router.push(`/folders/${result.folder.id}`)}
+        onRestart={() => handleRestartDiagnostic(result.folder.id)}
+        isRestarting={restartDiagnostic.isPending}
       />
     );
   }
@@ -104,16 +142,8 @@ export default function Diagnostic({ user }: { user: User }) {
         onViewFolder={() => {
           router.push(`/folders/${result.folder.id}`);
         }}
-        onRestart={async () => {
-          await delFolder.mutateAsync({
-            userId: user.id,
-            id: result.folder.id,
-          });
-          initializedSelection.current = "";
-          folderInitialization.reset();
-          folderInitialization.mutate();
-        }}
-        isRestarting={delFolder.isPending || folderInitialization.isPending}
+        onRestart={() => handleRestartDiagnostic(result.folder.id)}
+        isRestarting={restartDiagnostic.isPending}
       />
     );
   }

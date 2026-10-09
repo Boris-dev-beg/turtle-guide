@@ -26,7 +26,7 @@ export function DiagnosticCompleted({
     <DiagnocticLayout
       folder={folder}
       title="Votre dossier a déjà été terminé ou archivé."
-      description="Ce dossier ne peut plus être repris. Vous pouvez consulter son contenu ou recommencer cette démarche avec un nouveau dossier."
+      description="Ce dossier est terminé ou archivé. Vous pouvez consulter son contenu ou effacer les réponses du diagnostic pour recommencer dans ce même dossier."
     >
       {/* Action */}
       <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:justify-end">
@@ -37,7 +37,7 @@ export function DiagnosticCompleted({
           className="btn btn-outline disabled:cursor-not-allowed disabled:opacity-60"
         >
           <RotateCcw className="size-4" />
-          {isRestarting ? "Préparation..." : "Recommencer le dossier"}
+          {isRestarting ? "Réinitialisation..." : "Recommencer le diagnostic"}
         </button>
 
         <button

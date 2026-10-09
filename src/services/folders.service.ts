@@ -263,6 +263,32 @@ export const FolderServices = {
     });
   },
 
+  // AJOUTÉ - Recommence le diagnostic sur le même dossier en effaçant ses réponses et sa progression.
+  async resetDiagnostic({ id, userId }: { id: string; userId: string }) {
+    return prisma.$transaction(async (transaction) => {
+      const folder = await transaction.folder.findFirst({
+        where: { id, userId },
+        select: { id: true },
+      });
+
+      if (!folder) {
+        throw new Error("Dossier introuvable");
+      }
+
+      await transaction.answer.deleteMany({ where: { folderId: id } });
+      await transaction.progression.deleteMany({ where: { folderId: id } });
+
+      return transaction.folder.update({
+        where: { id, userId },
+        data: {
+          status: "CREATED",
+          processId: null,
+          locationId: null,
+        },
+      });
+    });
+  },
+
   // ! Delete Folder
   async deleteFolder(id: string, userId: string) {
     return await prisma.folder.delete({

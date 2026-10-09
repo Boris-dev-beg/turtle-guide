@@ -183,7 +183,8 @@ async function main() {
     const regionQuestion = await prisma.question.create({
       data: {
         title: "Dans quelle région vous trouvez-vous ?",
-        description: "Les quatre zones couvertes par les unités administratives actuellement référencées.",
+        description:
+          "Les quatre zones couvertes par les unités administratives actuellement référencées.",
         procedureId,
       },
     });
@@ -235,7 +236,8 @@ async function main() {
     processId: string,
     questions: DiagnosticQuestionSpec[],
   ) {
-    let nextQuestionId = (await buildLocationSubtree(procedureId, processId)).id;
+    let nextQuestionId = (await buildLocationSubtree(procedureId, processId))
+      .id;
 
     for (let i = questions.length - 1; i >= 0; i--) {
       const spec = questions[i];
@@ -264,161 +266,538 @@ async function main() {
   // complètent ensuite le contexte avant la localisation finale.
   const DIAGNOSTIC_CONTEXTS: Record<string, DiagnosticQuestionSpec[]> = {
     normalDeclarationProcess: [
-      { title: "La naissance a-t-elle eu lieu dans un établissement de santé ou au domicile ?", options: ["Dans un établissement de santé", "À domicile", "Autre situation"] },
-      { title: "Disposez-vous d'un justificatif ou d'une information permettant d'établir les circonstances de la naissance ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "La naissance a-t-elle eu lieu dans un établissement de santé ou au domicile ?",
+        options: [
+          "Dans un établissement de santé",
+          "À domicile",
+          "Autre situation",
+        ],
+      },
+      {
+        title:
+          "Disposez-vous d'un justificatif ou d'une information permettant d'établir les circonstances de la naissance ?",
+        options: ["Oui", "Non"],
+      },
     ],
     lateDeclarationProcess: [
-      { title: "Disposez-vous d'un justificatif permettant d'établir la naissance ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous déjà obtenu un document attestant que la naissance n'est pas inscrite dans les registres ?", options: ["Oui", "Non", "Je ne sais pas"] },
+      {
+        title:
+          "Disposez-vous d'un justificatif permettant d'établir la naissance ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "Avez-vous déjà obtenu un document attestant que la naissance n'est pas inscrite dans les registres ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
     ],
     suppletiveJudgmentProcess: [
-      { title: "Disposez-vous de documents permettant d'établir l'identité et la naissance de la personne concernée ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "La personne concernée peut-elle fournir les informations nécessaires à la constitution de la requête ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "Disposez-vous de documents permettant d'établir l'identité et la naissance de la personne concernée ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "La personne concernée peut-elle fournir les informations nécessaires à la constitution de la requête ?",
+        options: ["Oui", "Non"],
+      },
     ],
     birthCopyProcess: [
-      { title: "Connaissez-vous les références ou au moins les informations permettant de retrouver l'acte de naissance ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "La demande concerne-t-elle votre propre acte ou celui d'une autre personne ?", options: ["Mon propre acte", "L'acte d'une autre personne"] },
+      {
+        title:
+          "Connaissez-vous les références ou au moins les informations permettant de retrouver l'acte de naissance ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "La demande concerne-t-elle votre propre acte ou celui d'une autre personne ?",
+        options: ["Mon propre acte", "L'acte d'une autre personne"],
+      },
     ],
     birthRectificationProcess: [
-      { title: "Quelle information de l'acte comporte l'erreur ?", options: ["Nom ou prénom", "Date ou lieu de naissance", "Filiation", "Autre information"] },
-      { title: "Disposez-vous d'un document permettant de justifier la correction demandée ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title: "Quelle information de l'acte comporte l'erreur ?",
+        options: [
+          "Nom ou prénom",
+          "Date ou lieu de naissance",
+          "Filiation",
+          "Autre information",
+        ],
+      },
+      {
+        title:
+          "Disposez-vous d'un document permettant de justifier la correction demandée ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     marriageCelebrationProcess: [
-      { title: "Les futurs époux souhaitent-ils tous les deux célébrer un mariage civil ?", options: ["Oui", "Non ou situation à préciser"] },
-      { title: "Les futurs époux disposent-ils des pièces d'identité et documents nécessaires à la constitution du dossier ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Les futurs époux ont-ils déjà réuni les informations d'état civil nécessaires au dossier ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Les futurs époux souhaitent-ils tous les deux célébrer un mariage civil ?",
+        options: ["Oui", "Non ou situation à préciser"],
+      },
+      {
+        title:
+          "Les futurs époux disposent-ils des pièces d'identité et documents nécessaires à la constitution du dossier ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "Les futurs époux ont-ils déjà réuni les informations d'état civil nécessaires au dossier ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     marriageCopyProcess: [
-      { title: "Connaissez-vous la commune ou le centre d'état civil où le mariage a été célébré ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous des informations permettant d'identifier les époux et la date approximative du mariage ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Connaissez-vous la commune ou le centre d'état civil où le mariage a été célébré ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Disposez-vous des informations permettant d'identifier les époux et la date approximative du mariage ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     deathDeclarationProcess: [
-      { title: "Disposez-vous d'un certificat ou document médical constatant le décès ?", options: ["Oui", "Non", "En cours d'obtention"] },
-      { title: "Le décès doit-il être déclaré pour la première fois à l'état civil ?", options: ["Oui", "Je ne suis pas certain"] },
+      {
+        title:
+          "Disposez-vous d'un certificat ou document médical constatant le décès ?",
+        options: ["Oui", "Non", "En cours d'obtention"],
+      },
+      {
+        title:
+          "Le décès doit-il être déclaré pour la première fois à l'état civil ?",
+        options: ["Oui", "Je ne suis pas certain"],
+      },
     ],
     deathCopyProcess: [
-      { title: "Connaissez-vous le centre d'état civil où le décès a été enregistré ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous des informations d'identification de la personne décédée et de la date du décès ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Connaissez-vous le centre d'état civil où le décès a été enregistré ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Disposez-vous des informations d'identification de la personne décédée et de la date du décès ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     adminRecognitionProcess: [
-      { title: "La naissance de l'enfant est-elle en cours de déclaration ou n'est-elle pas encore déclarée ?", options: ["La naissance est en cours de déclaration", "La situation doit être précisée"] },
-      { title: "La mère peut-elle fournir le consentement nécessaire à la reconnaissance ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Deux témoins peuvent-ils être présents pour la déclaration ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "La naissance de l'enfant est-elle en cours de déclaration ou n'est-elle pas encore déclarée ?",
+        options: [
+          "La naissance est en cours de déclaration",
+          "La situation doit être précisée",
+        ],
+      },
+      {
+        title:
+          "La mère peut-elle fournir le consentement nécessaire à la reconnaissance ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
+      {
+        title: "Deux témoins peuvent-ils être présents pour la déclaration ?",
+        options: ["Oui", "Non"],
+      },
     ],
     judicialRecognitionProcess: [
-      { title: "La naissance de l'enfant est-elle déjà enregistrée à l'état civil ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Disposez-vous de documents ou d'éléments permettant d'établir la filiation invoquée ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "La naissance de l'enfant est-elle déjà enregistrée à l'état civil ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
+      {
+        title:
+          "Disposez-vous de documents ou d'éléments permettant d'établir la filiation invoquée ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     transcriptionProcess: [
-      { title: "L'acte étranger a-t-il été établi par une autorité étrangère compétente ?", options: ["Oui", "Je ne sais pas"] },
-      { title: "Disposez-vous de l'original de l'acte et des formalités de légalisation ou d'authentification disponibles ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Êtes-vous revenu au Cameroun depuis moins de six mois ?", options: ["Oui", "Non", "Je ne sais pas"] },
+      {
+        title:
+          "L'acte étranger a-t-il été établi par une autorité étrangère compétente ?",
+        options: ["Oui", "Je ne sais pas"],
+      },
+      {
+        title:
+          "Disposez-vous de l'original de l'acte et des formalités de légalisation ou d'authentification disponibles ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title: "Êtes-vous revenu au Cameroun depuis moins de six mois ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
     ],
     firstRequestProcess: [
-      { title: "Avez-vous déjà été titulaire d'une CNI camerounaise ?", options: ["Non, jamais", "Je ne sais pas"] },
-      { title: "Disposez-vous d'un acte de naissance ou d'un document d'état civil permettant d'établir votre identité ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title: "Avez-vous déjà été titulaire d'une CNI camerounaise ?",
+        options: ["Non, jamais", "Je ne sais pas"],
+      },
+      {
+        title:
+          "Disposez-vous d'un acte de naissance ou d'un document d'état civil permettant d'établir votre identité ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     lateFirstRequestProcess: [
-      { title: "S'agit-il bien de votre toute première demande de CNI ?", options: ["Oui", "Non ou situation à vérifier"] },
-      { title: "Disposez-vous des documents d'état civil et d'identité nécessaires à l'enrôlement ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title: "S'agit-il bien de votre toute première demande de CNI ?",
+        options: ["Oui", "Non ou situation à vérifier"],
+      },
+      {
+        title:
+          "Disposez-vous des documents d'état civil et d'identité nécessaires à l'enrôlement ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     renewalProcess: [
-      { title: "Votre CNI actuelle est-elle expirée, proche de l'expiration ou détériorée ?", options: ["Expirée", "Bientôt expirée", "Détériorée", "Autre situation"] },
-      { title: "Vos informations d'état civil sont-elles restées inchangées ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "Votre CNI actuelle est-elle expirée, proche de l'expiration ou détériorée ?",
+        options: [
+          "Expirée",
+          "Bientôt expirée",
+          "Détériorée",
+          "Autre situation",
+        ],
+      },
+      {
+        title: "Vos informations d'état civil sont-elles restées inchangées ?",
+        options: ["Oui", "Non"],
+      },
     ],
     lostStolenProcess: [
-      { title: "La CNI a-t-elle été perdue ou volée ?", options: ["Perdue", "Volée"] },
-      { title: "Avez-vous déjà effectué la déclaration auprès d'un commissariat ou d'une autorité de police ?", options: ["Oui", "Non"] },
+      {
+        title: "La CNI a-t-elle été perdue ou volée ?",
+        options: ["Perdue", "Volée"],
+      },
+      {
+        title:
+          "Avez-vous déjà effectué la déclaration auprès d'un commissariat ou d'une autorité de police ?",
+        options: ["Oui", "Non"],
+      },
     ],
     passportProcess: [
-      { title: "Le demandeur est-il majeur ou mineur ?", options: ["Majeur", "Mineur"] },
-      { title: "Disposez-vous des documents d'état civil et de la pièce d'identité nécessaires au dossier ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Pour le renouvellement, disposez-vous de l'ancien passeport ?", options: ["Oui", "Non", "Première demande"] },
+      {
+        title: "Le demandeur est-il majeur ou mineur ?",
+        options: ["Majeur", "Mineur"],
+      },
+      {
+        title:
+          "Disposez-vous des documents d'état civil et de la pièce d'identité nécessaires au dossier ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title: "Pour le renouvellement, disposez-vous de l'ancien passeport ?",
+        options: ["Oui", "Non", "Première demande"],
+      },
     ],
     pciProcess: [
-      { title: "Votre permis de conduire camerounais est-il actuellement valide ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous de l'original et d'une copie de votre permis ainsi que d'une pièce d'identité ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous besoin du PCI pour une utilisation à l'étranger ?", options: ["Oui", "Non", "Je veux vérifier les conditions"] },
+      {
+        title:
+          "Votre permis de conduire camerounais est-il actuellement valide ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Disposez-vous de l'original et d'une copie de votre permis ainsi que d'une pièce d'identité ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title: "Avez-vous besoin du PCI pour une utilisation à l'étranger ?",
+        options: ["Oui", "Non", "Je veux vérifier les conditions"],
+      },
     ],
     niuProcess: [
-      { title: "Votre demande de NIU concerne-t-elle une activité professionnelle ou une situation personnelle ?", options: ["Situation personnelle", "Activité professionnelle"] },
-      { title: "Disposez-vous d'une pièce d'identité et des informations nécessaires à votre immatriculation ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Votre demande de NIU concerne-t-elle une activité professionnelle ou une situation personnelle ?",
+        options: ["Situation personnelle", "Activité professionnelle"],
+      },
+      {
+        title:
+          "Disposez-vous d'une pièce d'identité et des informations nécessaires à votre immatriculation ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     nationalityProcess: [
-      { title: "Sur quel document fondez-vous principalement votre demande ?", options: ["Acte de naissance et filiation", "Document d'acquisition de la nationalité", "Autre justificatif"] },
-      { title: "Pouvez-vous fournir les pièces permettant d'établir le lien avec la nationalité camerounaise invoquée ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title: "Sur quel document fondez-vous principalement votre demande ?",
+        options: [
+          "Acte de naissance et filiation",
+          "Document d'acquisition de la nationalité",
+          "Autre justificatif",
+        ],
+      },
+      {
+        title:
+          "Pouvez-vous fournir les pièces permettant d'établir le lien avec la nationalité camerounaise invoquée ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     residenceCertificateProcess: [
-      { title: "L'adresse pour laquelle vous demandez l'attestation correspond-elle à votre résidence actuelle ?", options: ["Oui", "Non"] },
-      { title: "Disposez-vous d'une pièce d'identité et d'un justificatif ou témoignage permettant d'établir votre résidence ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "L'adresse pour laquelle vous demandez l'attestation correspond-elle à votre résidence actuelle ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Disposez-vous d'une pièce d'identité et d'un justificatif ou témoignage permettant d'établir votre résidence ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     hostingProcess: [
-      { title: "Êtes-vous la personne qui héberge effectivement le bénéficiaire du certificat ?", options: ["Oui", "Non, je suis la personne hébergée"] },
-      { title: "Disposez-vous des informations et pièces d'identité de l'hébergeant et de l'hébergé ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Êtes-vous la personne qui héberge effectivement le bénéficiaire du certificat ?",
+        options: ["Oui", "Non, je suis la personne hébergée"],
+      },
+      {
+        title:
+          "Disposez-vous des informations et pièces d'identité de l'hébergeant et de l'hébergé ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     buildingPermitProcess: [
-      { title: "Quel type de projet souhaitez-vous réaliser ?", options: ["Construction d'un bâtiment", "Extension ou modification", "Autre projet soumis à autorisation"] },
-      { title: "Disposez-vous d'un document établissant vos droits sur le terrain ?", options: ["Oui", "Non", "En cours d'obtention"] },
-      { title: "Les plans du projet sont-ils déjà préparés par un professionnel compétent ?", options: ["Oui", "Non", "En cours"] },
+      {
+        title: "Quel type de projet souhaitez-vous réaliser ?",
+        options: [
+          "Construction d'un bâtiment",
+          "Extension ou modification",
+          "Autre projet soumis à autorisation",
+        ],
+      },
+      {
+        title:
+          "Disposez-vous d'un document établissant vos droits sur le terrain ?",
+        options: ["Oui", "Non", "En cours d'obtention"],
+      },
+      {
+        title:
+          "Les plans du projet sont-ils déjà préparés par un professionnel compétent ?",
+        options: ["Oui", "Non", "En cours"],
+      },
     ],
     urbanismCertProcess: [
-      { title: "Disposez-vous d'informations permettant d'identifier précisément la parcelle concernée ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Pourquoi souhaitez-vous connaître les règles d'urbanisme applicables à la parcelle ?", options: ["Préparer une construction", "Avant une acquisition", "Autre projet"] },
+      {
+        title:
+          "Disposez-vous d'informations permettant d'identifier précisément la parcelle concernée ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "Pourquoi souhaitez-vous connaître les règles d'urbanisme applicables à la parcelle ?",
+        options: [
+          "Préparer une construction",
+          "Avant une acquisition",
+          "Autre projet",
+        ],
+      },
     ],
     patenteProcess: [
-      { title: "Quelle activité souhaitez-vous exercer ou régulariser ?", options: ["Commerce", "Service", "Artisanat", "Autre activité"] },
-      { title: "L'activité est-elle déjà effectivement exercée ?", options: ["Oui", "Non, lancement prochain", "Je suis en cours de création"] },
-      { title: "Disposez-vous déjà d'un NIU professionnel ?", options: ["Oui", "Non", "Je ne sais pas"] },
+      {
+        title: "Quelle activité souhaitez-vous exercer ou régulariser ?",
+        options: ["Commerce", "Service", "Artisanat", "Autre activité"],
+      },
+      {
+        title: "L'activité est-elle déjà effectivement exercée ?",
+        options: [
+          "Oui",
+          "Non, lancement prochain",
+          "Je suis en cours de création",
+        ],
+      },
+      {
+        title: "Disposez-vous déjà d'un NIU professionnel ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
     ],
     transcriptCertProcess: [
-      { title: "Quel établissement a délivré le relevé de notes ?", options: ["Université ou établissement public", "Établissement privé", "Autre établissement"] },
-      { title: "Le relevé de notes est-il complet et lisible ?", options: ["Oui", "Non", "Je dois obtenir une nouvelle copie"] },
-      { title: "Le destinataire exige-t-il une certification officielle particulière ?", options: ["Oui", "Non", "Je ne sais pas"] },
+      {
+        title: "Quel établissement a délivré le relevé de notes ?",
+        options: [
+          "Université ou établissement public",
+          "Établissement privé",
+          "Autre établissement",
+        ],
+      },
+      {
+        title: "Le relevé de notes est-il complet et lisible ?",
+        options: ["Oui", "Non", "Je dois obtenir une nouvelle copie"],
+      },
+      {
+        title:
+          "Le destinataire exige-t-il une certification officielle particulière ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
     ],
     diplomaCertProcess: [
-      { title: "Quel établissement a délivré le diplôme ?", options: ["Université ou établissement public", "Établissement privé", "Autre établissement"] },
-      { title: "Disposez-vous de l'original ou d'une copie exploitable du diplôme ?", options: ["Oui", "Non"] },
-      { title: "La certification est-elle destinée à une autorité ou un organisme précis ?", options: ["Oui", "Non", "Je ne sais pas"] },
+      {
+        title: "Quel établissement a délivré le diplôme ?",
+        options: [
+          "Université ou établissement public",
+          "Établissement privé",
+          "Autre établissement",
+        ],
+      },
+      {
+        title:
+          "Disposez-vous de l'original ou d'une copie exploitable du diplôme ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "La certification est-elle destinée à une autorité ou un organisme précis ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
     ],
     duplicateProcess: [
-      { title: "Le document a-t-il été perdu, volé ou détérioré ?", options: ["Perdu", "Volé", "Détérioré"] },
-      { title: "Disposez-vous d'une copie, d'un numéro ou d'une référence permettant d'identifier le document ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Avez-vous déjà déclaré la perte ou le vol lorsque cette déclaration est nécessaire ?", options: ["Oui", "Non", "Non concerné"] },
+      {
+        title: "Le document a-t-il été perdu, volé ou détérioré ?",
+        options: ["Perdu", "Volé", "Détérioré"],
+      },
+      {
+        title:
+          "Disposez-vous d'une copie, d'un numéro ou d'une référence permettant d'identifier le document ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "Avez-vous déjà déclaré la perte ou le vol lorsque cette déclaration est nécessaire ?",
+        options: ["Oui", "Non", "Non concerné"],
+      },
     ],
     correctionProcess: [
-      { title: "Le document à corriger est-il un diplôme ou un relevé de notes ?", options: ["Diplôme", "Relevé de notes"] },
-      { title: "L'erreur porte-t-elle sur l'état civil ou sur les résultats académiques ?", options: ["État civil", "Résultats ou mention", "Autre erreur matérielle"] },
-      { title: "Disposez-vous du document original ou d'une copie permettant de constater l'erreur ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "Le document à corriger est-il un diplôme ou un relevé de notes ?",
+        options: ["Diplôme", "Relevé de notes"],
+      },
+      {
+        title:
+          "L'erreur porte-t-elle sur l'état civil ou sur les résultats académiques ?",
+        options: [
+          "État civil",
+          "Résultats ou mention",
+          "Autre erreur matérielle",
+        ],
+      },
+      {
+        title:
+          "Disposez-vous du document original ou d'une copie permettant de constater l'erreur ?",
+        options: ["Oui", "Non"],
+      },
     ],
     successCertProcess: [
-      { title: "Quel diplôme ou niveau de formation concerne l'attestation ?", options: ["Enseignement supérieur", "Autre formation académique"] },
-      { title: "Avez-vous terminé la formation ou validé les conditions de réussite ?", options: ["Oui", "Je suis en attente de confirmation"] },
-      { title: "Le diplôme officiel est-il déjà disponible ?", options: ["Non", "Oui", "Je ne sais pas"] },
+      {
+        title: "Quel diplôme ou niveau de formation concerne l'attestation ?",
+        options: ["Enseignement supérieur", "Autre formation académique"],
+      },
+      {
+        title:
+          "Avez-vous terminé la formation ou validé les conditions de réussite ?",
+        options: ["Oui", "Je suis en attente de confirmation"],
+      },
+      {
+        title: "Le diplôme officiel est-il déjà disponible ?",
+        options: ["Non", "Oui", "Je ne sais pas"],
+      },
     ],
     criminalRecordProcess: [
-      { title: "Le casier judiciaire est-il demandé pour vous-même ?", options: ["Oui", "Non, pour une autre personne"] },
-      { title: "Connaissez-vous le lieu de naissance de la personne concernée ?", options: ["Oui", "Non"] },
-      { title: "Le document est-il destiné à une autorité camerounaise ou à une démarche internationale ?", options: ["Autorité camerounaise", "Démarche internationale", "Je ne sais pas"] },
+      {
+        title: "Le casier judiciaire est-il demandé pour vous-même ?",
+        options: ["Oui", "Non, pour une autre personne"],
+      },
+      {
+        title:
+          "Connaissez-vous le lieu de naissance de la personne concernée ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Le document est-il destiné à une autorité camerounaise ou à une démarche internationale ?",
+        options: [
+          "Autorité camerounaise",
+          "Démarche internationale",
+          "Je ne sais pas",
+        ],
+      },
     ],
     legalizationProcess: [
-      { title: "Le document à légaliser est-il un original, une copie ou une signature ?", options: ["Original", "Copie", "Signature ou déclaration"] },
-      { title: "Le document sera-t-il utilisé au Cameroun ou à l'étranger ?", options: ["Au Cameroun", "À l'étranger", "Je ne sais pas"] },
-      { title: "Disposez-vous déjà du document original et de la pièce d'identité nécessaire ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title:
+          "Le document à légaliser est-il un original, une copie ou une signature ?",
+        options: ["Original", "Copie", "Signature ou déclaration"],
+      },
+      {
+        title: "Le document sera-t-il utilisé au Cameroun ou à l'étranger ?",
+        options: ["Au Cameroun", "À l'étranger", "Je ne sais pas"],
+      },
+      {
+        title:
+          "Disposez-vous déjà du document original et de la pièce d'identité nécessaire ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     celibacyProcess: [
-      { title: "Le certificat est-il destiné à constituer un dossier de mariage ?", options: ["Oui", "Non"] },
-      { title: "Pouvez-vous fournir les informations d'état civil nécessaires à l'établissement du certificat ?", options: ["Oui", "Non", "Partiellement"] },
-      { title: "Disposez-vous de deux témoins majeurs pouvant confirmer votre situation ?", options: ["Oui", "Non"] },
+      {
+        title:
+          "Le certificat est-il destiné à constituer un dossier de mariage ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Pouvez-vous fournir les informations d'état civil nécessaires à l'établissement du certificat ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
+      {
+        title:
+          "Disposez-vous de deux témoins majeurs pouvant confirmer votre situation ?",
+        options: ["Oui", "Non"],
+      },
     ],
     associationProcess: [
-      { title: "Le siège de l'association sera-t-il situé au Cameroun ?", options: ["Oui", "Non"] },
-      { title: "L'association relève-t-elle du régime ordinaire de déclaration ?", options: ["Oui", "Non", "Je ne sais pas"] },
-      { title: "Disposez-vous déjà des statuts et des informations sur les dirigeants nécessaires à la déclaration ?", options: ["Oui", "Non", "Partiellement"] },
+      {
+        title: "Le siège de l'association sera-t-il situé au Cameroun ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "L'association relève-t-elle du régime ordinaire de déclaration ?",
+        options: ["Oui", "Non", "Je ne sais pas"],
+      },
+      {
+        title:
+          "Disposez-vous déjà des statuts et des informations sur les dirigeants nécessaires à la déclaration ?",
+        options: ["Oui", "Non", "Partiellement"],
+      },
     ],
     lossProcess: [
-      { title: "Quel type de document devez-vous déclarer comme perdu ou volé ?", options: ["CNI ou passeport", "Diplôme ou relevé", "Permis de conduire", "Autre document administratif"] },
-      { title: "La perte ou le vol a-t-il déjà été signalé à une autorité ?", options: ["Oui", "Non"] },
-      { title: "Avez-vous besoin du récépissé pour demander ensuite un duplicata ou un remplacement ?", options: ["Oui", "Non", "Je veux seulement formaliser la déclaration"] },
+      {
+        title:
+          "Quel type de document devez-vous déclarer comme perdu ou volé ?",
+        options: [
+          "CNI ou passeport",
+          "Diplôme ou relevé",
+          "Permis de conduire",
+          "Autre document administratif",
+        ],
+      },
+      {
+        title: "La perte ou le vol a-t-il déjà été signalé à une autorité ?",
+        options: ["Oui", "Non"],
+      },
+      {
+        title:
+          "Avez-vous besoin du récépissé pour demander ensuite un duplicata ou un remplacement ?",
+        options: ["Oui", "Non", "Je veux seulement formaliser la déclaration"],
+      },
     ],
   };
 
@@ -663,7 +1042,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Réunir les pièces justificatives de la naissance",
       processId: normalDeclarationProcess.id,
       administrativeBodyId: mairie.id,
@@ -681,7 +1060,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer le premier exemplaire de l'acte",
       processId: normalDeclarationProcess.id,
       administrativeBodyId: mairie.id,
@@ -690,7 +1069,7 @@ async function main() {
 
   const requisitionStep = await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Obtenir un certificat de non-inscription",
       processId: lateDeclarationProcess.id,
       administrativeBodyId: mairie.id,
@@ -698,7 +1077,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Saisir le Procureur de la République pour obtenir une réquisition",
       processId: lateDeclarationProcess.id,
@@ -708,7 +1087,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Présenter la réquisition à l'officier d'état civil",
       processId: lateDeclarationProcess.id,
       administrativeBodyId: mairie.id,
@@ -717,7 +1096,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Obtenir un certificat de non-inscription",
       processId: suppletiveJudgmentProcess.id,
       administrativeBodyId: mairie.id,
@@ -725,14 +1104,14 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Obtenir un certificat d'âge apparent",
       processId: suppletiveJudgmentProcess.id,
     },
   });
   const suppletiveTribunalStep = await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la requête en jugement supplétif",
       processId: suppletiveJudgmentProcess.id,
       administrativeBodyId: tribunal.id,
@@ -741,7 +1120,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Assister à l'audience et obtenir le jugement",
       processId: suppletiveJudgmentProcess.id,
       administrativeBodyId: tribunal.id,
@@ -749,7 +1128,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire transcrire le jugement à la mairie",
       processId: suppletiveJudgmentProcess.id,
       administrativeBodyId: mairie.id,
@@ -758,7 +1137,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Se présenter au centre d'état civil avec les références de l'acte",
       processId: birthCopyProcess.id,
@@ -768,7 +1147,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Payer les frais de timbre et retirer la copie",
       processId: birthCopyProcess.id,
       administrativeBodyId: mairie.id,
@@ -777,7 +1156,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Constituer le dossier de demande de rectification",
       processId: birthRectificationProcess.id,
       documents: { connect: [{ id: rectificationRequestForm.id }] },
@@ -785,7 +1164,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la requête devant le Tribunal de Première Instance",
       processId: birthRectificationProcess.id,
       administrativeBodyId: tribunal.id,
@@ -793,14 +1172,16 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire transcrire la mention rectificative",
       processId: birthRectificationProcess.id,
       administrativeBodyId: mairie.id,
     },
   });
 
-  console.log("✅ 1.1 Acte de naissance (5 sous-arbres avec localisation finale)");
+  console.log(
+    "✅ 1.1 Acte de naissance (5 sous-arbres avec localisation finale)",
+  );
 
   // --- 1.2 Acte de mariage (2 branches) ---
 
@@ -881,7 +1262,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Constituer le dossier de mariage",
       processId: marriageCelebrationProcess.id,
       administrativeBodyId: mairie.id,
@@ -898,7 +1279,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Assister à la célébration et recevoir le livret de famille",
       processId: marriageCelebrationProcess.id,
       administrativeBodyId: mairie.id,
@@ -906,7 +1287,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie où le mariage a été célébré",
       processId: marriageCopyProcess.id,
       administrativeBodyId: mairie.id,
@@ -997,14 +1378,14 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Obtenir un certificat du genre de mort",
       processId: deathDeclarationProcess.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déclarer le décès au centre d'état civil compétent",
       processId: deathDeclarationProcess.id,
       administrativeBodyId: mairie.id,
@@ -1013,7 +1394,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie où le décès a été enregistré",
       processId: deathCopyProcess.id,
       administrativeBodyId: mairie.id,
@@ -1104,14 +1485,14 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Obtenir le consentement de la mère",
       processId: adminRecognitionProcess.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Faire la déclaration devant l'officier d'état civil avec deux témoins",
       processId: adminRecognitionProcess.id,
@@ -1121,7 +1502,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Constituer le dossier de requête en reconnaissance",
       processId: judicialRecognitionProcess.id,
       documents: { connect: [{ id: recognitionRequestForm.id }] },
@@ -1129,7 +1510,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la requête devant le Tribunal de Première Instance",
       processId: judicialRecognitionProcess.id,
       administrativeBodyId: tribunal.id,
@@ -1137,7 +1518,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire transcrire le jugement à la mairie",
       processId: judicialRecognitionProcess.id,
       administrativeBodyId: mairie.id,
@@ -1207,14 +1588,14 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire légaliser l'acte étranger",
       processId: transcriptionProcess.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Déposer la demande de transcription au centre d'état civil de résidence",
       processId: transcriptionProcess.id,
@@ -1354,7 +1735,7 @@ async function main() {
   for (const process of [firstRequestProcess, lateFirstRequestProcess]) {
     await prisma.step.create({
       data: {
-        description:"",
+        description: "",
         title: "Effectuer le pré-enrôlement en ligne sur idcam.cm",
         processId: process.id,
         documents: { connect: [{ id: preEnrollmentForm.id }] },
@@ -1387,7 +1768,7 @@ async function main() {
   }
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Effectuer le pré-enrôlement en précisant un renouvellement",
       processId: renewalProcess.id,
       documents: { connect: [{ id: preEnrollmentForm.id }] },
@@ -1395,7 +1776,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter avec l'ancienne carte",
       processId: renewalProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1403,7 +1784,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer la nouvelle carte",
       processId: renewalProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1412,7 +1793,7 @@ async function main() {
 
   const lossDeclarationStep = await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire une déclaration de perte ou de vol",
       processId: lostStolenProcess.id,
       administrativeBodyId: commissariat.id,
@@ -1420,7 +1801,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Effectuer un nouveau pré-enrôlement",
       processId: lostStolenProcess.id,
       documents: { connect: [{ id: preEnrollmentForm.id }] },
@@ -1428,7 +1809,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer la nouvelle carte avec le récépissé",
       processId: lostStolenProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1496,7 +1877,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Créer un compte et pré-enrôler en ligne sur passcam.cm",
       processId: passportProcess.id,
       documents: { connect: [{ id: passportPreEnrollForm.id }] },
@@ -1504,7 +1885,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter au centre d'enrôlement avec les documents originaux",
       processId: passportProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1512,7 +1893,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Capture biométrique (photo, empreintes, signature)",
       processId: passportProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1520,7 +1901,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer le passeport au centre indiqué",
       processId: passportProcess.id,
       administrativeBodyId: dgsn.id,
@@ -1586,7 +1967,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Constituer le dossier (permis original + copie, CNI, 2 photos)",
       processId: pciProcess.id,
       documents: { connect: [{ id: pciForm.id }] },
@@ -1594,7 +1975,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer le dossier à Campost ou à la délégation MINT",
       processId: pciProcess.id,
       administrativeBodyId: campost.id,
@@ -1602,7 +1983,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer le Permis de Conduire International",
       processId: pciProcess.id,
       administrativeBodyId: campost.id,
@@ -1668,7 +2049,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Accéder à la plateforme de télédéclaration de la DGI",
       processId: niuProcess.id,
       documents: { connect: [{ id: niuForm.id }] },
@@ -1676,7 +2057,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Renseigner les informations d'identification et valider",
       processId: niuProcess.id,
       administrativeBodyId: dgi.id,
@@ -1684,7 +2065,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Télécharger l'attestation d'immatriculation",
       processId: niuProcess.id,
       administrativeBodyId: dgi.id,
@@ -1749,7 +2130,7 @@ async function main() {
 
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Constituer le dossier (acte de naissance, CNI des parents, timbre fiscal)",
       processId: nationalityProcess.id,
@@ -1758,7 +2139,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande manuscrite au Tribunal de Première Instance",
       processId: nationalityProcess.id,
       administrativeBodyId: tribunal.id,
@@ -1766,7 +2147,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Retirer le certificat signé par le président du tribunal",
       processId: nationalityProcess.id,
       administrativeBodyId: tribunal.id,
@@ -1825,21 +2206,22 @@ async function main() {
   });
   await prisma.answerOption.create({
     data: {
-      label: "Je ne suis pas certain que ma situation corresponde à cette commune",
+      label:
+        "Je ne suis pas certain que ma situation corresponde à cette commune",
       questionId: residenceQuestion.id,
       nextQuestionId: residenceSubtree.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire viser la demande par le chef de quartier",
       processId: residenceCertificateProcess.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie avec une pièce d'identité",
       processId: residenceCertificateProcess.id,
       administrativeBodyId: mairie.id,
@@ -1900,7 +2282,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Réunir les pièces de l'hébergeant et de l'hébergé",
       processId: hostingProcess.id,
       documents: { connect: [{ id: hostingForm.id }] },
@@ -1908,7 +2290,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie du lieu d'hébergement",
       processId: hostingProcess.id,
       administrativeBodyId: mairie.id,
@@ -1975,7 +2357,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Obtenir un certificat d'urbanisme et un certificat de propriété récent",
       processId: buildingPermitProcess.id,
@@ -1984,14 +2366,14 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire établir les plans par un architecte agréé",
       processId: buildingPermitProcess.id,
     },
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer le dossier au guichet unique de la commune",
       processId: buildingPermitProcess.id,
       administrativeBodyId: mairie.id,
@@ -2052,7 +2434,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande à la mairie ou à la communauté urbaine",
       processId: urbanismCertProcess.id,
       administrativeBodyId: mairie.id,
@@ -2113,7 +2495,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Déclarer l'activité et obtenir le NIU professionnel si nécessaire",
       processId: patenteProcess.id,
@@ -2123,7 +2505,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Payer la contribution des patentes correspondant à l'activité",
       processId: patenteProcess.id,
       administrativeBodyId: dgi.id,
@@ -2198,7 +2580,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Réunir la photocopie certifiée conforme du relevé et de la CNI",
       processId: transcriptCertProcess.id,
       documents: { connect: [{ id: academicForm.id }] },
@@ -2206,7 +2588,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande auprès du MINESUP ou de l'établissement",
       processId: transcriptCertProcess.id,
       administrativeBodyId: minesup.id,
@@ -2258,7 +2640,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Réunir la photocopie certifiée conforme du diplôme et de la CNI",
       processId: diplomaCertProcess.id,
       documents: { connect: [{ id: academicForm.id }] },
@@ -2266,7 +2648,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande auprès du MINESUP ou de l'établissement",
       processId: diplomaCertProcess.id,
       administrativeBodyId: minesup.id,
@@ -2319,7 +2701,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Faire une déclaration de perte",
       processId: duplicateProcess.id,
       administrativeBodyId: commissariat.id,
@@ -2328,7 +2710,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande de duplicata au MINESUP",
       processId: duplicateProcess.id,
       administrativeBodyId: minesup.id,
@@ -2381,7 +2763,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Joindre l'original du document à corriger et préciser l'erreur",
       processId: correctionProcess.id,
       documents: { connect: [{ id: academicForm.id }] },
@@ -2389,7 +2771,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande de correction au MINESUP",
       processId: correctionProcess.id,
       administrativeBodyId: minesup.id,
@@ -2442,7 +2824,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Déposer la demande d'attestation de réussite",
       processId: successCertProcess.id,
       administrativeBodyId: minesup.id,
@@ -2508,7 +2890,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Préparer une photocopie d'acte de naissance ou de CNI",
       processId: criminalRecordProcess.id,
       documents: { connect: [{ id: criminalRecordForm.id }] },
@@ -2516,7 +2898,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Déposer la demande au greffe du Tribunal de Première Instance du lieu de naissance",
       processId: criminalRecordProcess.id,
@@ -2588,7 +2970,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Préparer l'original et la copie du document",
       processId: legalizationProcess.id,
       documents: { connect: [{ id: legalizationForm.id }] },
@@ -2596,7 +2978,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie ou à la sous-préfecture",
       processId: legalizationProcess.id,
       administrativeBodyId: mairie.id,
@@ -2656,7 +3038,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Réunir deux témoins majeurs munis de leur CNI",
       processId: celibacyProcess.id,
       documents: { connect: [{ id: celibacyForm.id }] },
@@ -2664,7 +3046,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter à la mairie du lieu de naissance ou de résidence",
       processId: celibacyProcess.id,
       administrativeBodyId: mairie.id,
@@ -2727,7 +3109,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Rédiger les statuts et la lettre de déclaration",
       processId: associationProcess.id,
       documents: { connect: [{ id: associationForm.id }] },
@@ -2735,7 +3117,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title:
         "Déposer le dossier timbré à la préfecture du département du siège",
       processId: associationProcess.id,
@@ -2806,7 +3188,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Se présenter au commissariat de police le plus proche",
       processId: lossProcess.id,
       administrativeBodyId: commissariat.id,
@@ -2815,7 +3197,7 @@ async function main() {
   });
   await prisma.step.create({
     data: {
-      description:"",
+      description: "",
       title: "Conserver le récépissé pour la démarche de duplicata",
       processId: lossProcess.id,
       administrativeBodyId: commissariat.id,
