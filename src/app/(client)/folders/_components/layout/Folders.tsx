@@ -117,9 +117,11 @@ export default function Folders({ userId }: { userId: string }) {
         ) : folders.length === 0 ? (
           <EmptyFolders />
         ) : visibleFolders.length > 0 ? (
-          visibleFolders.map((folder) => (
+          <div className="grid gap-4">
+          {visibleFolders.map((folder) => (
             <FolderCard key={folder.id} folder={folder} />
-          ))
+          ))}
+          </div>
         ) : (
           <EmptyFilteredFolders />
         )}

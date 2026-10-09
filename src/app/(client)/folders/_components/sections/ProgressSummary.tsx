@@ -15,12 +15,10 @@ export default function ProgressSummary({
     description: string | null;
   };
   status: FolderStatus;
-  // AJOUTÉ - Un processId signifie que le diagnostic est terminé, même si le dossier reste PENDING.
   diagnosticComplete: boolean;
   setShowAnswers: (val: boolean) => void;
   showAnswers: boolean;
 }) {
-  // MODIFIÉ - Distingue la fin du diagnostic de la fin administrative du dossier.
   const isFinished = status === "ENDED" || status === "CLOSED";
 
   return (
@@ -36,7 +34,6 @@ export default function ProgressSummary({
         </p>
       </div>
 
-      {/* MODIFIÉ - Une dernière question répondue ne reste pas affichée comme question active. */}
       {currentQuestion && !isFinished && !diagnosticComplete ? (
         <div className="mt-4 rounded-sm border border-brand-green/20 bg-brand-green-soft/30 p-4">
           <p className="text-sm font-semibold text-brand-green-dark">

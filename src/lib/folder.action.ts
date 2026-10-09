@@ -47,7 +47,7 @@ export async function updateFolderStatus(data: {
   return await FolderServices.updateFolder(data);
 }
 
-// ! UPDATE FOlder Location
+// ! UPDATE FOlDER Location
 export async function updateFolderLocation(data: {
   id: string;
   userId: string;
@@ -61,7 +61,7 @@ export async function updateFolderLocation(data: {
   });
 }
 
-// ! UPDATE FOlder Location
+// ! UPDATE FOlDER Progression
 export async function updateFolderProgression(data: {
   id: string;
   userId: string;

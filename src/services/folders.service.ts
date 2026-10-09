@@ -172,7 +172,6 @@ export const FolderServices = {
                     administrativeUnits: {
                       include: {
                         location: true,
-                        // AJOUTÉ - Charge les localisations réellement couvertes par chaque unité.
                         areaServed: {
                           select: {
                             id: true,

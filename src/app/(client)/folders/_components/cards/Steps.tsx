@@ -13,7 +13,6 @@ import { FolderStatus } from "@/generated/prisma/enums";
 export function ProcesSteps({
   process,
   status,
-  // AJOUTÉ - Localisation sélectionnée lors du diagnostic; null signifie qu'aucune ville n'est connue.
   folderLocationId,
 }: {
   process?: {
@@ -45,7 +44,7 @@ export function ProcesSteps({
             {process.steps.map((step, index) => {
               const isCompleted = status === "ENDED" || status === "CLOSED";
               const isLast = index === process.steps.length - 1;
-              // AJOUTÉ - Résout l'unité qui couvre exactement la localisation du dossier.
+              
               const coveringUnit = folderLocationId
                 ? step.administrativeBody?.administrativeUnits.find((unit) =>
                     unit.areaServed.some(

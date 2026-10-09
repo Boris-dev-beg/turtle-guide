@@ -1,5 +1,6 @@
 import { CheckCircle2, Clock3 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { formatDate } from "../utils/functions/functions";
 
 export type DiagnosticAnswer = {
   id: string;
@@ -69,13 +70,7 @@ export function DiagnosticAnswers({
                       className="flex shrink-0 items-center gap-2 text-xs text-brand-ink-muted sm:pt-1 sm:text-sm"
                     >
                       <Clock3 className="size-4 shrink-0" aria-hidden="true" />
-                      {new Intl.DateTimeFormat("fr-FR", {
-                        day: "2-digit",
-                        month: "short",
-                        year: "numeric",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      }).format(answer.answeredAt)}
+                      {formatDate(answer.answeredAt)}
                     </time>
                   </div>
                 </li>

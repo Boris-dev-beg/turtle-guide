@@ -24,7 +24,6 @@ export const QuestionsSide = ({
 }) => {
   // ! states
   const router = useRouter();
-  // MODIFIÉ - Les réponses et l'état terminal sont écrits par une transaction serveur unique.
   const {
     question,
     isLoading,
@@ -35,7 +34,7 @@ export const QuestionsSide = ({
     submitAnswer,
     currentIndex,
     canGoBack,
-  } = useQuestions(userId);
+  } = useQuestions(userId, folderId);
 
   const [currentQuestion, setCurrentQuestion] =
     useState<CurrentQuestionType | null>(null);
@@ -75,7 +74,6 @@ export const QuestionsSide = ({
   }, [question]);
 
   // ? Go to the next Question in the tree
-  // MODIFIÉ - Attend la persistance avant d'avancer ou d'ouvrir le détail du dossier.
   const handleNextQuestion = async (option: {
     id: string;
     nextQuestionId: string | null;

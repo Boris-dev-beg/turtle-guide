@@ -7,8 +7,7 @@ import { useFolderStore } from "@/store/folder.store";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 
-// MODIFIÉ - Le userId sert à rafraîchir les caches de dossier après une réponse persistée.
-export function useQuestions(userId: string) {
+export function useQuestions(userId: string, folderId: string) {
   // ! State
   const { procedure, category } = useFolderStore();
   const [nextQuestionId, setNextQuestionId] = useState<string | null>(null);
@@ -24,11 +23,10 @@ export function useQuestions(userId: string) {
     error,
   } = useQuery({
     queryKey: ["questions", procedure],
-    queryFn: () => getFirstQuestion(procedure),
+    queryFn: () => getFirstQuestion(procedure, userId, folderId),
     enabled: !!procedure && !!category,
   });
 
-  // AJOUTÉ - Une réponse est une commande, pas une query déclenchée par un changement d'état.
   const submitAnswer = useMutation({
     mutationFn: submitDiagnosticAnswer,
     onSuccess: async (result, variables) => {

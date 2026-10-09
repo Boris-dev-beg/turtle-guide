@@ -2,15 +2,29 @@
 import { proceduresServices } from "@/services/procedure.service";
 import { questionServices } from "@/services/question.service";
 import { requireSession } from "@/lib/session";
+import { FolderServices } from "@/services/folders.service";
 
 // ! Get First Question
-export async function getFirstQuestion(procedureName: string) {
+export async function getFirstQuestion(
+  procedureName: string,
+  userId: string,
+  folderId: string,
+) {
   const procedure = await proceduresServices.getOne(procedureName);
+  const folder = await FolderServices.getOneFolder(folderId, userId);
 
   if (!procedure) {
     throw new Error("Procédure introuvable");
   }
+  if (!folder) {
+    throw new Error("Dossier introuvable");
+  }
 
+  const currentQuestionId = folder.progression?.currentQuestionId;
+
+  if (currentQuestionId)
+    return await questionServices.getOne(currentQuestionId);
+  
   return await questionServices.getFirst(procedure.id);
 }
 
@@ -27,9 +41,7 @@ export async function getAnswerOptions(questionId: string) {
   return answerOptions;
 }
 
-// MODIFIÉ - L'ancien endpoint saveAnswer est retiré pour empêcher les réponses sans progression.
-
-// AJOUTÉ - Soumet une réponse en utilisant l'identité de session côté serveur.
+// ! Submit Question with the ID of the user's session.
 export async function submitDiagnosticAnswer(data: {
   folderId: string;
   optionId: string;
