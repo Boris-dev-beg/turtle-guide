@@ -214,6 +214,9 @@ model Document {
   price        Decimal
   customizable Boolean @default(false)
   legalWarning String?
+  
+  contentUrl   String
+  sourceUrl    String?
 
   purchases DocumentPurchase[]
   steps     Step[]

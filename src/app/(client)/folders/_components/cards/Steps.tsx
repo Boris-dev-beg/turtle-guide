@@ -9,6 +9,7 @@ import {
 import { Step } from "../../types/types";
 import { CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FolderStatus } from "@/generated/prisma/enums";
+import Link from "next/link";
 
 export function ProcesSteps({
   process,
@@ -16,7 +17,9 @@ export function ProcesSteps({
   folderLocationId,
   diagnosticComplete,
   onResumeDiagnostic,
+  folderId
 }: {
+  folderId: string,
   process?: {
     id: string;
     title: string;
@@ -28,6 +31,12 @@ export function ProcesSteps({
   diagnosticComplete: boolean;
   onResumeDiagnostic: () => void;
 }) {
+  // ! States
+
+  // ! Functions
+
+  // ! Render
+  console.log("Documents:", process?.steps);
   return (
     <div>
       <CardHeader className="px-5 pb-4 pt-5 sm:px-6 sm:pt-6">
@@ -151,36 +160,28 @@ export function ProcesSteps({
 
                     {/* Step's Documents */}
 
-                    {step.documents.length > 0 && (
-                      <div className="mt-4">
-                        <p className="mb-2 text-sm font-semibold uppercase tracking-wide text-brand-ink-muted">
-                          Documents nécessaires
-                        </p>
-
-                        <div className="space-y-2">
-                          {step.documents.map((document) => (
-                            <div
-                              key={document.id}
-                              className="flex items-start gap-3 rounded-lg border border-brand-green/30 bg-brand-green-soft p-3"
-                            >
-                              <FileText className="mt-0.5 size-6 shrink-0 text-brand-green" />
-
-                              <div className="min-w-0 flex-1">
-                                <p className="text-base font-medium text-brand-ink">
-                                  {document.name}
-                                </p>
-
-                                {document.legalWarning && (
-                                  <p className="mt-1 text-sm leading-5 text-brand-ink-muted line-clamp-3">
-                                    {document.legalWarning}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                          ))}
+                    {step.documents.map((document) => (
+                      <Link
+                        key={document.id}
+                        href={`/documents/${document.id}?from=${encodeURIComponent(`/folders/${folderId}`)}`}
+                        className="flex items-start gap-3 rounded-lg border border-brand-green/30 bg-brand-green-soft p-3 transition-colors hover:border-brand-green"
+                      >
+                        <FileText className="mt-0.5 size-6 shrink-0 text-brand-green" />
+                        <div className="min-w-0 flex-1">
+                          <p className="text-base font-medium text-brand-ink">
+                            {document.name}
+                          </p>
+                          {document.legalWarning && (
+                            <p className="mt-1 line-clamp-3 text-sm leading-5 text-brand-ink-muted">
+                              {document.legalWarning}
+                            </p>
+                          )}
+                          <p className="mt-2 text-sm font-medium text-brand-green">
+                            Voir le document
+                          </p>
                         </div>
-                      </div>
-                    )}
+                      </Link>
+                    ))}
 
                     {/* Fraud Alets */}
 

@@ -226,6 +226,7 @@ export default function FolderDetailsPage({
         <div className="min-w-0 space-y-5">
           {/*  Steps */}
           <ProcesSteps
+          folderId={folder.id}
             process={folder.process}
             status={folder.status}
             folderLocationId={folder.locationId}

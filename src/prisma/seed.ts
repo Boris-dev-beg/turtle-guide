@@ -7,6 +7,17 @@ const adapter = new PrismaPg({
 
 const prisma = new PrismaClient({ adapter });
 
+
+// URL de base où sont hébergés les fichiers de contenu des documents (dossier documents/).
+// Exemple : Cloudinary (resource_type raw), Vercel Blob, S3, ou public/documents/ de votre app.
+const DOCUMENTS_BASE_URL = process.env.DOCUMENTS_BASE_URL ?? "";
+if (!DOCUMENTS_BASE_URL) {
+  throw new Error("DOCUMENTS_BASE_URL manquant : indiquez l'URL où sont hébergés les fichiers du dossier documents/.");
+}
+function docUrl(slug: string) {
+  return `${DOCUMENTS_BASE_URL.replace(/\/$/, "")}/${slug}.md`;
+}
+
 function img(seed: string) {
   return `https://picsum.photos/seed/turtleguide-${seed}/900/600`;
 }
@@ -912,6 +923,8 @@ async function main() {
   const birthDeclarationForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration de naissance pré-remplie",
+      contentUrl: docUrl("fiche-declaration-naissance"),
+      sourceUrl: "https://jobandpartners.com/wp-content/uploads/2025/02/NOTE-SUR-LA-LOI-N%C2%B0-2024_016-DU-23-DECEMBRE-2024-PORTANT-ORGANISATION-DU-SYSTEME-DENREGISTREMENT-DES-FAITS-DETAT-CIVIL-AU-CAMEROUN.pdf",
       price: 500,
       customizable: true,
       legalWarning:
@@ -921,6 +934,8 @@ async function main() {
   const requisitionRequestForm = await prisma.document.create({
     data: {
       name: "Modèle de demande de réquisition au Procureur de la République",
+      contentUrl: docUrl("requisition-procureur"),
+      sourceUrl: "https://jobandpartners.com/wp-content/uploads/2025/02/NOTE-SUR-LA-LOI-N%C2%B0-2024_016-DU-23-DECEMBRE-2024-PORTANT-ORGANISATION-DU-SYSTEME-DENREGISTREMENT-DES-FAITS-DETAT-CIVIL-AU-CAMEROUN.pdf",
       price: 1500,
       customizable: true,
       legalWarning:
@@ -930,6 +945,8 @@ async function main() {
   const suppletiveRequestForm = await prisma.document.create({
     data: {
       name: "Modèle de requête en jugement supplétif d'acte de naissance",
+      contentUrl: docUrl("requete-jugement-suppletif-naissance"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 2000,
       customizable: true,
       legalWarning:
@@ -939,6 +956,8 @@ async function main() {
   const birthCopyRequestForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de copie d'acte de naissance",
+      contentUrl: docUrl("demande-copie-acte-naissance"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 500,
       customizable: true,
       legalWarning: "Des frais de timbre restent dus directement à la mairie.",
@@ -947,6 +966,8 @@ async function main() {
   const rectificationRequestForm = await prisma.document.create({
     data: {
       name: "Modèle de requête en rectification d'acte de naissance",
+      contentUrl: docUrl("requete-rectification-naissance"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 2000,
       customizable: true,
       legalWarning: "Ne remplace pas une assistance juridique.",
@@ -1214,6 +1235,8 @@ async function main() {
   const marriageFileForm = await prisma.document.create({
     data: {
       name: "Fiche de constitution du dossier de mariage",
+      contentUrl: docUrl("dossier-mariage"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 1000,
       customizable: true,
       legalWarning: "Ne remplace aucune pièce officielle.",
@@ -1222,6 +1245,8 @@ async function main() {
   const marriageCopyForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de copie d'acte de mariage",
+      contentUrl: docUrl("demande-copie-acte-mariage"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 500,
       customizable: true,
     },
@@ -1329,6 +1354,8 @@ async function main() {
   const deathDeclarationForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration de décès pré-remplie",
+      contentUrl: docUrl("fiche-declaration-deces"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 500,
       customizable: true,
       legalWarning:
@@ -1338,6 +1365,8 @@ async function main() {
   const deathCopyForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de copie d'acte de décès",
+      contentUrl: docUrl("demande-copie-acte-deces"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 500,
       customizable: true,
     },
@@ -1436,6 +1465,8 @@ async function main() {
   const recognitionDeclarationForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration de reconnaissance (devant l'officier d'état civil)",
+      contentUrl: docUrl("declaration-reconnaissance-enfant"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 500,
       customizable: true,
     },
@@ -1443,6 +1474,8 @@ async function main() {
   const recognitionRequestForm = await prisma.document.create({
     data: {
       name: "Modèle de requête en reconnaissance judiciaire",
+      contentUrl: docUrl("requete-reconnaissance-judiciaire"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 2000,
       customizable: true,
       legalWarning:
@@ -1553,6 +1586,8 @@ async function main() {
   const transcriptionForm = await prisma.document.create({
     data: {
       name: "Fiche de demande de transcription d'acte",
+      contentUrl: docUrl("demande-transcription-acte-etranger"),
+      sourceUrl: "https://www.cvuc-uccc.com/minat/textes/34.pdf",
       price: 1000,
       customizable: true,
       legalWarning:
@@ -1656,6 +1691,8 @@ async function main() {
   const preEnrollmentForm = await prisma.document.create({
     data: {
       name: "Fiche de pré-enrôlement CNI pré-remplie",
+      contentUrl: docUrl("fiche-preenrolement-cni"),
+      sourceUrl: "https://www.dgsn.cm",
       price: 500,
       customizable: true,
       legalWarning:
@@ -1842,6 +1879,8 @@ async function main() {
   const passportPreEnrollForm = await prisma.document.create({
     data: {
       name: "Fiche de pré-enrôlement passeport pré-remplie",
+      contentUrl: docUrl("fiche-preenrolement-passeport"),
+      sourceUrl: "https://www.passcam.cm",
       price: 500,
       customizable: true,
       legalWarning:
@@ -1934,6 +1973,7 @@ async function main() {
   const pciForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de Permis de Conduire International",
+      contentUrl: docUrl("demande-pci"),
       price: 500,
       customizable: true,
     },
@@ -2015,6 +2055,8 @@ async function main() {
   const niuForm = await prisma.document.create({
     data: {
       name: "Fiche d'immatriculation NIU pré-remplie",
+      contentUrl: docUrl("fiche-immatriculation-niu"),
+      sourceUrl: "https://teledeclaration-dgi.cm",
       price: 500,
       customizable: true,
       legalWarning:
@@ -2098,6 +2140,7 @@ async function main() {
   const nationalityForm = await prisma.document.create({
     data: {
       name: "Modèle de demande manuscrite de certificat de nationalité",
+      contentUrl: docUrl("demande-certificat-nationalite"),
       price: 1000,
       customizable: true,
     },
@@ -2181,6 +2224,7 @@ async function main() {
   const residenceForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande d'attestation de résidence",
+      contentUrl: docUrl("demande-attestation-residence"),
       price: 500,
       customizable: true,
       legalWarning: "Ne dispense pas du visa usuel du chef de quartier.",
@@ -2251,6 +2295,7 @@ async function main() {
   const hostingForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de certificat d'hébergement",
+      contentUrl: docUrl("demande-certificat-hebergement"),
       price: 500,
       customizable: true,
     },
@@ -2324,6 +2369,8 @@ async function main() {
   const buildingPermitForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de permis de bâtir",
+      contentUrl: docUrl("demande-permis-batir"),
+      sourceUrl: "https://www.minhdu.gov.cm/wp-content/uploads/2023/08/loi-no-2004-003-du-21-04-2004-regissant-l-urbanisme-au-Cameroun.pdf",
       price: 1500,
       customizable: true,
       legalWarning:
@@ -2403,6 +2450,8 @@ async function main() {
   const urbanismCertForm = await prisma.document.create({
     data: {
       name: "Formulaire de demande de certificat d'urbanisme",
+      contentUrl: docUrl("demande-certificat-urbanisme"),
+      sourceUrl: "https://www.minhdu.gov.cm/wp-content/uploads/2023/08/loi-no-2004-003-du-21-04-2004-regissant-l-urbanisme-au-Cameroun.pdf",
       price: 1000,
       customizable: true,
     },
@@ -2464,6 +2513,8 @@ async function main() {
   const patenteForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration d'activité commerciale",
+      contentUrl: docUrl("declaration-activite-patente"),
+      sourceUrl: "https://teledeclaration-dgi.cm",
       price: 1000,
       customizable: true,
     },
@@ -2519,11 +2570,57 @@ async function main() {
 
   const MINESUP_SOURCE =
     "Formulaire officiel MINESUP (DCAA) — https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf";
-  const academicForm = await prisma.document.create({
+  const minesupCertReleveForm = await prisma.document.create({
     data: {
-      name: "Formulaire de demande MINESUP pré-rempli",
+      name: "Dossier MINESUP — certification d'un relevé de notes",
       price: 1000,
       customizable: true,
+      contentUrl: docUrl("minesup-certification-releve"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
+      legalWarning:
+        "Le formulaire officiel (DCAA) reste à faire valider par le MINESUP ou l'établissement concerné.",
+    },
+  });
+  const minesupCertDiplomeForm = await prisma.document.create({
+    data: {
+      name: "Dossier MINESUP — certification d'un diplôme",
+      price: 1000,
+      customizable: true,
+      contentUrl: docUrl("minesup-certification-diplome"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
+      legalWarning:
+        "Le formulaire officiel (DCAA) reste à faire valider par le MINESUP ou l'établissement concerné.",
+    },
+  });
+  const minesupDuplicataForm = await prisma.document.create({
+    data: {
+      name: "Dossier MINESUP — duplicata d'un diplôme ou relevé",
+      price: 1000,
+      customizable: true,
+      contentUrl: docUrl("minesup-duplicata"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
+      legalWarning:
+        "Le formulaire officiel (DCAA) reste à faire valider par le MINESUP ou l'établissement concerné.",
+    },
+  });
+  const minesupCorrectionForm = await prisma.document.create({
+    data: {
+      name: "Dossier MINESUP — correction d'un diplôme ou relevé",
+      price: 1000,
+      customizable: true,
+      contentUrl: docUrl("minesup-correction"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
+      legalWarning:
+        "Le formulaire officiel (DCAA) reste à faire valider par le MINESUP ou l'établissement concerné.",
+    },
+  });
+  const minesupNonDelivranceForm = await prisma.document.create({
+    data: {
+      name: "Dossier MINESUP — attestation de réussite (diplôme non édité)",
+      price: 1000,
+      customizable: true,
+      contentUrl: docUrl("minesup-attestation-non-delivrance"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
       legalWarning:
         "Le formulaire officiel (DCAA) reste à faire valider par le MINESUP ou l'établissement concerné.",
     },
@@ -2531,6 +2628,8 @@ async function main() {
   const lossDeclarationForm = await prisma.document.create({
     data: {
       name: "Déclaration de perte pré-remplie (pour duplicata)",
+      contentUrl: docUrl("declaration-perte-diplome"),
+      sourceUrl: "https://www.minesup.gov.cm/site/DCAA/Formulaire%20de%20demande%20DCAA.pdf",
       price: 500,
       customizable: true,
     },
@@ -2583,7 +2682,7 @@ async function main() {
       description: "",
       title: "Réunir la photocopie certifiée conforme du relevé et de la CNI",
       processId: transcriptCertProcess.id,
-      documents: { connect: [{ id: academicForm.id }] },
+      documents: { connect: [{ id: minesupCertReleveForm.id }] },
     },
   });
   await prisma.step.create({
@@ -2643,7 +2742,7 @@ async function main() {
       description: "",
       title: "Réunir la photocopie certifiée conforme du diplôme et de la CNI",
       processId: diplomaCertProcess.id,
-      documents: { connect: [{ id: academicForm.id }] },
+      documents: { connect: [{ id: minesupCertDiplomeForm.id }] },
     },
   });
   await prisma.step.create({
@@ -2714,7 +2813,7 @@ async function main() {
       title: "Déposer la demande de duplicata au MINESUP",
       processId: duplicateProcess.id,
       administrativeBodyId: minesup.id,
-      documents: { connect: [{ id: academicForm.id }] },
+      documents: { connect: [{ id: minesupDuplicataForm.id }] },
     },
   });
   console.log("✅ 4.3 Duplicata");
@@ -2766,7 +2865,7 @@ async function main() {
       description: "",
       title: "Joindre l'original du document à corriger et préciser l'erreur",
       processId: correctionProcess.id,
-      documents: { connect: [{ id: academicForm.id }] },
+      documents: { connect: [{ id: minesupCorrectionForm.id }] },
     },
   });
   await prisma.step.create({
@@ -2828,7 +2927,7 @@ async function main() {
       title: "Déposer la demande d'attestation de réussite",
       processId: successCertProcess.id,
       administrativeBodyId: minesup.id,
-      documents: { connect: [{ id: academicForm.id }] },
+      documents: { connect: [{ id: minesupNonDelivranceForm.id }] },
     },
   });
   console.log("✅ 4.5 Attestation de réussite — Académique complète");
@@ -2859,6 +2958,7 @@ async function main() {
   const criminalRecordForm = await prisma.document.create({
     data: {
       name: "Demande timbrée d'extrait de casier judiciaire pré-remplie",
+      contentUrl: docUrl("demande-casier-judiciaire"),
       price: 500,
       customizable: true,
     },
@@ -2937,6 +3037,7 @@ async function main() {
   const legalizationForm = await prisma.document.create({
     data: {
       name: "Fiche récapitulative des documents à légaliser",
+      contentUrl: docUrl("recap-legalisation"),
       price: 500,
       customizable: true,
       legalWarning:
@@ -3007,6 +3108,7 @@ async function main() {
   const celibacyForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration de célibat pré-remplie",
+      contentUrl: docUrl("declaration-celibat"),
       price: 500,
       customizable: true,
     },
@@ -3075,6 +3177,8 @@ async function main() {
   const associationForm = await prisma.document.create({
     data: {
       name: "Modèle de lettre de déclaration et de statuts d'association",
+      contentUrl: docUrl("statuts-association"),
+      sourceUrl: "https://app.maathis.com/droit/cameroun/loi/90-053-loi-n-90053-19-decembre-1990-relative-liberte-dassociation",
       price: 2000,
       customizable: true,
       legalWarning:
@@ -3157,6 +3261,7 @@ async function main() {
   const lossForm = await prisma.document.create({
     data: {
       name: "Fiche de déclaration de perte ou de vol pré-remplie",
+      contentUrl: docUrl("declaration-perte-document"),
       price: 500,
       customizable: true,
     },
