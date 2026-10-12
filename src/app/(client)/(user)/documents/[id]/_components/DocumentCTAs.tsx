@@ -1,8 +1,8 @@
 "use client";
 
+import { startDocumentPurchase } from "@/lib/documents";
 import Link from "next/link";
 import { useTransition } from "react";
-import { startDocumentPurchase } from "../actions";
 
 export function DocumentCTAs({
   documentId,
