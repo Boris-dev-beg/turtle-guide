@@ -11,7 +11,7 @@
 }
 
 @theme inline {
-  --font-body: "Inter";
+  --font-body: "Poppins";
   --font-display: "Fraunces", Georgia, serif;
 
   --color-background: var(--background);

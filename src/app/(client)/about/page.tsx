@@ -62,7 +62,7 @@ const resources = [
 export default function AboutPage() {
   return (
     <main className="w-full">
-      <section className="relative isolate flex min-h-[22rem] items-end overflow-hidden bg-brand-ink sm:min-h-[26rem] lg:min-h-[29rem]">
+      <section className="relative isolate flex min-h-88 items-end overflow-hidden bg-brand-ink sm:min-h-104 lg:min-h-116">
         <Image
           src={cityImage}
           alt="Carrefour urbain animé avec taxis et bâtiments"
