@@ -7,9 +7,14 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { Back } from "@/components/shared/links";
 import { findPurchase } from "@/lib/documents";
-import { DOCS_DIR, highlightFields, parseDocFile } from "./_components/Constantes/Globalconsts";
+import {
+  DOCS_DIR,
+  highlightFields,
+  parseDocFile,
+} from "./_components/Constantes/Globalconsts";
 import DocumentHeader from "./_components/Cards/DocumentHeader";
-
+import { Button } from "@/components/ui/button";
+import { RotateCw } from "lucide-react";
 
 export default async function DocumentPage({
   params,
@@ -43,13 +48,20 @@ export default async function DocumentPage({
   const backHref =
     from?.startsWith("/") && !from.startsWith("//") ? from : "/folders";
 
+  const handleRefresh = () => window.location.reload();
+
   return (
     <main className="mx-auto max-w-5xl px-4 py-6">
       <Back href={backHref} />
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
         {/* HEADER */}
-        <DocumentHeader content={content} doc={doc} session={session} alreadyPurchased={alreadyPurchased} />
+        <DocumentHeader
+          content={content}
+          doc={doc}
+          session={session}
+          alreadyPurchased={alreadyPurchased}
+        />
 
         {/* BODY */}
         <article className="prose prose-neutral max-w-2xl min-w-0.5 border-2 p-2 border-border">
@@ -58,10 +70,20 @@ export default async function DocumentPage({
               {highlightFields(content.markdown)}
             </ReactMarkdown>
           ) : (
-            <p>
-              Le contenu de ce document n&apos;est pas disponible pour le
-              moment.
-            </p>
+            <>
+              <p>
+                Le contenu de ce document n&apos;est pas disponible pour le
+                moment.
+              </p>
+              <Button
+                className="flex items-center gap-4"
+                variant="secondary"
+                onClick={handleRefresh}
+              >
+                Ressayer
+                <RotateCw />
+              </Button>
+            </>
           )}
         </article>
       </div>
