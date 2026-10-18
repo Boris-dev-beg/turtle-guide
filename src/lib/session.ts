@@ -8,12 +8,11 @@ export async function getSession() {
   }); 
 } 
 
-export async function requireSession() { 
+export async function requireSession(uriComponent?: string) { 
   const session = await getSession(); 
 
-  // console.log("Session:", session); 
   if (!session?.user) { 
-    redirect("/login"); 
+    redirect(`/login?callbackUrl=${encodeURIComponent(uriComponent || window.location.href)}`); 
   } 
 
   return session; 

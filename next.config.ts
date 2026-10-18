@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
         hostname: 'graph.facebook.com', // Facebook (other URL variante) 
         pathname: '/**', 
       }, 
+      { 
+        protocol: 'https', 
+        hostname: 'picsum.photos',
+        pathname: '/**', 
+      }
     ], 
   }, 
   reactCompiler: true, 

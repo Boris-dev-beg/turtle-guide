@@ -1,56 +1,55 @@
-import { Card, CardDescription, CardTitle } from "@/components/ui/card"; 
-import { HowDoesItWork_infos } from "@/data/GlobalData"; 
-import { AlertTriangle } from "lucide-react"; 
 
-export default function HowDoesItWork() { 
-  return ( 
-    <section className="wrapper flex flex-col gap-4 relative"> 
-      <h2 className="text-2xl font-bold uppercase tracking-wider text-brand-green-text"> 
-        {HowDoesItWork_infos.title} 
-      </h2> 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"> 
-        {HowDoesItWork_infos.element.map((elt, index) => ( 
-          <Card_ 
-            key={index} 
-            id={elt.id} 
-            title={elt.title} 
-            description={elt.description} 
-          /> 
-        ))} 
-      </div> 
-      <div className="turtle-alert-info border-0 rounded-none bg-orange-100 max-md:*:flex-col *:items-center flex gap-2 justify-center"> 
-        <span className="flex flex-col items-center gap-2.5"> 
-          <AlertTriangle className="size-10 text-orange-400" /> 
-          <span className="flex flex-col items-center max-md:*:text-center"> 
-            <h3 className="font-semibold text-[20px]"> 
-              {HowDoesItWork_infos.alert.title} 
-            </h3> 
-            <p>{HowDoesItWork_infos.alert.description}</p> 
-          </span> 
-        </span> 
-      </div> 
-    </section> 
-  ); 
-} 
+import { HowDoesItWork_infos } from "@/data/GlobalData";
+import { AlertTriangle, ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { Card_ } from "./cards/HowDoesItWork.card";
 
-const Card_ = ({ 
-  title, 
-  description, 
-  id, 
-}: { 
-  title: string; 
-  description: string; 
-  id: number; 
-}) => { 
-  return ( 
-    <Card className="flex flex-row items-start gap-3 px-4"> 
-      <span className="py-2 px-3 bg-brand-green-text rounded-full text-primary-foreground text-xl font-black"> 
-        0{id} 
-      </span> 
-      <span className="flex flex-col"> 
-        <CardTitle className="font-bold text-[20px]">{title}</CardTitle> 
-        <CardDescription className="text-base">{description}</CardDescription> 
-      </span> 
-    </Card> 
-  ); 
-}; 
+export default function HowDoesItWork() {
+  return (
+    <section className="wrapper relative space-y-6 py-6">
+      <div className="space-y-2">
+        <h2 className="font-display text-3xl text-brand-ink sm:text-4xl">
+          {HowDoesItWork_infos.title}
+        </h2>
+        <p className="max-w-xl text-base leading-7 text-brand-ink-muted">
+          {HowDoesItWork_infos.subtitle}
+        </p>
+      </div>
+
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {HowDoesItWork_infos.element.map((elt) => (
+          <Card_
+            key={elt.id}
+            id={elt.id}
+            title={elt.title}
+            description={elt.description}
+          />
+        ))}
+      </div>
+
+      <div className="flex flex-col md:flex-row items-start justify-start gap-4 rounded-sm border border-brand-yellow/30 bg-brand-yellow-bg p-5">
+        <AlertTriangle className="size-8 shrink-0 text-brand-yellow" />
+
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between md:gap-6">
+          <div className="space-y-1">
+            <h3 className="font-display text-[1.4rem] leading-tight text-brand-yellow">
+              {HowDoesItWork_infos.alert.title}
+            </h3>
+            <p className="max-w-2xl text-sm leading-6 text-brand-ink-muted md:text-base">
+              {HowDoesItWork_infos.alert.description}
+            </p>
+          </div>
+
+          <Link
+            href=""
+            className="inline-flex items-center gap-1 text-sm font-medium text-brand-yellow transition-colors hover:underline text-nowrap"
+          >
+            En savoir plus
+            <ArrowRight className="size-4" />
+          </Link>
+        </div>
+      </div>
+    </section>
+  );
+}
+

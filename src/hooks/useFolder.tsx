@@ -1,20 +1,153 @@
-import { updateFolderStatus } from "@/lib/folder.action"; 
-import { useMutation } from "@tanstack/react-query"; 
+"use client";
+import {
+  createOrGetFolderAction,
+  deleteFolder,
+  getFolder,
+  getFolders,
+  restartFolderDiagnostic,
+  updateFolderLocation,
+  updateFolderStatus,
+} from "@/lib/folder.action";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-export function useFolder() { 
+export function useFolder(userId: string, id?: string) {
+  const queryClient = useQueryClient();
+  const folderId = id ?? "";
 
-  const updateStatus = useMutation({ 
-    mutationFn: async (data: { 
-      id: string; 
-      userId: string; 
-      processId: string; 
-      status: "CREATED" | "PENDING" | "CLOSED" | "ENDED"; 
-    }) => { 
-      return await updateFolderStatus(data); 
-    }, 
-  }); 
+  // ! Get user folders
+  const {
+    data: folders,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["folders", userId],
+    queryFn: async () => await getFolders(userId),
+    enabled: !!userId,
+  });
 
-  return { 
-    updateStatus, 
-  }; 
-} 
+  // ! Get One folder
+  const {
+    data: folder,
+    isLoading: folderIsLoading,
+    isError: folderIsError,
+    error: folderError,
+    refetch: folderRefetch,
+  } = useQuery({
+    queryKey: ["folder", userId, folderId],
+    queryFn: async () => await getFolder(folderId, userId),
+    enabled: !!userId && !!folderId,
+  });
+
+  // ! Create or get folder once for the current diagnostic selection
+  function useCreateOrGetFolder(data: {
+    procedureName?: string;
+    category?: string;
+  }) {
+    return useMutation({
+      mutationFn: async () => {
+        if (!userId || !data.procedureName || !data.category) {
+          throw new Error("Sélection de diagnostic incomplète");
+        }
+
+        return await createOrGetFolderAction({
+          procedureName: data.procedureName!,
+          userId,
+          category: data.category!,
+        });
+      },
+    });
+  }
+
+  // ! Update folder's status
+  const updateStatus = useMutation({
+    mutationFn: async (data: {
+      id: string;
+      userId: string;
+      processId: string;
+      status: "CREATED" | "PENDING" | "CLOSED" | "ENDED";
+    }) => {
+      return await updateFolderStatus(data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+    },
+  });
+
+  // ! Update folder location
+  const updateLocation = useMutation({
+    mutationFn: async (data: {
+      id: string;
+      userId: string;
+      locationName: string;
+    }) => {
+      return await updateFolderLocation(data);
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+    },
+  });
+
+  // AJOUTÉ - Réinitialise le diagnostic du dossier et rafraîchit les vues concernées.
+  const restartDiagnostic = useMutation({
+    mutationFn: restartFolderDiagnostic,
+    onSuccess: async (_, resetFolderId) => {
+      await Promise.all([
+        queryClient.invalidateQueries({
+          queryKey: ["folder", userId, resetFolderId],
+        }),
+        queryClient.invalidateQueries({ queryKey: ["folders", userId] }),
+      ]);
+    },
+  });
+
+  // ! Delete folder
+  const delFolder = useMutation({
+    mutationFn: async (data: { userId: string; id: string }) => {
+      return await deleteFolder(data.id, data.userId);
+    },
+    onSuccess: (_, variables) => {
+      // ? Imediatly remove it in the cache
+      queryClient.removeQueries({
+        queryKey: ["folder", userId, variables.id],
+      });
+
+      // ? Invalidate the list of folders
+      queryClient.invalidateQueries({
+        queryKey: ["folders", userId],
+      });
+    },
+  });
+
+  return {
+    folders,
+    folder,
+
+    isLoading,
+    isError,
+    refetch,
+    folderIsLoading,
+    folderIsError,
+    folderError,
+    folderRefetch,
+
+    useCreateOrGetFolder, // nouveau
+
+    updateStatus,
+    updateLocation,
+    restartDiagnostic,
+    delFolder,
+  };
+}

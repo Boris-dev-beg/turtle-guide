@@ -1,38 +1,55 @@
-"use server"; 
-import { proceduresServices } from "@/services/procedure.service"; 
-import { questionServices } from "@/services/question.service"; 
+"use server";
+import { proceduresServices } from "@/services/procedure.service";
+import { questionServices } from "@/services/question.service";
+import { requireSession } from "@/lib/session";
+import { FolderServices } from "@/services/folders.service";
 
-// ! Get First Question 
-export async function getFirstQuestion(procedureName: string) { 
-  const procedure = await proceduresServices.getOne(procedureName); 
+// ! Get First Question
+export async function getFirstQuestion(
+  procedureName: string,
+  userId: string,
+  folderId: string,
+) {
+  const procedure = await proceduresServices.getOne(procedureName);
+  const folder = await FolderServices.getOneFolder(folderId, userId);
 
-  if (!procedure) { 
-    throw new Error("Procédure introuvable"); 
-  } 
+  if (!procedure) {
+    throw new Error("Procédure introuvable");
+  }
+  if (!folder) {
+    throw new Error("Dossier introuvable");
+  }
 
-  return await questionServices.getFirst(procedure.id); 
-} 
+  const currentQuestionId = folder.progression?.currentQuestionId;
 
-// ! Get Next Question 
-export async function getNextQuestion(questionId: string) { 
-  return await questionServices.getOne(questionId); 
-} 
+  if (currentQuestionId)
+    return await questionServices.getOne(currentQuestionId);
+  
+  return await questionServices.getFirst(procedure.id);
+}
 
-// ! Get Answer Options 
-export async function getAnswerOptions(questionId: string) { 
-  const answerOptions = await questionServices.getAllAnswerOptions(questionId); 
+// ! Get Next Question
+export async function getNextQuestion(questionId: string) {
+  return await questionServices.getOne(questionId);
+}
 
-  console.log("AnswerOptions:", answerOptions); 
-  return answerOptions; 
-} 
+// ! Get Answer Options
+export async function getAnswerOptions(questionId: string) {
+  const answerOptions = await questionServices.getAllAnswerOptions(questionId);
 
-// ! Create Answer 
-export async function saveAnswer(data: { folderId: string; optionId: string }) { 
-  const answerExist = await questionServices.getAnswer(data); 
+  console.log("AnswerOptions:", answerOptions);
+  return answerOptions;
+}
 
-  if (answerExist) { 
-    return answerExist; 
-  } 
+// ! Submit Question with the ID of the user's session.
+export async function submitDiagnosticAnswer(data: {
+  folderId: string;
+  optionId: string;
+}) {
+  const session = await requireSession();
 
-  return await questionServices.saveAnswer(data); 
-} 
+  return await questionServices.submitDiagnosticAnswer({
+    ...data,
+    userId: session.user.id,
+  });
+}
