@@ -1,20 +1,11 @@
 import { notFound } from "next/navigation";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
+import Link from "next/link";
+import { ExternalLink } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { DocumentCTAs } from "./_components/DocumentCTAs";
 import { getSession } from "@/lib/session";
-import { Back } from "@/components/shared/links";
 import { findPurchase } from "@/lib/documents";
-import {
-  DOCS_DIR,
-  highlightFields,
-  parseDocFile,
-} from "./_components/Constantes/Globalconsts";
-import DocumentHeader from "./_components/Cards/DocumentHeader";
-import { Button } from "@/components/ui/button";
-import { RotateCw } from "lucide-react";
+import { formtaPrice } from "./_components/Constantes/Globalconsts";
 
 export default async function DocumentPage({
   params,
@@ -29,17 +20,6 @@ export default async function DocumentPage({
   const doc = await prisma.document.findUnique({ where: { id } });
   if (!doc) notFound();
 
-  let content: { statut: string | null; markdown: string } | null = null;
-  try {
-    const raw = await readFile(
-      path.join(DOCS_DIR, path.basename(doc.contentUrl)),
-      "utf8",
-    );
-    content = parseDocFile(raw);
-  } catch {
-    content = null;
-  }
-
   const session = await getSession();
   const alreadyPurchased = session
     ? !!(await findPurchase(session.user.id, doc.id))
@@ -48,44 +28,64 @@ export default async function DocumentPage({
   const backHref =
     from?.startsWith("/") && !from.startsWith("//") ? from : "/folders";
 
-  const handleRefresh = () => window.location.reload();
+  // contentUrl = /documents/<slug>.pdf (servi depuis public/)
+  const pdfSrc = `${doc.contentUrl}#toolbar=0&navpanes=0&view=FitH`;
 
   return (
-    <main className="mx-auto max-w-5xl px-4 py-6">
-      <Back href={backHref} />
+    <main className="mx-auto max-w-6xl px-4 py-6">
+      <Link
+        href={backHref}
+        className="text-sm font-medium text-brand-green underline"
+      >
+        Retour à mon dossier
+      </Link>
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
-        {/* HEADER */}
-        <DocumentHeader
-          content={content}
-          doc={doc}
-          session={session}
-          alreadyPurchased={alreadyPurchased}
-        />
+        <aside className="order-first lg:order-last">
+          <div className="rounded-lg border border-border bg-card p-4 lg:sticky lg:top-24">
+            <p className="text-base font-semibold text-brand-ink">{doc.name}</p>
+            <p className="mt-3 text-2xl font-semibold text-brand-ink">
+              {formtaPrice(Number(doc.price))}
+            </p>
 
-        {/* BODY */}
-        <article className="prose prose-neutral max-w-2xl min-w-0.5 border-2 p-2 border-border">
-          {content ? (
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {highlightFields(content.markdown)}
-            </ReactMarkdown>
-          ) : (
-            <>
-              <p>
-                Le contenu de ce document n&apos;est pas disponible pour le
-                moment.
+            <DocumentCTAs
+              documentId={doc.id}
+              isAuthenticated={!!session}
+              alreadyPurchased={alreadyPurchased}
+            />
+
+            {doc.legalWarning && (
+              <p className="mt-3 text-sm leading-5 text-brand-ink-muted">
+                {doc.legalWarning}
               </p>
-              <Button
-                className="flex items-center gap-4"
-                variant="secondary"
-                onClick={handleRefresh}
-              >
-                Ressayer
-                <RotateCw />
-              </Button>
-            </>
-          )}
-        </article>
+            )}
+          </div>
+        </aside>
+
+        <section aria-label={`Aperçu de ${doc.name}`}>
+          {/* Desktop */}
+          <iframe
+            src={pdfSrc}
+            title={`Aperçu du document : ${doc.name}`}
+            className="hidden h-[80vh] w-full rounded-lg border border-border bg-white md:block"
+          />
+
+          {/* Mobile */}
+          <div className="rounded-lg border border-border bg-card p-4 md:hidden">
+            <p className="text-base text-brand-ink">
+              Ouvrez l&apos;aperçu pour lire le contenu complet de ce document.
+            </p>
+            <a
+              href={doc.contentUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-md border border-brand-green font-medium text-brand-green"
+            >
+              <ExternalLink className="size-4" />
+              Ouvrir l&apos;aperçu PDF
+            </a>
+          </div>
+        </section>
       </div>
     </main>
   );

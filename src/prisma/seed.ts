@@ -15,7 +15,7 @@ if (!DOCUMENTS_BASE_URL) {
   throw new Error("DOCUMENTS_BASE_URL manquant : indiquez l'URL où sont hébergés les fichiers du dossier documents/.");
 }
 function docUrl(slug: string) {
-  return `${DOCUMENTS_BASE_URL.replace(/\/$/, "")}/${slug}.md`;
+  return `${DOCUMENTS_BASE_URL.replace(/\/$/, "")}/${slug}.pdf`;
 }
 
 function img(seed: string) {
