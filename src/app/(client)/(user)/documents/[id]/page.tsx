@@ -49,7 +49,7 @@ export default async function DocumentPage({
             </p>
 
             <DocumentCTAs
-              documentId={doc.id}
+              document={doc}
               isAuthenticated={!!session}
               alreadyPurchased={alreadyPurchased}
             />
