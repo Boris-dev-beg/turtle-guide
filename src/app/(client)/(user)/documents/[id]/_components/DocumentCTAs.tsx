@@ -3,7 +3,7 @@
 import { Document } from "@/generated/prisma/client";
 import { startDocumentPurchase } from "@/lib/documents";
 import Link from "next/link";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 
 export function DocumentCTAs({
   document,
@@ -15,6 +15,8 @@ export function DocumentCTAs({
   alreadyPurchased: boolean;
 }) {
   const [pending, startTransition] = useTransition();
+  const [paymentMethod, setPaymentMethod] = useState("stripe");
+  const [showChoices, setShowchoices] = useState(false);
 
   if (alreadyPurchased) {
     return (
@@ -37,25 +39,88 @@ export function DocumentCTAs({
 
   return (
     <>
-      <div className="absolute bg-accent top-17 right-1 left-1 bottom-17 flex items-center justify-center flex-col gap-4">
-        <h1>Acheter ce Document:</h1>
-        <p>{document.name}</p>
+      {showChoices && (
+        <div className="fixed bg-secondary/95 flex items-center justify-center flex-col gap-4 z-50 inset-25">
+          <h1>Acheter ce Document:</h1>
+          <p>{document.name}</p>
 
-        <div>
-          <span className={`turtle-radio justify-start gap-3 items-start hover:border-primary/30 hover:bg-accent/40`}>
-            <b className="turtle-radio"></b>
-            <p>Stripe</p>
-          </span>
+          <div className="flex gap-10">
+            <MethodButton
+              label="Stripe"
+              isSelected={paymentMethod}
+              setIsSelected={setPaymentMethod}
+              start={() =>
+                startTransition(() => startDocumentPurchase(document.id))
+              }
+              pending={pending}
+              setShowChoices={setShowchoices}
+            />
+            <MethodButton
+              label="Mobile Money"
+              isSelected={paymentMethod}
+              setIsSelected={setPaymentMethod}
+              start={() =>
+                startTransition(() => startDocumentPurchase(document.id))
+              }
+              pending={pending}
+              setShowChoices={setShowchoices}
+            />
+            <MethodButton
+              label="MTN Momo"
+              isSelected={paymentMethod}
+              setIsSelected={setPaymentMethod}
+              start={() =>
+                startTransition(() => startDocumentPurchase(document.id))
+              }
+              pending={pending}
+              setShowChoices={setShowchoices}
+            />
+          </div>
         </div>
-      </div>
+      )}
       <button
-        type="button"
-        disabled={pending}
-        onClick={() => startTransition(() => startDocumentPurchase(document.id))}
+        onClick={() => setShowchoices(true)}
         className="mt-4 h-12 w-full rounded-md bg-brand-green font-medium text-white disabled:opacity-60"
       >
-        {pending ? "Redirection…" : "Acheter ce document"}
+        Acheter ce document
       </button>
     </>
   );
 }
+
+const MethodButton = ({
+  label,
+  isSelected,
+  setIsSelected,
+  start,
+  pending,
+  setShowChoices,
+}: {
+  label: string;
+  isSelected: string;
+  setIsSelected: (val: string) => void;
+  start: () => void;
+  pending: boolean;
+  setShowChoices: (val: boolean) => void;
+}) => {
+  const handleClick = (label: string) => {
+    setIsSelected(label);
+
+    setTimeout(() => {
+      start();
+
+      setShowChoices(false);
+    }, 1000);
+  };
+  
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      onClick={() => handleClick(label)}
+      className={`turtle-radio ${isSelected.toLowerCase() === label.toLocaleLowerCase() ? "turtle-radio-active" : "hover:border-primary/30 hover:bg-accent/40"} justify-start gap-3 items-start hover:border-primary/30 hover:bg-accent/40`}
+    >
+      {label}
+    </button>
+  );
+};
