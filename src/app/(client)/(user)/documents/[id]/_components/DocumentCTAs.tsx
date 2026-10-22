@@ -1,8 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState } from "react";
 import Link from "next/link";
-import { CreditCard, Lock, Smartphone, type LucideIcon } from "lucide-react";
+import { CreditCard, Lock } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Dialog,
   DialogContent,
@@ -10,34 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { cn } from "@/lib/utils";
 import { startDocumentPurchase } from "@/lib/documents";
+import { checkoutRequestSchema, type CheckoutRequest } from "@/lib/payment/checkout-schema";
 
-type PaymentMethod = "mobile-money" | "card";
-
-const METHODS: {
-  id: PaymentMethod;
-  label: string;
-  description: string;
-  provider: string;
-  icon: LucideIcon;
-}[] = [
-  {
-    id: "mobile-money",
-    label: "Mobile Money",
-    description: "Payez avec votre numéro de téléphone mobile.",
-    provider: "Paiement sécurisé via KPay",
-    icon: Smartphone,
-  },
-  {
-    id: "card",
-    label: "Carte bancaire",
-    description: "Utile si vous payez depuis l'étranger.",
-    provider: "Paiement sécurisé via Stripe",
-    icon: CreditCard,
-  },
-];
-
+/** Affiche l'achat du document et valide le choix de paiement avant redirection Stripe. */
 export function DocumentCTAs({
   document,
   isAuthenticated,
@@ -48,8 +26,11 @@ export function DocumentCTAs({
   alreadyPurchased: boolean;
 }) {
   const [open, setOpen] = useState(false);
-  const [method, setMethod] = useState<PaymentMethod>("mobile-money");
-  const [pending, startTransition] = useTransition();
+  const form = useForm<CheckoutRequest>({
+    resolver: zodResolver(checkoutRequestSchema),
+    defaultValues: { documentId: document.id, method: "card" },
+  });
+  const pending = form.formState.isSubmitting;
 
   const price = `${new Intl.NumberFormat("fr-FR").format(document.price)} FCFA`;
 
@@ -72,23 +53,43 @@ export function DocumentCTAs({
     );
   }
 
-  const handlePay = () => {
-    // TODO : transmettez `method` à votre fonction de paiement
-    startTransition(() => startDocumentPurchase(document.id));
+  /** Valide le choix avant de demander au serveur une session Stripe Checkout. */
+  const handlePay = form.handleSubmit(async (values) => {
+    try {
+      const result = await startDocumentPurchase(values);
+      window.location.assign(result.checkoutUrl);
+    } catch {
+      form.setError("root", {
+        message: "Impossible de démarrer le paiement. Réessayez dans un instant.",
+      });
+    }
+  });
+
+  /** Empêche la fermeture de la fenêtre pendant la création/redirection Checkout. */
+  const handleDialogChange = (value: boolean) => {
+    if (!pending) setOpen(value);
+  };
+
+  /** Ouvre le dialogue de confirmation du paiement. */
+  const openPayment = () => setOpen(true);
+
+  /** Annule le dialogue avant la soumission. */
+  const cancelPayment = () => {
+    if (!pending) setOpen(false);
   };
 
   return (
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={openPayment}
         className="mt-4 h-12 w-full rounded-md bg-brand-green font-medium text-white"
       >
         Acheter ce document
       </button>
 
       {/* On ne ferme pas la popup pendant la redirection vers le paiement */}
-      <Dialog open={open} onOpenChange={(value) => !pending && setOpen(value)}>
+      <Dialog open={open} onOpenChange={handleDialogChange}>
         <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="text-xl text-brand-ink">
@@ -109,70 +110,20 @@ export function DocumentCTAs({
             </p>
           </div>
 
-          {/* Choix du moyen de paiement */}
-          <fieldset disabled={pending}>
-            <legend className="mb-2 text-base font-semibold text-brand-ink">
-              Comment souhaitez-vous payer ?
-            </legend>
-
-            <div className="space-y-2">
-              {METHODS.map(
-                ({ id, label, description, provider, icon: Icon }) => {
-                  const selected = method === id;
-                  return (
-                    <label
-                      key={id}
-                      className={cn(
-                        "flex min-h-16 cursor-pointer items-start gap-3 rounded-md border p-3 transition-colors",
-                        "has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-brand-green",
-                        selected
-                          ? "border-brand-green bg-brand-green-soft"
-                          : "border-border bg-card hover:border-brand-green/50",
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="payment-method"
-                        value={id}
-                        checked={selected}
-                        onChange={() => setMethod(id)}
-                        className="sr-only"
-                      />
-                      <Icon
-                        className="mt-0.5 size-6 shrink-0 text-brand-green"
-                        aria-hidden
-                      />
-
-                      <span className="min-w-0 flex-1">
-                        <span className="block text-base font-medium text-brand-ink">
-                          {label}
-                        </span>
-                        <span className="block text-sm leading-5 text-brand-ink-muted">
-                          {description}
-                        </span>
-                        <span className="mt-1 block text-sm text-brand-ink-muted">
-                          {provider}
-                        </span>
-                      </span>
-
-                      {/* Indicateur de sélection : forme + couleur, pas la couleur seule */}
-                      <span
-                        aria-hidden
-                        className={cn(
-                          "mt-1 grid size-5 shrink-0 place-items-center rounded-full border-2",
-                          selected ? "border-brand-green" : "border-border",
-                        )}
-                      >
-                        {selected && (
-                          <span className="size-2.5 rounded-full bg-brand-green" />
-                        )}
-                      </span>
-                    </label>
-                  );
-                },
-              )}
+          {/* Le formulaire ne collecte aucune donnée sensible de carte. */}
+          <form onSubmit={handlePay} className="space-y-3">
+            <input type="hidden" {...form.register("documentId")} />
+            <input type="hidden" {...form.register("method")} />
+            <div className="flex items-start gap-3 rounded-md border border-brand-green bg-brand-green-soft p-3">
+              <CreditCard className="mt-0.5 size-6 shrink-0 text-brand-green" aria-hidden />
+              <span>
+                <span className="block text-base font-medium text-brand-ink">Carte bancaire</span>
+                <span className="block text-sm leading-5 text-brand-ink-muted">Paiement sécurisé via Stripe Checkout.</span>
+              </span>
             </div>
-          </fieldset>
+            {form.formState.errors.root && (
+              <p role="alert" className="text-sm text-destructive">{form.formState.errors.root.message}</p>
+            )}
 
           {/* Réassurance */}
           <p className="flex items-start gap-2 text-sm leading-5 text-brand-ink-muted">
@@ -188,21 +139,21 @@ export function DocumentCTAs({
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button
               type="button"
-              onClick={() => setOpen(false)}
+              onClick={cancelPayment}
               disabled={pending}
               className="h-12 rounded-md border border-border px-5 font-medium text-brand-ink hover:bg-muted disabled:opacity-60"
             >
               Annuler
             </button>
             <button
-              type="button"
-              onClick={handlePay}
+              type="submit"
               disabled={pending}
               className="h-12 rounded-md bg-brand-green px-5 font-medium text-white disabled:opacity-60"
             >
               {pending ? "Redirection vers le paiement…" : `Payer ${price}`}
             </button>
-          </div>
+            </div>
+          </form>
         </DialogContent>
       </Dialog>
     </>

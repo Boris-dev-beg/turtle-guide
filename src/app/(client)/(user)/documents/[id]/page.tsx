@@ -12,10 +12,10 @@ export default async function DocumentPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ from?: string }>;
+  searchParams: Promise<{ from?: string; payment?: string }>;
 }) {
   const { id } = await params;
-  const { from } = await searchParams;
+  const { from, payment } = await searchParams;
 
   const doc = await prisma.document.findUnique({ where: { id } });
   if (!doc) notFound();
@@ -39,6 +39,17 @@ export default async function DocumentPage({
       >
         Retour à mon dossier
       </Link>
+
+      {payment === "cancelled" && (
+        <p role="status" className="mt-4 rounded-md border border-border p-3 text-sm text-brand-ink">
+          Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.
+        </p>
+      )}
+      {payment === "success" && (
+        <p role="status" className="mt-4 rounded-md border border-border p-3 text-sm text-brand-ink">
+          Paiement reçu. La confirmation sécurisée est en cours; actualisez cette page dans quelques instants.
+        </p>
+      )}
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
         <aside className="order-first lg:order-last">

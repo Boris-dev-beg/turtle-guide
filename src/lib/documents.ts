@@ -1,15 +1,9 @@
 "use server";
 
-import { z } from "zod";
 import { requireSession } from "@/lib/session";
 import { stripe } from "@/lib/payment/stripe";
+import { checkoutRequestSchema } from "@/lib/payment/checkout-schema";
 import { documentServices } from "@/services/documents.service";
-
-// AJOUTÉ - Valide strictement les seules données permises depuis le navigateur.
-const checkoutRequestSchema = z.object({
-  documentId: z.string().min(1),
-  method: z.literal("card"),
-});
 
 /**
  * Crée une commande depuis le document en base, initialise son paiement Stripe
@@ -22,10 +16,9 @@ export async function startDocumentPurchase(input: unknown) {
   const { document, purchase, payment } =
     await documentServices.createPendingPurchase(documentId, session.user.id);
 
+  // À compléter : définir NEXT_PUBLIC_APP_URL selon le domaine de déploiement.
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) {
-    throw new Error("NEXT_PUBLIC_APP_URL n'est pas configurée.");
-  }
+  if (!appUrl) throw new Error("NEXT_PUBLIC_APP_URL n'est pas configurée.");
 
   const checkout = await stripe.checkout.sessions.create({
     mode: "payment",
