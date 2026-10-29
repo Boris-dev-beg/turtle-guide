@@ -7,6 +7,7 @@ export const documentServices = {
    * Le client ne fournit jamais de montant ni de référence de transaction.
    */
   async createPendingPurchase(documentId: string, userId: string) {
+    // ? Finding document to buy
     const document = await prisma.document.findUnique({
       where: { id: documentId },
       select: { id: true, name: true, price: true },
@@ -17,6 +18,7 @@ export const documentServices = {
     }
 
     return prisma.$transaction(async (transaction) => {
+      // ? Create document purchase
       const purchase = await transaction.documentPurchase.create({
         data: {
           userId,
@@ -25,6 +27,7 @@ export const documentServices = {
         },
       });
 
+      // ? Create transaction
       const payment = await transaction.transaction.create({
         data: {
           reference: randomUUID(),
@@ -106,6 +109,7 @@ export const documentServices = {
     status: "PENDING" | "SUCCESS" | "FAILED";
   }) {
     return prisma.$transaction(async (db) => {
+      // ? Find transaction
       const payment = await db.transaction.findUnique({
         where: { id: transactionId },
         include: { documentPurchase: true },
@@ -116,7 +120,7 @@ export const documentServices = {
         !payment.documentPurchase ||
         payment.reference !== sessionId ||
         payment.documentPurchase.id !== purchaseId ||
-        payment.documentPurchase.amount.toString() !== String(amount) ||
+        !payment.documentPurchase.amount.equals(amount) ||
         currency.toLowerCase() !== "xaf"
       ) {
         throw new Error(
@@ -128,6 +132,7 @@ export const documentServices = {
         return payment;
       }
 
+      // ? Update transaction status
       return db.transaction.update({
         where: { id: payment.id },
         data: { status },

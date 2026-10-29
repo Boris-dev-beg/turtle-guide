@@ -13,7 +13,10 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { startDocumentPurchase } from "@/lib/documents";
-import { checkoutRequestSchema, type CheckoutRequest } from "@/lib/payment/checkout-schema";
+import {
+  checkoutRequestSchema,
+  type CheckoutRequest,
+} from "@/lib/payment/checkout-schema";
 
 /** Affiche l'achat du document et valide le choix de paiement avant redirection Stripe. */
 export function DocumentCTAs({
@@ -36,9 +39,9 @@ export function DocumentCTAs({
 
   if (alreadyPurchased) {
     return (
-      <p className="mt-4 rounded-md bg-brand-green-soft p-3 text-sm font-medium text-brand-green">
-        Vous avez déjà acheté ce document. Retrouvez-le dans votre dossier.
-      </p>
+      <div role="status" className="turtle-alert-info mt-4 text-lg">
+        Vous avez déjà acheté ce document.
+      </div>
     );
   }
 
@@ -46,7 +49,7 @@ export function DocumentCTAs({
     return (
       <Link
         href={`/login?callbackUrl=${encodeURIComponent(`/documents/${document.id}`)}`}
-        className="mt-4 flex h-12 w-full items-center justify-center rounded-md bg-brand-green font-medium text-white"
+        className="btn btn-primary mt-4 min-h-12 w-full text-lg"
       >
         Se connecter pour acheter
       </Link>
@@ -60,7 +63,8 @@ export function DocumentCTAs({
       window.location.assign(result.checkoutUrl);
     } catch {
       form.setError("root", {
-        message: "Impossible de démarrer le paiement. Réessayez dans un instant.",
+        message:
+          "Impossible de démarrer le paiement. Réessayez dans un instant.",
       });
     }
   });
@@ -83,7 +87,7 @@ export function DocumentCTAs({
       <button
         type="button"
         onClick={openPayment}
-        className="mt-4 h-12 w-full rounded-md bg-brand-green font-medium text-white"
+        className="btn btn-primary"
       >
         Acheter ce document
       </button>
@@ -102,10 +106,10 @@ export function DocumentCTAs({
 
           {/* Récapitulatif */}
           <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-muted p-3">
-            <p className="min-w-0 text-base font-medium text-brand-ink">
+            <p className="min-w-0 text-lg font-medium text-brand-ink">
               {document.name}
             </p>
-            <p className="shrink-0 text-base font-semibold text-brand-ink">
+            <p className="shrink-0 text-lg font-semibold text-brand-ink">
               {price}
             </p>
           </div>
@@ -114,44 +118,52 @@ export function DocumentCTAs({
           <form onSubmit={handlePay} className="space-y-3">
             <input type="hidden" {...form.register("documentId")} />
             <input type="hidden" {...form.register("method")} />
-            <div className="flex items-start gap-3 rounded-md border border-brand-green bg-brand-green-soft p-3">
-              <CreditCard className="mt-0.5 size-6 shrink-0 text-brand-green" aria-hidden />
+            <div className="flex items-start gap-3 rounded-md border border-brand-green bg-brand-green-soft p-3 text-lg">
+              <CreditCard
+                className="mt-0.5 size-6 shrink-0 text-brand-green"
+                aria-hidden
+              />
               <span>
-                <span className="block text-base font-medium text-brand-ink">Carte bancaire</span>
-                <span className="block text-sm leading-5 text-brand-ink-muted">Paiement sécurisé via Stripe Checkout.</span>
+                <span className="block font-medium text-brand-ink">
+                  Carte bancaire
+                </span>
+                <span className="block leading-6 text-brand-ink-muted">
+                  Paiement sécurisé via Stripe Checkout.
+                </span>
               </span>
             </div>
             {form.formState.errors.root && (
-              <p role="alert" className="text-sm text-destructive">{form.formState.errors.root.message}</p>
+              <p role="alert" className="text-lg text-destructive">
+                {form.formState.errors.root.message}
+              </p>
             )}
 
-          {/* Réassurance */}
-          <p className="flex items-start gap-2 text-sm leading-5 text-brand-ink-muted">
-            <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <span>
-              TurtleGuide ne conserve aucune donnée de carte ni de compte Mobile
-              Money. Une fois le paiement confirmé, le document est disponible
-              dans votre dossier.
-            </span>
-          </p>
+            {/* Réassurance */}
+            <p className="flex items-start gap-2 text-lg leading-6 text-brand-ink-muted">
+              <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
+              <span>
+                TurtleGuide ne conserve aucune donnée de carte. Après confirmation
+                Stripe, votre achat sera indiqué sur cette page.
+              </span>
+            </p>
 
-          {/* Actions */}
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <button
-              type="button"
-              onClick={cancelPayment}
-              disabled={pending}
-              className="h-12 rounded-md border border-border px-5 font-medium text-brand-ink hover:bg-muted disabled:opacity-60"
-            >
-              Annuler
-            </button>
-            <button
-              type="submit"
-              disabled={pending}
-              className="h-12 rounded-md bg-brand-green px-5 font-medium text-white disabled:opacity-60"
-            >
-              {pending ? "Redirection vers le paiement…" : `Payer ${price}`}
-            </button>
+            {/* Actions */}
+            <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={cancelPayment}
+                disabled={pending}
+                className="btn btn-outline min-h-12 text-lg"
+              >
+                Annuler
+              </button>
+              <button
+                type="submit"
+                disabled={pending}
+                className="btn btn-primary min-h-12 text-lg"
+              >
+                {pending ? "Redirection vers le paiement…" : `Payer ${price}`}
+              </button>
             </div>
           </form>
         </DialogContent>

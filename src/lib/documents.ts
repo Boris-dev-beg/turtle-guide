@@ -16,13 +16,28 @@ export async function startDocumentPurchase(input: unknown) {
   const { document, purchase, payment } =
     await documentServices.createPendingPurchase(documentId, session.user.id);
 
-  // À compléter : définir NEXT_PUBLIC_APP_URL selon le domaine de déploiement.
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL;
-  if (!appUrl) throw new Error("NEXT_PUBLIC_APP_URL n'est pas configurée.");
+  // Déterminer dynamiquement l'URL de l'application
+  let appUrl = process.env.NEXT_PUBLIC_APP_URL;
+
+  // Si la variable manuelle n'est pas définie, on utilise le système Vercel
+  if (!appUrl && process.env.VERCEL_URL) {
+    // Vercel fournit l'URL sans le protocole (ex: mon-site.vercel.app), on ajoute donc https://
+    appUrl = `https://${process.env.VERCEL_URL}`;
+  }
+
+  // Sécurité pour le développement local au cas où aucun fichier .env n'est présent
+  if (!appUrl && process.env.NODE_ENV === "development") {
+    appUrl = "http://localhost:3000";
+  }
+
+  if (!appUrl) {
+    throw new Error(
+      "Impossible de déterminer l'URL de l'application (URL manquante).",
+    );
+  }
 
   const checkout = await stripe.checkout.sessions.create({
     mode: "payment",
-    payment_method_types: [method],
     client_reference_id: payment.reference,
     customer_email: session.user.email,
     line_items: [

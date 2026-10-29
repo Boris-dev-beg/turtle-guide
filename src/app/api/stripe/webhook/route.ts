@@ -10,6 +10,7 @@ export async function POST(request: Request) {
   // À compléter : ajouter STRIPE_WEBHOOK_SECRET (whsec_...) fourni par Stripe.
   const signingSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!signingSecret) {
+    console.error("Webhook Stripe désactivé : STRIPE_WEBHOOK_SECRET est absente.");
     return Response.json(
       { error: "STRIPE_WEBHOOK_SECRET doit être configurée." },
       { status: 500 },
@@ -56,7 +57,12 @@ async function applyCheckoutEvent(
 ) {
   const transactionId = session.metadata?.transactionId;
   const purchaseId = session.metadata?.documentPurchaseId;
-  if (!transactionId || !purchaseId || !session.amount_total || !session.currency) {
+  if (
+    !transactionId ||
+    !purchaseId ||
+    session.amount_total === null ||
+    !session.currency
+  ) {
     throw new Error("Métadonnées ou montant Checkout manquants.");
   }
 

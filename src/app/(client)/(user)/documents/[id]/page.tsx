@@ -33,20 +33,17 @@ export default async function DocumentPage({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
-      <Link
-        href={backHref}
-        className="text-sm font-medium text-brand-green underline"
-      >
+      <Link href={backHref} className="text-lg font-medium text-brand-green underline">
         Retour à mon dossier
       </Link>
 
       {payment === "cancelled" && (
-        <p role="status" className="mt-4 rounded-md border border-border p-3 text-sm text-brand-ink">
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
           Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.
         </p>
       )}
       {payment === "success" && (
-        <p role="status" className="mt-4 rounded-md border border-border p-3 text-sm text-brand-ink">
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
           Paiement reçu. La confirmation sécurisée est en cours; actualisez cette page dans quelques instants.
         </p>
       )}
@@ -54,7 +51,7 @@ export default async function DocumentPage({
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
         <aside className="order-first lg:order-last">
           <div className="rounded-lg border border-border bg-card p-4 lg:sticky lg:top-24">
-            <p className="text-base font-semibold text-brand-ink">{doc.name}</p>
+            <p className="text-lg font-semibold text-brand-ink">{doc.name}</p>
             <p className="mt-3 text-2xl font-semibold text-brand-ink">
               {formtaPrice(Number(doc.price))}
             </p>
@@ -82,19 +79,19 @@ export default async function DocumentPage({
           <iframe
             src={pdfSrc}
             title={`Aperçu du document : ${doc.name}`}
-            className="hidden h-[80vh] w-full rounded-lg border border-border bg-white md:block"
+              className="hidden h-[80vh] w-full rounded-lg border border-border bg-card md:block"
           />
 
           {/* Mobile */}
           <div className="rounded-lg border border-border bg-card p-4 md:hidden">
-            <p className="text-base text-brand-ink">
+            <p className="text-lg text-brand-ink">
               Ouvrez l&apos;aperçu pour lire le contenu complet de ce document.
             </p>
             <a
               href={doc.contentUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-md border border-brand-green font-medium text-brand-green"
+              className="btn btn-outline mt-3 min-h-12 w-full text-lg"
             >
               <ExternalLink className="size-4" />
               Ouvrir l&apos;aperçu PDF
