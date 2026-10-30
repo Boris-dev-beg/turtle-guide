@@ -6,7 +6,11 @@ export const documentServices = {
    * Crée un achat et une transaction en attente à partir du prix stocké en base.
    * Le client ne fournit jamais de montant ni de référence de transaction.
    */
-  async createPendingPurchase(documentId: string, userId: string) {
+  async createPendingPurchase(
+    documentId: string,
+    userId: string,
+    paymentMethod: "stripe" | "kpay",
+  ) {
     // ? Finding document to buy
     const document = await prisma.document.findUnique({
       where: { id: documentId },
@@ -32,7 +36,7 @@ export const documentServices = {
         data: {
           reference: randomUUID(),
           amount: document.price,
-          paymentMethod: "stripe",
+          paymentMethod,
           status: "INITIATED",
           documentPurchaseId: purchase.id,
         },
@@ -133,6 +137,44 @@ export const documentServices = {
       }
 
       // ? Update transaction status
+      return db.transaction.update({
+        where: { id: payment.id },
+        data: { status },
+      });
+    });
+  },
+
+  /**
+   * Finalise un callback KPay signé uniquement si sa référence externe et son
+   * montant correspondent à la transaction KPay créée par le serveur.
+   */
+  async finalizeKpayPayment({
+    externalId,
+    amount,
+    status,
+  }: {
+    externalId: string;
+    amount: number;
+    status: "SUCCESS" | "FAILED";
+  }) {
+    return prisma.$transaction(async (db) => {
+      const payment = await db.transaction.findUnique({
+        where: { reference: externalId },
+        include: { documentPurchase: true },
+      });
+
+      if (
+        !payment ||
+        payment.paymentMethod !== "kpay" ||
+        !payment.documentPurchase ||
+        !payment.amount.equals(amount) ||
+        !payment.documentPurchase.amount.equals(amount)
+      ) {
+        throw new Error("Les données du paiement KPay ne correspondent pas à l'achat.");
+      }
+
+      if (payment.status === "SUCCESS") return payment;
+
       return db.transaction.update({
         where: { id: payment.id },
         data: { status },

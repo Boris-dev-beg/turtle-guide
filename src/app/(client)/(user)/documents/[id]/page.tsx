@@ -47,6 +47,11 @@ export default async function DocumentPage({
           Paiement reçu. La confirmation sécurisée est en cours; actualisez cette page dans quelques instants.
         </p>
       )}
+      {payment === "kpay_pending" && (
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
+          Retour KPay reçu. Le document sera indiqué comme acheté après confirmation du paiement par KPay.
+        </p>
+      )}
 
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
         <aside className="order-first lg:order-last">

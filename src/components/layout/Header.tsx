@@ -1,8 +1,5 @@
 import Link from "next/link";
 import Image from "next/image";
-import logo_mobile from "../../assets/images/logos/mobile.png";
-import logo_tablet from "../../assets/images/logos/tablet.png";
-import logo_descktop from "../../assets/images/logos/desktop.png";
 import { NavBar } from "../shared/NavBar";
 
 export default function Header({
@@ -18,26 +15,24 @@ export default function Header({
         {/* Logo */}
         <Link
           href="/"
-          className="group flex min-w-15 items-center justify-center gap-2 transition-opacity hover:opacity-80 w-15 md:w-55"
+          aria-label="TurtleGuide — accueil"
+          className="group flex h-12 w-12 shrink-0 items-center justify-start transition-opacity hover:opacity-80 md:h-13 md:w-60"
         >
           <Image
-            src={logo_mobile}
-            alt="Logo TurtleGuide"
-            className="md:hidden size-full object-contain"
+            src="/brand/turtleguide-mark.svg"
+            alt=""
+            width={48}
+            height={48}
+            className="size-11 md:hidden"
             priority
           />
 
           <Image
-            src={logo_tablet}
-            alt="Logo TurtleGuide"
-            className="hidden md:flex lg:hidden size-full object-contain"
-            priority
-          />
-
-          <Image
-            src={logo_descktop}
-            alt="Logo TurtleGuide"
-            className="hidden lg:flex size-full object-contain"
+            src="/brand/turtleguide-logo.svg"
+            alt=""
+            width={360}
+            height={76}
+            className="hidden h-13 w-60 object-contain object-left md:block"
             priority
           />
         </Link>

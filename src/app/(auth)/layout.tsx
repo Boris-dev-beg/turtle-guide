@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { Toaster } from "@/components/ui/sonner";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -18,7 +19,21 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       />
       {/* Header */}
       <header className="flex h-16 w-full items-center border-b border-border/60 bg-background">
-        <div className="wrapper w-full">
+        <div className="wrapper flex w-full items-center justify-between">
+          <Link
+            href="/"
+            aria-label="TurtleGuide — accueil"
+            className="transition-opacity hover:opacity-80"
+          >
+            <Image
+              src="/brand/turtleguide-logo.svg"
+              alt="TurtleGuide — Vos démarches, pas à pas"
+              width={288}
+              height={61}
+              className="h-11 w-52 object-contain object-left"
+              priority
+            />
+          </Link>
           <Link
             href="/"
             className="group flex w-fit items-center gap-2 font-semibold text-muted-foreground transition-colors hover:text-foreground"
