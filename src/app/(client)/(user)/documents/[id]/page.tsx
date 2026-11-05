@@ -33,23 +33,29 @@ export default async function DocumentPage({
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
-      <Link href={backHref} className="text-lg font-medium text-brand-green underline">
+      <Link
+        href={backHref}
+        className="text-lg font-medium text-brand-green underline"
+      >
         Retour à mon dossier
       </Link>
 
       {payment === "cancelled" && (
         <p role="status" className="turtle-alert-info mt-4 text-lg">
-          Le paiement a été annulé. Vous pouvez réessayer quand vous le souhaitez.
+          Le paiement a été annulé. Vous pouvez réessayer quand vous le
+          souhaitez.
         </p>
       )}
       {payment === "success" && (
         <p role="status" className="turtle-alert-info mt-4 text-lg">
-          Paiement reçu. La confirmation sécurisée est en cours; actualisez cette page dans quelques instants.
+          Paiement reçu. La confirmation sécurisée est en cours; actualisez
+          cette page dans quelques instants.
         </p>
       )}
       {payment === "kpay_pending" && (
         <p role="status" className="turtle-alert-info mt-4 text-lg">
-          Retour KPay reçu. Le document sera indiqué comme acheté après confirmation du paiement par KPay.
+          Retour KPay reçu. Le document sera indiqué comme acheté après
+          confirmation du paiement par KPay.
         </p>
       )}
 
@@ -66,6 +72,7 @@ export default async function DocumentPage({
                 id: doc.id,
                 name: doc.name,
                 price: Number(doc.price),
+                customizable: doc.customizable,
               }}
               isAuthenticated={!!session}
               alreadyPurchased={alreadyPurchased}
@@ -84,7 +91,7 @@ export default async function DocumentPage({
           <iframe
             src={pdfSrc}
             title={`Aperçu du document : ${doc.name}`}
-              className="hidden h-[80vh] w-full rounded-lg border border-border bg-card md:block"
+            className="hidden h-[80vh] w-full rounded-lg border border-border bg-card md:block"
           />
 
           {/* Mobile */}
