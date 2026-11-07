@@ -17,7 +17,6 @@ import { formtaPrice, personalizationSteps } from "./Constantes/Globalconsts";
 import PurchaseForm from "./forms/PurchaseForm";
 import PersonalizationForm from "./forms/PersonalizationForm";
 
-/** Affiche l'achat du document et valide le mode choisi avant la redirection prestataire. */
 export function DocumentCTAs({
   document,
   isAuthenticated,

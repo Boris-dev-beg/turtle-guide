@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { ArrowRight } from "lucide-react";
 import { RenderField } from "../common/Fields";
 import { PersonalizationFormValues } from "../../_schema/personalization.schema";
-import { UseFormReturn } from "react-hook-form";
+import { PersanalizeFormTypeProps } from "../../_types/types";
 
 export default function PersonalizationForm({
   customizationOpen,
@@ -22,47 +22,7 @@ export default function PersonalizationForm({
   previousStep,
   setCustomizationOpen,
   personalizationForm,
-}: {
-  customizationOpen: boolean;
-  setCustomizationOpen: (val: boolean) => void;
-  handleCustomizationDialogChange: (open: boolean) => void;
-  stepIndex: number;
-  totalSteps: number;
-  currentStepFields:
-    | readonly ["firstName", "lastName", "birthDate", "age"]
-    | readonly ["phone", "email", "city", "address"]
-    | readonly ["purpose", "notes"];
-  handleCustomize: (e: React.FormEvent<HTMLFormElement>) => void;
-  nextStep: () => void;
-  previousStep: () => void;
-  personalizationForm: UseFormReturn<
-    {
-      firstName: string;
-      lastName: string;
-      birthDate: string;
-      age: string;
-      phone: string;
-      city: string;
-      address: string;
-      purpose: string;
-      email?: string | undefined;
-      notes?: string | undefined;
-    },
-    unknown,
-    {
-      firstName: string;
-      lastName: string;
-      birthDate: string;
-      age: string;
-      phone: string;
-      city: string;
-      address: string;
-      purpose: string;
-      email?: string | undefined;
-      notes?: string | undefined;
-    }
-  >;
-}) {
+}: PersanalizeFormTypeProps) {
   return (
     <Dialog
       open={customizationOpen}

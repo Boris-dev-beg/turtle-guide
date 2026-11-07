@@ -4,12 +4,6 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: "Inter";
-  src: url("/fonts/Inter.ttf") format("TrueType");
-  font-display: swap;
-}
-
 @theme inline {
   --font-body: "Poppins";
   --font-display: "Fraunces", Georgia, serif;

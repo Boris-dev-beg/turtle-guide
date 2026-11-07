@@ -8,7 +8,7 @@ import {
 import { PAYMENT_METHODS } from "../Constantes/Globalconsts";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { UseFormReturn } from "react-hook-form";
+import { PurchaseFormProps } from "../../_types/types";
 
 export default function PurchaseForm({
   open,
@@ -20,27 +20,7 @@ export default function PurchaseForm({
   form,
   handlePay,
   pending,
-}: {
-  open: boolean;
-  setOpen: (open: boolean) => void;
-  handleDialogChange: (open: boolean) => void;
-  document: { name: string };
-  price: string;
-  method: string;
-  form: UseFormReturn<
-    {
-      documentId: string;
-      method: "card" | "kpay";
-    },
-    unknown,
-    {
-      documentId: string;
-      method: "card" | "kpay";
-    }
-  >;
-  handlePay: (e: React.FormEvent<HTMLFormElement>) => void;
-  pending: boolean;
-}) {
+}: PurchaseFormProps) {
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
