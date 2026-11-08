@@ -6,23 +6,107 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Field, FieldError, FieldLabel } from "@/components/ui/field";
+import {
+  InputGroup,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import { ArrowRight } from "lucide-react";
-import { RenderField } from "../common/Fields";
-import { PersonalizationFormValues } from "../../_schema/personalization.schema";
-import { PersanalizeFormTypeProps } from "../../_types/types";
+import {
+  PersonalizationFormValues,
+  personalizationSchema,
+} from "../../_schema/personalization.schema";
+import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { startDocumentPurchase } from "@/lib/documents";
+import { personalizationSteps } from "../Constantes/Globalconsts";
 
 export default function PersonalizationForm({
   customizationOpen,
-  handleCustomizationDialogChange,
-  stepIndex,
-  totalSteps,
-  currentStepFields,
-  handleCustomize,
-  nextStep,
-  previousStep,
   setCustomizationOpen,
-  personalizationForm,
-}: PersanalizeFormTypeProps) {
+  docId,
+}: {
+  docId: string;
+  setCustomizationOpen: (val: boolean) => void;
+  customizationOpen: boolean;
+}) {
+  const [stepIndex, setStepIndex] = useState(0);
+
+  const personalizationForm = useForm<PersonalizationFormValues>({
+    resolver: zodResolver(personalizationSchema),
+    mode:"onChange",
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      birthDate: "",
+      age: "",
+      phone: "",
+      email: "",
+      city: "",
+      address: "",
+      purpose: "",
+      notes: "",
+    },
+  });
+
+  const handleCustomize = personalizationForm.handleSubmit(async (values) => {
+    try {
+      window.sessionStorage.setItem(
+        `document-personalization:${docId}`,
+        JSON.stringify(values),
+      );
+      const result = await startDocumentPurchase({
+        documentId: docId,
+        method: "card",
+      });
+      window.location.assign(result.checkoutUrl);
+    } catch {
+      personalizationForm.setError("root", {
+        message:
+          "Impossible de lancer la personnalisation et le paiement. Réessayez dans quelques instants.",
+      });
+    }
+  });
+
+  const handleCustomizationDialogChange = (value: boolean) => {
+    if (!personalizationForm.formState.isSubmitting) {
+      setCustomizationOpen(value);
+      if (!value) setStepIndex(0);
+    }
+  };
+
+  const nextStep = async () => {
+    const stepFields = personalizationSteps[stepIndex];
+    const isValid = await personalizationForm.trigger(stepFields);
+    if (isValid && stepIndex < personalizationSteps.length - 1) {
+      setStepIndex((current) => current + 1);
+    }
+  };
+
+  const previousStep = () => {
+    setStepIndex((current) => Math.max(current - 1, 0));
+  };
+
+  const totalSteps = personalizationSteps.length;
+  const currentStepFields = personalizationSteps[stepIndex];
+
+  const fieldMap: Record<
+    keyof PersonalizationFormValues,
+    { label: string; type?: string }
+  > = {
+    firstName: { label: "Prénom" },
+    lastName: { label: "Nom" },
+    birthDate: { label: "Date de naissance", type: "date" },
+    age: { label: "Âge", type: "number" },
+    phone: { label: "Téléphone" },
+    email: { label: "E-mail", type: "email" },
+    city: { label: "Ville" },
+    address: { label: "Adresse" },
+    purpose: { label: "Objet de la demande" },
+    notes: { label: "Informations utiles" },
+  };
+
   return (
     <Dialog
       open={customizationOpen}
@@ -45,35 +129,47 @@ export default function PersonalizationForm({
         <form onSubmit={handleCustomize} className="space-y-5">
           <div className="grid gap-4 md:grid-cols-2">
             {currentStepFields.map((fieldName) => {
-              const fieldMap: Record<
-                keyof PersonalizationFormValues,
-                { label: string; type?: string }
-              > = {
-                firstName: { label: "Prénom" },
-                lastName: { label: "Nom" },
-                birthDate: { label: "Date de naissance", type: "date" },
-                age: { label: "Âge", type: "number" },
-                phone: { label: "Téléphone" },
-                email: { label: "E-mail", type: "email" },
-                city: { label: "Ville" },
-                address: { label: "Adresse" },
-                purpose: { label: "Objet de la demande" },
-                notes: { label: "Informations utiles" },
-              };
-
               const fieldConfig = fieldMap[fieldName];
               if (!fieldConfig) return null;
 
               return (
-                <RenderField
+                <Controller
                   key={fieldName}
+                  control={personalizationForm.control}
                   name={fieldName}
-                  label={fieldConfig.label}
-                  type={fieldConfig.type}
-                  error={
-                    personalizationForm.formState.errors[fieldName]?.message
-                  }
-                  register={personalizationForm.register(fieldName)}
+                  render={({ field, fieldState }) => (
+                    <Field data-invalid={fieldState.invalid} className="gap-1.5">
+                      <FieldLabel
+                        htmlFor={field.name}
+                        className="text-base font-semibold text-foreground"
+                      >
+                        {fieldConfig.label}
+                      </FieldLabel>
+
+                      <InputGroup
+                        aria-invalid={fieldState.invalid}
+                        className={`${
+                          fieldState.invalid
+                            ? "border-destructive focus-within:border-destructive focus-within:ring-destructive/20"
+                            : "border-border/70 focus-within:border-primary/50 focus-within:ring-primary/50 focus-within:ring-4"
+                        } h-11 rounded-lg bg-background transition-all`}
+                      >
+                        <InputGroupInput
+                          id={field.name}
+                          type={fieldConfig.type ?? "text"}
+                          placeholder={fieldConfig.label}
+                          {...field}
+                          value={field.value ?? ""}
+                          className="text-base! focus-visible:ring-0"
+                          aria-invalid={fieldState.invalid}
+                        />
+                      </InputGroup>
+
+                      {fieldState.invalid && (
+                        <FieldError errors={[fieldState.error]} />
+                      )}
+                    </Field>
+                  )}
                 />
               );
             })}

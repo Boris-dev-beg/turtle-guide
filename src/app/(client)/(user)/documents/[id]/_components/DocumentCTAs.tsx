@@ -9,11 +9,7 @@ import {
   checkoutRequestSchema,
   type CheckoutRequest,
 } from "@/lib/payment/checkout-schema";
-import {
-  PersonalizationFormValues,
-  personalizationSchema,
-} from "../_schema/personalization.schema";
-import { formtaPrice, personalizationSteps } from "./Constantes/Globalconsts";
+import { formtaPrice } from "./Constantes/Globalconsts";
 import PurchaseForm from "./forms/PurchaseForm";
 import PersonalizationForm from "./forms/PersonalizationForm";
 
@@ -26,29 +22,12 @@ export function DocumentCTAs({
   isAuthenticated: boolean;
   alreadyPurchased: boolean;
 }) {
-  const [open, setOpen] = useState(false);
   const [customizationOpen, setCustomizationOpen] = useState(false);
-  const [stepIndex, setStepIndex] = useState(0);
+  const [open, setOpen] = useState(false);
 
   const form = useForm<CheckoutRequest>({
     resolver: zodResolver(checkoutRequestSchema),
     defaultValues: { documentId: document.id, method: "card" },
-  });
-
-  const personalizationForm = useForm<PersonalizationFormValues>({
-    resolver: zodResolver(personalizationSchema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      birthDate: "",
-      age: "",
-      phone: "",
-      email: "",
-      city: "",
-      address: "",
-      purpose: "",
-      notes: "",
-    },
   });
 
   const pending = form.formState.isSubmitting;
@@ -86,52 +65,11 @@ export function DocumentCTAs({
     }
   });
 
-  const handleCustomize = personalizationForm.handleSubmit(async (values) => {
-    try {
-      window.sessionStorage.setItem(
-        `document-personalization:${document.id}`,
-        JSON.stringify(values),
-      );
-      const result = await startDocumentPurchase({
-        documentId: document.id,
-        method: "card",
-      });
-      window.location.assign(result.checkoutUrl);
-    } catch {
-      personalizationForm.setError("root", {
-        message:
-          "Impossible de lancer la personnalisation et le paiement. Réessayez dans quelques instants.",
-      });
-    }
-  });
-
   const openPayment = () => setOpen(true);
 
   const handleDialogChange = (value: boolean) => {
     if (!pending) setOpen(value);
   };
-
-  const handleCustomizationDialogChange = (value: boolean) => {
-    if (!personalizationForm.formState.isSubmitting) {
-      setCustomizationOpen(value);
-      if (!value) setStepIndex(0);
-    }
-  };
-
-  const nextStep = async () => {
-    const stepFields = personalizationSteps[stepIndex];
-    const isValid = await personalizationForm.trigger(stepFields);
-    if (isValid && stepIndex < personalizationSteps.length - 1) {
-      setStepIndex((current) => current + 1);
-    }
-  };
-
-  const previousStep = () => {
-    setStepIndex((current) => Math.max(current - 1, 0));
-  };
-
-  const totalSteps = personalizationSteps.length;
-  const currentStepFields = personalizationSteps[stepIndex];
 
   return (
     <>
@@ -166,16 +104,17 @@ export function DocumentCTAs({
       />
 
       <PersonalizationForm
+        docId={document.id}
         customizationOpen={customizationOpen}
-        handleCustomizationDialogChange={handleCustomizationDialogChange}
-        stepIndex={stepIndex}
-        totalSteps={totalSteps}
-        currentStepFields={currentStepFields}
-        personalizationForm={personalizationForm}
         setCustomizationOpen={setCustomizationOpen}
-        handleCustomize={handleCustomize}
-        nextStep={nextStep}
-        previousStep={previousStep}
+        // handleCustomizationDialogChange={handleCustomizationDialogChange}
+        // stepIndex={stepIndex}
+        // totalSteps={totalSteps}
+        // currentStepFields={currentStepFields}
+        // personalizationForm={personalizationForm}
+        // handleCustomize={handleCustomize}
+        // nextStep={nextStep}
+        // previousStep={previousStep}
       />
     </>
   );
