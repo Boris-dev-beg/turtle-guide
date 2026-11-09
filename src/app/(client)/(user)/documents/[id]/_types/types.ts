@@ -4,7 +4,7 @@ export type PurchaseFormProps = {
   open: boolean;
   setOpen: (open: boolean) => void;
   handleDialogChange: (open: boolean) => void;
-  document: { name: string };
+  document: { id: string; name: string, price: number };
   price: string;
   method: string;
   form: UseFormReturn<

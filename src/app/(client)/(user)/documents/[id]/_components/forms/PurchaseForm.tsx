@@ -5,22 +5,50 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { PAYMENT_METHODS } from "../Constantes/Globalconsts";
+import { formtaPrice, PAYMENT_METHODS } from "../Constantes/Globalconsts";
 import { Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { PurchaseFormProps } from "../../_types/types";
+import { useForm, useWatch } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  CheckoutRequest,
+  checkoutRequestSchema,
+} from "@/lib/payment/checkout-schema";
+import { startDocumentPurchase } from "@/lib/documents";
 
 export default function PurchaseForm({
   open,
   setOpen,
-  handleDialogChange,
   document,
-  price,
-  method,
-  form,
-  handlePay,
-  pending,
-}: PurchaseFormProps) {
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  document: { id: string; name: string; price: number };
+}) {
+  const form = useForm<CheckoutRequest>({
+    resolver: zodResolver(checkoutRequestSchema),
+    defaultValues: { documentId: document.id, method: "card" },
+  });
+
+  const pending = form.formState.isSubmitting;
+  const method = useWatch({ control: form.control, name: "method" });
+  const price = formtaPrice(document.price);
+
+  const handlePay = form.handleSubmit(async (values) => {
+    try {
+      const result = await startDocumentPurchase(values);
+      window.location.assign(result.checkoutUrl);
+    } catch {
+      form.setError("root", {
+        message:
+          "Impossible de démarrer le paiement. Vérifiez la configuration puis réessayez.",
+      });
+    }
+  });
+
+  const handleDialogChange = (value: boolean) => {
+    if (!pending) setOpen(value);
+  };
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
