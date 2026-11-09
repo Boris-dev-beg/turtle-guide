@@ -7,7 +7,6 @@ import {
 } from "@/components/ui/dialog";
 import { formtaPrice, PAYMENT_METHODS } from "../Constantes/Globalconsts";
 import { Lock } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -51,17 +50,17 @@ export default function PurchaseForm({
   };
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-md">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg w-[99vw] scrollbar-thin">
         <DialogHeader>
           <DialogTitle className="text-xl text-brand-ink">
             Acheter ce document
           </DialogTitle>
-          <DialogDescription className="text-lg text-brand-ink-muted">
+          <DialogDescription className="text-base text-brand-ink-muted">
             Choisissez un mode de paiement pour continuer.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-muted p-3 text-lg">
+        <div className="flex items-start justify-between gap-4 rounded-md border border-border bg-muted p-3 text-base">
           <p className="min-w-0 font-medium text-brand-ink">{document.name}</p>
           <p className="shrink-0 font-semibold text-brand-ink">{price}</p>
         </div>
@@ -78,7 +77,7 @@ export default function PurchaseForm({
               return (
                 <label
                   key={id}
-                  className={`turtle-radio has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring ${
+                  className={`turtle-radio has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring gap-2 ${
                     selected ? "turtle-radio-active" : ""
                   }`}
                 >
@@ -89,14 +88,14 @@ export default function PurchaseForm({
                     className="sr-only"
                   />
                   <Icon
-                    className="size-6 shrink-0 text-brand-green"
+                    className="size-10 min-size-16 shrink-0 text-brand-green"
                     aria-hidden
                   />
                   <span className="flex-1">
                     <span className="block text-lg font-medium text-brand-ink">
                       {label}
                     </span>
-                    <span className="block text-lg leading-6 text-brand-ink-muted">
+                    <span className="block text-sm leading-6 text-brand-ink-muted">
                       {description}
                     </span>
                   </span>
@@ -111,7 +110,7 @@ export default function PurchaseForm({
             </p>
           )}
 
-          <p className="flex items-start gap-2 text-lg leading-6 text-brand-ink-muted">
+          <p className="flex items-start gap-2 text-base leading-6 text-brand-ink-muted">
             <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
             <span>
               Les informations de paiement sont saisies sur la page sécurisée du
@@ -120,14 +119,14 @@ export default function PurchaseForm({
           </p>
 
           <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-            <Button
+            <button
               type="button"
               onClick={() => setOpen(false)}
               disabled={pending}
               className="btn btn-outline min-h-12 text-lg"
             >
               Annuler
-            </Button>
+            </button>
             <button
               type="submit"
               disabled={pending}
