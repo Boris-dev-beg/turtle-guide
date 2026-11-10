@@ -12,10 +12,12 @@ export default async function DocumentPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ from?: string; payment?: string }>;
+  searchParams: Promise<{ from?: string; payment?: string; folderId?: string }>;
 }) {
   const { id } = await params;
-  const { from, payment } = await searchParams;
+  const { from, payment, folderId: folderIdParam } = await searchParams;
+  const folderId =
+    folderIdParam ?? from?.match(/^\/folders\/([^/]+)/)?.[1] ?? null;
 
   const doc = await prisma.document.findUnique({ where: { id } });
   if (!doc) notFound();
@@ -74,6 +76,7 @@ export default async function DocumentPage({
                 price: Number(doc.price),
                 customizable: doc.customizable,
               }}
+              folderId={folderId}
               isAuthenticated={!!session}
               alreadyPurchased={alreadyPurchased}
             />

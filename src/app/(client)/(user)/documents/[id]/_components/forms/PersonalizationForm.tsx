@@ -17,13 +17,18 @@ import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { personalizationSteps } from "../Constantes/Globalconsts";
+import { toast } from "sonner";
 
 export default function PersonalizationForm({
   customizationOpen,
   setCustomizationOpen,
   docId,
+  folderId,
+  requiresFiliation,
 }: {
   docId: string;
+  folderId: string;
+  requiresFiliation: boolean;
   setCustomizationOpen: (val: boolean) => void;
   customizationOpen: boolean;
 }) {
@@ -37,28 +42,55 @@ export default function PersonalizationForm({
         firstName: "",
         lastName: "",
         birthDate: "",
-        age: "",
-        phone: "",
-        email: "",
-        city: "",
-        address: "",
-        purpose: "",
-        notes: "",
+        birthPlace: "",
+        fatherName: "",
+        motherName: "",
       },
     });
 
   const handleCustomize = handleSubmit(async (values) => {
+    if (
+      requiresFiliation &&
+      (!values.fatherName?.trim() || !values.motherName?.trim())
+    ) {
+      if (!values.fatherName?.trim()) {
+        setError("fatherName", { message: "Le nom du père est requis." });
+      }
+      if (!values.motherName?.trim()) {
+        setError("motherName", { message: "Le nom de la mère est requis." });
+      }
+      return;
+    }
+
     try {
-      window.sessionStorage.setItem(
-        `document-personalization:${docId}`,
-        JSON.stringify(values),
-      );
-      console.log("Valeurs de personalisation: ", values);
-    } catch {
-      setError("root", {
-        message:
-          "Impossible de lancer la personnalisation et le paiement. Réessayez dans quelques instants.",
+      const res = await fetch("/api/generate-pdf", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ docId, folderId, data: values }),
       });
+
+      if (!res.ok) {
+        const result = await res.json().catch(() => null);
+        throw new Error(result?.error ?? "La génération du PDF a échoué.");
+      }
+
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `lettre-administrative-${docId}.pdf`;
+      a.click();
+      URL.revokeObjectURL(url);
+      toast.success("Votre lettre personnalisée a été téléchargée.");
+    } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Impossible de générer le document. Réessayez dans quelques instants.";
+      setError("root", {
+        message,
+      });
+      toast.error(message);
     }
   });
 
@@ -69,10 +101,14 @@ export default function PersonalizationForm({
     }
   };
 
+  const formSteps = requiresFiliation
+    ? personalizationSteps
+    : [personalizationSteps[0]];
+
   const nextStep = async () => {
-    const stepFields = personalizationSteps[stepIndex];
+    const stepFields = formSteps[stepIndex];
     const isValid = await trigger(stepFields);
-    if (isValid && stepIndex < personalizationSteps.length - 1) {
+    if (isValid && stepIndex < formSteps.length - 1) {
       setStepIndex((current) => current + 1);
     }
   };
@@ -81,8 +117,8 @@ export default function PersonalizationForm({
     setStepIndex((current) => Math.max(current - 1, 0));
   };
 
-  const totalSteps = personalizationSteps.length;
-  const currentStepFields = personalizationSteps[stepIndex];
+  const totalSteps = formSteps.length;
+  const currentStepFields = formSteps[stepIndex];
 
   const fieldMap: Record<
     keyof PersonalizationFormValues,
@@ -91,13 +127,9 @@ export default function PersonalizationForm({
     firstName: { label: "Prénom" },
     lastName: { label: "Nom" },
     birthDate: { label: "Date de naissance", type: "date" },
-    age: { label: "Âge", type: "number" },
-    phone: { label: "Téléphone" },
-    email: { label: "E-mail", type: "email" },
-    city: { label: "Ville" },
-    address: { label: "Adresse" },
-    purpose: { label: "Objet de la demande" },
-    notes: { label: "Informations utiles" },
+    birthPlace: { label: "Lieu de naissance" },
+    fatherName: { label: "Nom complet du père" },
+    motherName: { label: "Nom complet de la mère" },
   };
 
   return (
@@ -111,8 +143,8 @@ export default function PersonalizationForm({
             Personnaliser le document
           </DialogTitle>
           <DialogDescription className="text-lg text-brand-ink-muted">
-            Complétez vos informations ou celles du destinataire pour
-            personnaliser le document.
+            Les informations de votre dossier complètent automatiquement la
+            lettre. Renseignez uniquement les données personnelles manquantes.
           </DialogDescription>
         </DialogHeader>
 
@@ -193,7 +225,7 @@ export default function PersonalizationForm({
               {stepIndex === 0 ? "Fermer" : "Retour"}
             </Button>
 
-            {stepIndex < totalSteps - 1 ? (
+            {requiresFiliation && stepIndex < totalSteps - 1 ? (
               <Button
                 type="button"
                 onClick={nextStep}

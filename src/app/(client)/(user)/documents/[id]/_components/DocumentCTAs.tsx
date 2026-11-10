@@ -7,16 +7,17 @@ import PersonalizationForm from "./forms/PersonalizationForm";
 
 export function DocumentCTAs({
   document,
+  folderId,
   isAuthenticated,
   alreadyPurchased,
 }: {
   document: { id: string; name: string; price: number; customizable?: boolean };
+  folderId: string | null;
   isAuthenticated: boolean;
   alreadyPurchased: boolean;
 }) {
   const [customizationOpen, setCustomizationOpen] = useState(false);
   const [open, setOpen] = useState(false);
-  
 
   if (alreadyPurchased) {
     return (
@@ -37,7 +38,6 @@ export function DocumentCTAs({
     );
   }
 
-
   const openPayment = () => setOpen(true);
 
   return (
@@ -50,7 +50,7 @@ export function DocumentCTAs({
         Acheter ce document
       </button>
 
-      {document.customizable && (
+      {document.customizable && folderId && (
         <button
           type="button"
           onClick={() => setCustomizationOpen(true)}
@@ -60,14 +60,19 @@ export function DocumentCTAs({
         </button>
       )}
 
-      <PurchaseForm
-        open={open}
-        setOpen={setOpen}
-        document={document}
-      />
+      {document.customizable && !folderId && (
+        <p role="status" className="mt-3 text-sm text-brand-ink-muted">
+          Ouvrez ce document depuis votre dossier pour le personnaliser avec les
+          informations de votre démarche.
+        </p>
+      )}
+
+      <PurchaseForm open={open} setOpen={setOpen} document={document} />
 
       <PersonalizationForm
         docId={document.id}
+        folderId={folderId ?? ""}
+        requiresFiliation={/casier judiciaire/i.test(document.name)}
         customizationOpen={customizationOpen}
         setCustomizationOpen={setCustomizationOpen}
       />

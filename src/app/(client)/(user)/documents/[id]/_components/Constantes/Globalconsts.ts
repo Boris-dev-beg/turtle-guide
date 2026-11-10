@@ -31,6 +31,6 @@ export const PAYMENT_METHODS = [
 ] as const;
 
 export const personalizationSteps = [
-  ["firstName", "lastName", "birthDate", "age", "phone", "email"],
-  ["purpose", "city", "address", "notes"],
+  ["firstName", "lastName", "birthDate", "birthPlace"],
+  ["fatherName", "motherName"],
 ] as const;
