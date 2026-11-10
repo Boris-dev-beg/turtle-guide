@@ -20,7 +20,11 @@ export default function FolderInfos({
   setWantToSeeDetails: (value: boolean) => void;
 }) {
   return (
-    <section className="flex flex-col items-center justify-center fixed inset-0 z-50 bg-black/30 backdrop-blur-sm w-full h-full">
+    <section className="flex flex-col items-center justify-center fixed inset-0 z-50 w-full h-full">
+      <button
+        className="bg-black/30 backdrop-blur-sm absolute inset-0 z-0"
+        onClick={() => setWantToSeeDetails(false)}
+      />
       <div className="flex flex-col items-center justify-center gap-4 rounded-md border border-border bg-card py-5 px-1 shadow-[0_8px_22px_rgba(34,32,27,0.04)] sm:p-8 lg:p-10 max-h-[96vh] overflow-y-auto w-[90vw] sm:w-150 relative">
         <span
           className="absolute top-4 right-4 cursor-pointer"
@@ -28,13 +32,13 @@ export default function FolderInfos({
         >
           <X className="size-7 text-muted-foreground hover:text-foreground" />
         </span>
-        <CardHeader className="px-5 pb-3 pt-5 sm:px-6 sm:pt-6 w-full">
+        <CardHeader className="w-full">
           <CardTitle className="text-2xl sm:text-3xl text-brand-ink w-full">
             Informations sur la démarche
           </CardTitle>
         </CardHeader>
 
-        <CardContent className="grid gap-5 px-2 pb-5 grid-cols-2 sm:px-4 sm:pb-6">
+        <CardContent className="grid gap-5 px-2 pb-5 grid-cols-2">
           <InfoItem
             icon={FileText}
             label="Procédure"
@@ -98,7 +102,9 @@ function InfoItem({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 gap-1">
+    <div
+      className={`flex min-w-0 gap-1 ${label.toLowerCase().includes("base") && "col-span-2"}`}
+    >
       <div className="flex size-12 shrink-0 items-center justify-center">
         <Icon className="size-6 text-brand-green" />
       </div>

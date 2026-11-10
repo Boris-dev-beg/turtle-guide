@@ -20,12 +20,12 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useFolderStore } from "@/store/folder.store";
-import ConfirmDelete from "../cards/ConfirmDelete";
 import { DiagnosticAnswers } from "../cards/DiagnosticAnswers";
 import { FolderStatusBadge, formatDate } from "../utils/functions/functions";
 import FolderInfos from "../sections/FolderInfos";
 import { GreatToKnow, HelpBox } from "../cards/SimpleCard";
 import ProgressSummary from "../sections/ProgressSummary";
+import ConfirmOperation from "../cards/ConfirmOperation";
 
 export default function FolderDetailsPage({
   id,
@@ -37,10 +37,16 @@ export default function FolderDetailsPage({
   // ! STATES
   const router = useRouter();
 
+  // ? DELETE
   const [wantToDelete, setWantToDelete] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  // ? RESTART
+  const [wantToRestart, setWantToRestart] = useState(false);
+  const [isRestarting, setIsRestarting] = useState(false);
+  
   const [wantToSeeDetails, setWantToSeeDetails] = useState(false);
   const [showAnswers, setShowAnswers] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
   const { setCategory, setProcedure } = useFolderStore();
   const {
@@ -177,9 +183,9 @@ export default function FolderDetailsPage({
                 <button
                   type="button"
                   onClick={openDiagnostic}
-                  className="btn btn-primary min-h-12 text-base"
+                  className="btn btn-primary min-h-12 text-sm"
                 >
-                  <Play className="size-5" />
+                  <Play className="size-8" />
                   {folder.status === "CREATED"
                     ? "Continuer le diagnostic"
                     : "Reprendre la démarche"}
@@ -190,14 +196,12 @@ export default function FolderDetailsPage({
               folder.status === "CLOSED") && (
               <button
                 type="button"
-                onClick={handleRestartDiagnostic}
-                disabled={restartDiagnostic.isPending}
-                className="btn btn-primary min-h-12 text-base"
+                onClick={setWantToRestart.bind(null, true)}
+                disabled={wantToRestart}
+                className="btn btn-primary min-h-12 text-sm"
               >
-                <RotateCcw className="size-5" />
-                {restartDiagnostic.isPending
-                  ? "Réinitialisation..."
-                  : "Recommencer le diagnostic"}
+                <RotateCcw className="size-8" />
+                Recommencer le diagnostic
               </button>
             )}
             <button
@@ -206,7 +210,7 @@ export default function FolderDetailsPage({
               disabled={wantToDelete}
               className="btn btn-destructive min-h-12 text-base disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <Trash2 className="size-5" />
+              <Trash2 className="size-8" />
               Supprimer le dossier
             </button>
           </div>
@@ -214,11 +218,23 @@ export default function FolderDetailsPage({
       </div>
 
       {wantToDelete && (
-        <ConfirmDelete
-          isDeleting={isDeleting}
-          handleDelete={handleDelete}
-          setIsDeleting={setIsDeleting}
-          setWantToDelete={setWantToDelete}
+        <ConfirmOperation
+          isPending={isDeleting}
+          handleOperation={handleDelete}
+          setIsPending={setIsDeleting}
+          setWantToContinue={setWantToDelete}
+          label="Supprimer"
+          labelPending="Suppression..."
+        />
+      )}
+      {wantToRestart && (
+        <ConfirmOperation
+          isPending={isRestarting}
+          handleOperation={handleRestartDiagnostic}
+          setIsPending={setIsRestarting}
+          setWantToContinue={setWantToRestart}
+          label="Recommencer"
+          labelPending="Réinitialisation..."
         />
       )}
 

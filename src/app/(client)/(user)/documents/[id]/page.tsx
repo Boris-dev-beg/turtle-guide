@@ -12,10 +12,10 @@ export default async function DocumentPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ from?: string }>;
+  searchParams: Promise<{ from?: string; payment?: string }>;
 }) {
   const { id } = await params;
-  const { from } = await searchParams;
+  const { from, payment } = await searchParams;
 
   const doc = await prisma.document.findUnique({ where: { id } });
   if (!doc) notFound();
@@ -28,28 +28,52 @@ export default async function DocumentPage({
   const backHref =
     from?.startsWith("/") && !from.startsWith("//") ? from : "/folders";
 
-  // contentUrl = /documents/<slug>.pdf (servi depuis public/)
+  // ? contentUrl = /documents/<slug>.pdf (servi depuis public/)
   const pdfSrc = `${doc.contentUrl}#toolbar=0&navpanes=0&view=FitH`;
 
   return (
     <main className="mx-auto max-w-6xl px-4 py-6">
       <Link
         href={backHref}
-        className="text-sm font-medium text-brand-green underline"
+        className="text-lg font-medium text-brand-green underline"
       >
         Retour à mon dossier
       </Link>
 
+      {payment === "cancelled" && (
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
+          Le paiement a été annulé. Vous pouvez réessayer quand vous le
+          souhaitez.
+        </p>
+      )}
+      {payment === "success" && (
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
+          Paiement reçu. La confirmation sécurisée est en cours; actualisez
+          cette page dans quelques instants.
+        </p>
+      )}
+      {payment === "kpay_pending" && (
+        <p role="status" className="turtle-alert-info mt-4 text-lg">
+          Retour KPay reçu. Le document sera indiqué comme acheté après
+          confirmation du paiement par KPay.
+        </p>
+      )}
+
       <div className="mt-4 grid gap-6 lg:grid-cols-[1fr_320px]">
         <aside className="order-first lg:order-last">
           <div className="rounded-lg border border-border bg-card p-4 lg:sticky lg:top-24">
-            <p className="text-base font-semibold text-brand-ink">{doc.name}</p>
+            <p className="text-lg font-semibold text-brand-ink">{doc.name}</p>
             <p className="mt-3 text-2xl font-semibold text-brand-ink">
               {formtaPrice(Number(doc.price))}
             </p>
 
             <DocumentCTAs
-              documentId={doc.id}
+              document={{
+                id: doc.id,
+                name: doc.name,
+                price: Number(doc.price),
+                customizable: doc.customizable,
+              }}
               isAuthenticated={!!session}
               alreadyPurchased={alreadyPurchased}
             />
@@ -67,19 +91,19 @@ export default async function DocumentPage({
           <iframe
             src={pdfSrc}
             title={`Aperçu du document : ${doc.name}`}
-            className="hidden h-[80vh] w-full rounded-lg border border-border bg-white md:block"
+            className="hidden h-[80vh] w-full rounded-lg border border-border bg-card md:block"
           />
 
           {/* Mobile */}
           <div className="rounded-lg border border-border bg-card p-4 md:hidden">
-            <p className="text-base text-brand-ink">
+            <p className="text-lg text-brand-ink">
               Ouvrez l&apos;aperçu pour lire le contenu complet de ce document.
             </p>
             <a
               href={doc.contentUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-3 flex h-12 items-center justify-center gap-2 rounded-md border border-brand-green font-medium text-brand-green"
+              className="btn btn-outline mt-3 min-h-12 w-full text-lg"
             >
               <ExternalLink className="size-4" />
               Ouvrir l&apos;aperçu PDF

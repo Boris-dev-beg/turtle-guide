@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 76" fill="none">
+  <title>TurtleGuide — Vos démarches, pas à pas</title>
+  <g transform="translate(2 5) scale(1.02)">
+    <path d="m17.2 19.6-4.4-4.6c-2.1-2.2-5.8-.7-5.8 2.3v1.9c0 2.5 2 4.5 4.5 4.5h6.1m28.5-4.1 4.4-4.6c2.1-2.2 5.8-.7 5.8 2.3v1.9c0 2.5-2 4.5-4.5 4.5h-6.1M18 40.8l-4.1 4.5c-2 2.2-.5 5.7 2.5 5.7h1.1c2.5 0 4.5-2 4.5-4.5v-4.8m24-5.9 4.2 4.5c2 2.2.5 5.7-2.5 5.7h-1.1c-2.5 0-4.5-2-4.5-4.5v-4.8" fill="#0b6e56"/>
+    <path d="M14.5 29.6c0-10.1 7.8-17.1 18-17.1 9.4 0 16.9 6.1 17.9 15.2.9 8.8-6.2 16.8-16.8 18.6-10.8 1.8-19.1-5.3-19.1-16.7Z" fill="#0b6e56"/>
+    <path d="M44.4 17.9c2.5-4.8 7.9-6.9 12.2-4.5 4.4 2.5 5.1 8.4 1.4 12.4-2.8 3.1-7.4 3.7-11.1 1.7" fill="#0b6e56"/>
+    <circle cx="55.1" cy="17.8" r="1.35" fill="#f7f9f6"/>
+    <path d="M20.3 33.3c3.8-.1 4.6-8.7 10.1-8.7 4.1 0 4 7.9 8.5 7.9 2.1 0 3.6-1.5 5.1-4" stroke="#f7f9f6" stroke-linecap="round" stroke-width="2.7"/>
+    <circle cx="20.5" cy="33.3" r="2" fill="#f7f9f6"/><circle cx="30.4" cy="24.6" r="2" fill="#f7f9f6"/><circle cx="38.9" cy="32.5" r="2" fill="#f7f9f6"/><circle cx="44.2" cy="28.5" r="2" fill="#f7f9f6"/>
+  </g>
+  <text x="76" y="39" fill="#141f2e" font-family="Arial, Helvetica, sans-serif" font-size="29" font-weight="700" letter-spacing="-1.2">TurtleGuide</text>
+  <text x="78" y="59" fill="#0b6e56" font-family="Arial, Helvetica, sans-serif" font-size="12.5" font-weight="500" letter-spacing=".15">Vos démarches, pas à pas</text>
+</svg>

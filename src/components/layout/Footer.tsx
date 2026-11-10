@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Footer() {
   return (
@@ -8,9 +9,16 @@ export default function Footer() {
         <div className="flex flex-col gap-2">
           <Link
             href="/"
-            className="w-fit text-xl font-semibold tracking-tight text-brand-ink transition-colors hover:text-brand-green"
+            aria-label="TurtleGuide — accueil"
+            className="w-fit transition-opacity hover:opacity-80"
           >
-            TurtleGuide
+            <Image
+              src="/brand/turtleguide-logo.svg"
+              alt="TurtleGuide — Vos démarches, pas à pas"
+              width={288}
+              height={61}
+              className="h-14 w-64 object-contain object-left"
+            />
           </Link>
 
           <p className="max-w-md text-sm leading-5 sm:text-base">

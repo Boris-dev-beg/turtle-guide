@@ -1,47 +1,76 @@
 "use client";
 
-import { startDocumentPurchase } from "@/lib/documents";
+import { useState } from "react";
 import Link from "next/link";
-import { useTransition } from "react";
+import PurchaseForm from "./forms/PurchaseForm";
+import PersonalizationForm from "./forms/PersonalizationForm";
 
 export function DocumentCTAs({
-  documentId,
+  document,
   isAuthenticated,
   alreadyPurchased,
 }: {
-  documentId: string;
+  document: { id: string; name: string; price: number; customizable?: boolean };
   isAuthenticated: boolean;
   alreadyPurchased: boolean;
 }) {
-  const [pending, startTransition] = useTransition();
+  const [customizationOpen, setCustomizationOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  
 
   if (alreadyPurchased) {
     return (
-      <p className="mt-4 rounded-md bg-brand-green-soft p-3 text-sm font-medium text-brand-green">
-        Vous avez déjà acheté ce document. Retrouvez-le dans votre dossier.
-      </p>
+      <div role="status" className="turtle-alert-info mt-4 text-lg">
+        Vous avez déjà acheté ce document.
+      </div>
     );
   }
 
   if (!isAuthenticated) {
     return (
       <Link
-        href={`/login?callbackUrl=${encodeURIComponent(`/documents/${documentId}`)}`}
-        className="mt-4 flex h-12 w-full items-center justify-center rounded-md bg-brand-green font-medium text-white"
+        href={`/login?callbackUrl=${encodeURIComponent(`/documents/${document.id}`)}`}
+        className="btn btn-primary mt-4 min-h-12 w-full text-lg"
       >
         Se connecter pour acheter
       </Link>
     );
   }
 
+
+  const openPayment = () => setOpen(true);
+
   return (
-    <button
-      type="button"
-      disabled={pending}
-      onClick={() => startTransition(() => startDocumentPurchase(documentId))}
-      className="mt-4 h-12 w-full rounded-md bg-brand-green font-medium text-white disabled:opacity-60"
-    >
-      {pending ? "Redirection…" : "Acheter ce document"}
-    </button>
+    <>
+      <button
+        type="button"
+        onClick={openPayment}
+        className="btn btn-primary mt-4 min-h-12 w-full text-lg"
+      >
+        Acheter ce document
+      </button>
+
+      {document.customizable && (
+        <button
+          type="button"
+          onClick={() => setCustomizationOpen(true)}
+          className="btn btn-outline mt-3 min-h-12 w-full text-base"
+        >
+          Personnaliser ce document
+        </button>
+      )}
+
+      <PurchaseForm
+        open={open}
+        setOpen={setOpen}
+        document={document}
+      />
+
+      <PersonalizationForm
+        docId={document.id}
+        customizationOpen={customizationOpen}
+        setCustomizationOpen={setCustomizationOpen}
+      />
+    </>
   );
 }

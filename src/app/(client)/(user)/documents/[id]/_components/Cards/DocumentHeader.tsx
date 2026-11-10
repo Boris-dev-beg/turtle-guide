@@ -41,9 +41,9 @@ export default function DocumentHeader({
   return (
     <aside className="order-first lg:order-last">
       <div className="rounded-lg border border-border bg-card p-4 lg:sticky lg:top-24">
-        <p className="text-base font-semibold text-brand-ink">{doc.name}</p>
+        <p className="text-lg font-semibold text-brand-ink">{doc.name}</p>
         {content?.statut && (
-          <p className="mt-1 text-sm text-brand-ink-muted">
+          <p className="mt-1 text-lg text-brand-ink-muted">
             {STATUT_LABEL[content.statut] ?? content.statut}
           </p>
         )}
@@ -52,7 +52,7 @@ export default function DocumentHeader({
         </p>
 
         <DocumentCTAs
-          documentId={doc.id}
+          document={{ id: doc.id, name: doc.name, price: Number(doc.price) }}
           isAuthenticated={!!session}
           alreadyPurchased={alreadyPurchased}
         />

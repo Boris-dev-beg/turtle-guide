@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"; 
-import { auth } from "./auth/auth"; // path to your Better Auth server instance 
+import { auth } from "./auth/auth";
 import { headers } from "next/headers"; 
 
 export async function getSession() { 
@@ -12,7 +12,7 @@ export async function requireSession(uriComponent?: string) {
   const session = await getSession(); 
 
   if (!session?.user) { 
-    redirect(`/login?callbackUrl=${encodeURIComponent(uriComponent || window.location.href)}`); 
+    redirect(`/login?callbackUrl=${encodeURIComponent(uriComponent || "")}`); 
   } 
 
   return session; 

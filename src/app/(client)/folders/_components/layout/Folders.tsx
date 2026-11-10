@@ -59,42 +59,48 @@ export default function Folders({ userId }: { userId: string }) {
 
       {/* Filtres */}
       <div className="mb-6 flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-        <Tabs value={statusFilter} onValueChange={setStatusFilter}>
-          <TabsList className="h-12! rounded-sm border border-border bg-card p-2">
-            <TabsTrigger value="all" className="rounded-sm px-4 text-base h-8">
-              Tous ({folders ? folders.length : 0})
-            </TabsTrigger>
+        <div className="space-y-1">
+          <p>Filtrez vos dossiers par statut</p>
+          <Tabs value={statusFilter} onValueChange={setStatusFilter}>
+            <TabsList className="h-12! rounded-sm border border-border bg-card p-2">
+              <TabsTrigger
+                value="all"
+                className="rounded-sm px-4 text-base h-8"
+              >
+                Tous ({folders ? folders.length : 0})
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="active"
-              className="rounded-sm px-4 text-base h-8"
-            >
-              En cours (
-              {folders
-                ? folders.filter(
-                    (folder) =>
-                      folder.status === "CREATED" ||
-                      folder.status === "PENDING",
-                  ).length
-                : 0}
-              )
-            </TabsTrigger>
+              <TabsTrigger
+                value="active"
+                className="rounded-sm px-4 text-base h-8"
+              >
+                En cours (
+                {folders
+                  ? folders.filter(
+                      (folder) =>
+                        folder.status === "CREATED" ||
+                        folder.status === "PENDING",
+                    ).length
+                  : 0}
+                )
+              </TabsTrigger>
 
-            <TabsTrigger
-              value="finished"
-              className="rounded-sm px-4 text-base h-8"
-            >
-              Terminés (
-              {folders
-                ? folders.filter(
-                    (folder) =>
-                      folder.status === "ENDED" || folder.status === "CLOSED",
-                  ).length
-                : 0}
-              )
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
+              <TabsTrigger
+                value="finished"
+                className="rounded-sm px-4 text-base h-8"
+              >
+                Terminés (
+                {folders
+                  ? folders.filter(
+                      (folder) =>
+                        folder.status === "ENDED" || folder.status === "CLOSED",
+                    ).length
+                  : 0}
+                )
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
 
         <div className="relative w-full lg:w-72">
           <Search className="absolute left-3 top-1/2 size-5 -translate-y-1/2 text-brand-ink-muted" />
@@ -118,9 +124,9 @@ export default function Folders({ userId }: { userId: string }) {
           <EmptyFolders />
         ) : visibleFolders.length > 0 ? (
           <div className="grid gap-4">
-          {visibleFolders.map((folder) => (
-            <FolderCard key={folder.id} folder={folder} />
-          ))}
+            {visibleFolders.map((folder) => (
+              <FolderCard key={folder.id} folder={folder} />
+            ))}
           </div>
         ) : (
           <EmptyFilteredFolders />

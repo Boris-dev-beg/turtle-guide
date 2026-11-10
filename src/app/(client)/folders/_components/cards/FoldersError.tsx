@@ -7,7 +7,7 @@ type FolderErrorProps = {
 
 export function FoldersError({ onRetry }: FolderErrorProps) {
   return (
-    <div className="flex min-h-70 flex-col items-center justify-center rounded-sm border border-brand-danger/20 border-l-4 border-l-brand-danger bg-card px-6 py-10 text-center">
+    <div className="min-h-70 flex-col items-center justify-center border-brand-danger/20 px-6 py-10 text-center turtle-card">
       <div className="mb-4 flex size-14 items-center justify-center rounded-sm bg-brand-danger-bg">
         <AlertCircle className="size-8 text-brand-danger" strokeWidth={1.8} />
       </div>
@@ -26,7 +26,7 @@ export function FoldersError({ onRetry }: FolderErrorProps) {
           variant="outline"
           type="button"
           onClick={onRetry}
-          className="btn btn-outline text-base mt-5 rounded-sm p-4"
+          className="btn btn-outline text-base mt-5 rounded-xs px-6 py-5"
         >
           <RefreshCw className="size-5" />
           Réessayer

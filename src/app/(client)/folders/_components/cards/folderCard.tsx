@@ -80,7 +80,7 @@ export function FolderCard({ folder }: { folder: FolderListType }) {
 
   return (
     <Link href={`/folders/${folder.id}`}>
-      <Card className="group relative rounded-sm border-border border-l-4 border-l-brand-yellow bg-card shadow-none transition-colors hover:border-brand-green-light/40">
+      <Card className="group relative rounded-sm border-2 border-border bg-card shadow-none transition-colors hover:border-brand-green-light/40">
         <CardContent className="p-4 sm:p-5">
           <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             {/* Folder's Information */}
@@ -115,7 +115,7 @@ export function FolderCard({ folder }: { folder: FolderListType }) {
             </div>
 
             {/* Action */}
-            <span className="flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm border border-brand-green px-3 text-base font-semibold text-brand-green transition-colors group-hover:bg-brand-green group-hover:text-primary-foreground">
+            <span className="flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-sm border border-brand-green px-3 text-base font-semibold text-brand-green transition-colors duration-300 group-hover:bg-brand-green group-hover:text-primary-foreground">
               {actionLabel}
               <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" />
             </span>
