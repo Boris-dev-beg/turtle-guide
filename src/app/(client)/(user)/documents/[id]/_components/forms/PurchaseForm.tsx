@@ -50,9 +50,9 @@ export default function PurchaseForm({
   };
   return (
     <Dialog open={open} onOpenChange={handleDialogChange}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg w-[99vw] scrollbar-thin">
+      <DialogContent className="min-h-[90vh] overflow-y-auto sm:max-w-lg w-[99vw] py-6 scrollbar-thin">
         <DialogHeader>
-          <DialogTitle className="text-xl text-brand-ink">
+          <DialogTitle className="text-2xl text-brand-ink">
             Acheter ce document
           </DialogTitle>
           <DialogDescription className="text-base text-brand-ink-muted">
@@ -111,8 +111,8 @@ export default function PurchaseForm({
           )}
 
           <p className="flex items-start gap-2 text-base leading-6 text-brand-ink-muted">
-            <Lock className="mt-0.5 size-4 shrink-0" aria-hidden />
-            <span>
+            <Lock className="mt-0.5 size-5 shrink-0" aria-hidden />
+            <span className="text-sm">
               Les informations de paiement sont saisies sur la page sécurisée du
               prestataire choisi, pas sur TurtleGuide.
             </span>
@@ -134,7 +134,7 @@ export default function PurchaseForm({
             >
               {pending
                 ? "Préparation du paiement…"
-                : `Payer ${price} avec ${method === "kpay" ? "KPay" : "Stripe"}`}
+                : `Payer (${price})`}
             </button>
           </div>
         </form>

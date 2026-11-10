@@ -33,7 +33,7 @@ export default function PersonalizationForm({
 }) {
   const [stepIndex, setStepIndex] = useState(0);
 
-  const personalizationForm = useForm<PersonalizationFormValues>({
+  const {handleSubmit, trigger, formState, control, setError} = useForm<PersonalizationFormValues>({
     resolver: zodResolver(personalizationSchema),
     mode:"onChange",
     defaultValues: {
@@ -50,7 +50,7 @@ export default function PersonalizationForm({
     },
   });
 
-  const handleCustomize = personalizationForm.handleSubmit(async (values) => {
+  const handleCustomize = handleSubmit(async (values) => {
     try {
       window.sessionStorage.setItem(
         `document-personalization:${docId}`,
@@ -62,7 +62,7 @@ export default function PersonalizationForm({
       });
       window.location.assign(result.checkoutUrl);
     } catch {
-      personalizationForm.setError("root", {
+      setError("root", {
         message:
           "Impossible de lancer la personnalisation et le paiement. Réessayez dans quelques instants.",
       });
@@ -70,7 +70,7 @@ export default function PersonalizationForm({
   });
 
   const handleCustomizationDialogChange = (value: boolean) => {
-    if (!personalizationForm.formState.isSubmitting) {
+    if (!formState.isSubmitting) {
       setCustomizationOpen(value);
       if (!value) setStepIndex(0);
     }
@@ -78,7 +78,7 @@ export default function PersonalizationForm({
 
   const nextStep = async () => {
     const stepFields = personalizationSteps[stepIndex];
-    const isValid = await personalizationForm.trigger(stepFields);
+    const isValid = await trigger(stepFields);
     if (isValid && stepIndex < personalizationSteps.length - 1) {
       setStepIndex((current) => current + 1);
     }
@@ -112,7 +112,7 @@ export default function PersonalizationForm({
       open={customizationOpen}
       onOpenChange={handleCustomizationDialogChange}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-xl p-5">
         <DialogHeader>
           <DialogTitle className="text-xl text-brand-ink">
             Personnaliser le document
@@ -135,7 +135,7 @@ export default function PersonalizationForm({
               return (
                 <Controller
                   key={fieldName}
-                  control={personalizationForm.control}
+                  control={control}
                   name={fieldName}
                   render={({ field, fieldState }) => (
                     <Field data-invalid={fieldState.invalid} className="gap-1.5">
@@ -175,9 +175,9 @@ export default function PersonalizationForm({
             })}
           </div>
 
-          {personalizationForm.formState.errors.root && (
+          {formState.errors.root && (
             <p className="text-sm text-destructive">
-              {String(personalizationForm.formState.errors.root.message)}
+              {String(formState.errors.root.message)}
             </p>
           )}
 
@@ -208,10 +208,10 @@ export default function PersonalizationForm({
             ) : (
               <Button
                 type="submit"
-                disabled={personalizationForm.formState.isSubmitting}
+                disabled={formState.isSubmitting}
                 className="btn btn-primary min-h-12 text-lg"
               >
-                {personalizationForm.formState.isSubmitting
+                {formState.isSubmitting
                   ? "Préparation du paiement…"
                   : "Continuer vers le paiement"}
               </Button>

@@ -14,7 +14,6 @@ export const personalizationSchema = z.object({
     }, "L'âge doit être un nombre valide entre 0 et 120."),
   phone: z.string().min(8, "Le téléphone est requis."),
   email: z
-    .string()
     .email("L'adresse e-mail est invalide.")
     .optional()
     .or(z.literal("")),

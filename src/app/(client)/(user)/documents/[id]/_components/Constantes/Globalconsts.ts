@@ -17,13 +17,13 @@ export function formtaPrice(price: number) {
 export const PAYMENT_METHODS = [
   {
     id: "card",
-    label: "Carte bancaire avec Stripe",
+    label: "Carte bancaire",
     description: "Paiement par carte sur la page sécurisée Stripe.",
     Icon: CreditCard,
   },
   {
     id: "kpay",
-    label: "Mobile Money avec KPay",
+    label: "Mobile Money",
     description:
       "Choisissez MTN Mobile Money ou Orange Money sur la page sécurisée KPay.",
     Icon: Smartphone,
