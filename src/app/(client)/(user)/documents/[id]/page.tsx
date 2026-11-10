@@ -28,7 +28,7 @@ export default async function DocumentPage({
   const backHref =
     from?.startsWith("/") && !from.startsWith("//") ? from : "/folders";
 
-  // contentUrl = /documents/<slug>.pdf (servi depuis public/)
+  // ? contentUrl = /documents/<slug>.pdf (servi depuis public/)
   const pdfSrc = `${doc.contentUrl}#toolbar=0&navpanes=0&view=FitH`;
 
   return (

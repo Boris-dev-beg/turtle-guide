@@ -54,7 +54,7 @@ export function DocumentCTAs({
         <button
           type="button"
           onClick={() => setCustomizationOpen(true)}
-          className="btn btn-outline mt-3 min-h-12 w-full text-lg"
+          className="btn btn-outline mt-3 min-h-12 w-full text-base"
         >
           Personnaliser ce document
         </button>

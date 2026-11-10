@@ -7,10 +7,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldLabel } from "@/components/ui/field";
-import {
-  InputGroup,
-  InputGroupInput,
-} from "@/components/ui/input-group";
+import { InputGroup, InputGroupInput } from "@/components/ui/input-group";
 import { ArrowRight } from "lucide-react";
 import {
   PersonalizationFormValues,
@@ -19,7 +16,6 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { startDocumentPurchase } from "@/lib/documents";
 import { personalizationSteps } from "../Constantes/Globalconsts";
 
 export default function PersonalizationForm({
@@ -33,22 +29,23 @@ export default function PersonalizationForm({
 }) {
   const [stepIndex, setStepIndex] = useState(0);
 
-  const {handleSubmit, trigger, formState, control, setError} = useForm<PersonalizationFormValues>({
-    resolver: zodResolver(personalizationSchema),
-    mode:"onChange",
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      birthDate: "",
-      age: "",
-      phone: "",
-      email: "",
-      city: "",
-      address: "",
-      purpose: "",
-      notes: "",
-    },
-  });
+  const { handleSubmit, trigger, formState, control, setError } =
+    useForm<PersonalizationFormValues>({
+      resolver: zodResolver(personalizationSchema),
+      mode: "onChange",
+      defaultValues: {
+        firstName: "",
+        lastName: "",
+        birthDate: "",
+        age: "",
+        phone: "",
+        email: "",
+        city: "",
+        address: "",
+        purpose: "",
+        notes: "",
+      },
+    });
 
   const handleCustomize = handleSubmit(async (values) => {
     try {
@@ -56,11 +53,7 @@ export default function PersonalizationForm({
         `document-personalization:${docId}`,
         JSON.stringify(values),
       );
-      const result = await startDocumentPurchase({
-        documentId: docId,
-        method: "card",
-      });
-      window.location.assign(result.checkoutUrl);
+      console.log("Valeurs de personalisation: ", values);
     } catch {
       setError("root", {
         message:
@@ -118,7 +111,8 @@ export default function PersonalizationForm({
             Personnaliser le document
           </DialogTitle>
           <DialogDescription className="text-lg text-brand-ink-muted">
-            Complétez vos informations pour continuer vers le paiement.
+            Complétez vos informations ou celles du destinataire pour
+            personnaliser le document.
           </DialogDescription>
         </DialogHeader>
 
@@ -138,7 +132,10 @@ export default function PersonalizationForm({
                   control={control}
                   name={fieldName}
                   render={({ field, fieldState }) => (
-                    <Field data-invalid={fieldState.invalid} className="gap-1.5">
+                    <Field
+                      data-invalid={fieldState.invalid}
+                      className="gap-1.5"
+                    >
                       <FieldLabel
                         htmlFor={field.name}
                         className="text-base font-semibold text-foreground"
@@ -212,8 +209,8 @@ export default function PersonalizationForm({
                 className="btn btn-primary min-h-12 text-lg"
               >
                 {formState.isSubmitting
-                  ? "Préparation du paiement…"
-                  : "Continuer vers le paiement"}
+                  ? "Préparation de la personalisation…"
+                  : "Personnaliser le document"}
               </Button>
             )}
           </div>
