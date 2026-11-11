@@ -1,90 +1,19 @@
 import { generatePDF } from "@/lib/pdf-generation/pdf";
 import { requireSession } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { getFolder } from "@/lib/folder.action";
-
-export const maxDuration = 60;
-export const dynamic = "force-dynamic";
-export const runtime = "nodejs";
-
-function normalizeBirthDate(value: unknown) {
-  if (typeof value !== "string") return value;
-
-  const monthFirst = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
-  if (monthFirst) {
-    const [, month, day, year] = monthFirst;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  const yearFirst = value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
-  if (yearFirst) {
-    const [, year, month, day] = yearFirst;
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  }
-
-  return value;
-}
-
-const requestSchema = z.object({
-  docId: z.string().min(1),
-  folderId: z.string().min(1),
-  data: z.object({
-    firstName: z.string().trim().min(2).max(100),
-    lastName: z.string().trim().min(2).max(100),
-    birthDate: z.preprocess(
-      normalizeBirthDate,
-      z
-        .string()
-        .regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide.")
-        .refine((value) => {
-          const [year, month, day] = value.split("-").map(Number);
-          const date = new Date(Date.UTC(year, month - 1, day));
-          return (
-            date.getUTCFullYear() === year &&
-            date.getUTCMonth() === month - 1 &&
-            date.getUTCDate() === day
-          );
-        }, "Date de naissance invalide."),
-    ),
-    birthPlace: z.string().trim().min(2).max(150),
-    fatherName: z.string().trim().max(150).optional().default(""),
-    motherName: z.string().trim().max(150).optional().default(""),
-  }),
-});
-
-function escapeHtml(value: string) {
-  const entities: Record<string, string> = {
-    "&": "&amp;",
-    "<": "&lt;",
-    ">": "&gt;",
-    '"': "&quot;",
-    "'": "&#39;",
-  };
-  return value.replace(/[&<>"']/g, (character) => entities[character]);
-}
-
-function formatDate(value: string) {
-  return new Intl.DateTimeFormat("fr-FR", {
-    day: "numeric",
-    month: "long",
-    year: "numeric",
-    timeZone: "Africa/Douala",
-  }).format(new Date(`${value}T12:00:00`));
-}
-
-function getPurpose(answers: { question: string; answer: string }[]) {
-  return answers.find(({ question }) =>
-    /usage|utilisation|motif|pour quel/i.test(question),
-  )?.answer;
-}
+import {
+  escapeHtml,
+  formatDate,
+  getPurpose,
+  requestSchema,
+} from "@/utils/functions";
 
 export async function POST(req: NextRequest) {
+  // ? Exige une session active; requireSession redirige/refuse aussi les appels anonymes.
   const session = await requireSession();
-  if (!session) {
-    return NextResponse.json({ error: "Session requise." }, { status: 401 });
-  }
 
+  // ? Le schéma partagé normalise la date puis vérifie tous les champs reçus avant leur usage.
   const body = await req.json().catch(() => null);
   const parsed = requestSchema.safeParse(body);
   if (!parsed.success) {
@@ -106,6 +35,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { docId, folderId, data } = parsed.data;
+  // ? un client ne peut pas générer un PDF à partir du dossier d'un autre compte.
   const folder = await getFolder(folderId, session.user.id);
 
   if (!folder) {
@@ -122,6 +52,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ? Le document doit réellement apparaître dans les étapes de ce dossier et être personnalisable.
   const document = folder.process.steps
     .flatMap((step) => step.documents)
     .find((item) => item.id === docId && item.customizable);
@@ -133,6 +64,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // ? Les questions/réponses enregistrées sont la source du motif et du résumé de contexte de la lettre.
   const answers = folder.answers.map(({ option }) => ({
     question: option.question.title,
     answer: option.label,
@@ -140,6 +72,7 @@ export async function POST(req: NextRequest) {
   const purpose = getPurpose(answers);
   const location =
     folder.location?.city || folder.location?.address || "________________";
+  // ? Le modèle de casier ajoute destinataire judiciaire et filiation; les autres lettres restent génériques.
   const isCriminalRecord = /casier judiciaire/i.test(
     `${folder.procedure.title} ${folder.process.title} ${document.name}`,
   );
@@ -176,6 +109,7 @@ export async function POST(req: NextRequest) {
     ? `, enfant de ${escapeHtml(data.fatherName)} et de ${escapeHtml(data.motherName)}`
     : "";
 
+  // ? Le HTML définit la mise en page de la lettre; toutes les valeurs dynamiques sont échappées ci-dessus.
   const html = `<!doctype html>
     <html lang="fr">
       <head>
@@ -203,8 +137,7 @@ export async function POST(req: NextRequest) {
         <p>
           Je soussigné(e) <strong>${escapeHtml(data.firstName)} ${escapeHtml(data.lastName)}</strong>,
           né(e) le ${escapeHtml(formatDate(data.birthDate))} à ${escapeHtml(data.birthPlace)},
-          ${filiation}
-          sollicite la délivrance de <strong>${escapeHtml(document.name)}</strong>.
+          ${filiation} sollicite la délivrance de <strong>${escapeHtml(document.name)}</strong>.
         </p>
         <p>
           Cette demande est présentée dans le cadre de la démarche
@@ -227,6 +160,7 @@ export async function POST(req: NextRequest) {
     </html>`;
 
   try {
+    // ? Puppeteer imprime le HTML en PDF A4; la réponse HTTP transporte ensuite le fichier au formulaire.
     const pdf = await generatePDF(html);
     const filename = `lettre-administrative-${docId.replace(/[^a-zA-Z0-9_-]/g, "")}.pdf`;
     return new Response(new Uint8Array(pdf), {

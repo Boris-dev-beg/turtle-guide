@@ -32,8 +32,10 @@ export default function PersonalizationForm({
   setCustomizationOpen: (val: boolean) => void;
   customizationOpen: boolean;
 }) {
+  // ! State pour suivre l'étape actuelle du formulaire de personnalisation.
   const [stepIndex, setStepIndex] = useState(0);
 
+  // ? Gestion des formulaires avec React Hook Form et validation Zod.
   const { handleSubmit, trigger, formState, control, setError } =
     useForm<PersonalizationFormValues>({
       resolver: zodResolver(personalizationSchema),
@@ -48,6 +50,8 @@ export default function PersonalizationForm({
       },
     });
 
+  // ! Function to handle form submission and PDF generation
+  // ? La filiation n'est requise que pour le modèle de demande de casier judiciaire.
   const handleCustomize = handleSubmit(async (values) => {
     if (
       requiresFiliation &&
@@ -63,6 +67,7 @@ export default function PersonalizationForm({
     }
 
     try {
+      // ! Permet de générer le PDF personnalisé.
       const res = await fetch("/api/generate-pdf", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -74,6 +79,7 @@ export default function PersonalizationForm({
         throw new Error(result?.error ?? "La génération du PDF a échoué.");
       }
 
+      // ! La réponse est le fichier PDF binaire généré par l'API, téléchargé sans navigation.
       const blob = await res.blob();
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -91,6 +97,8 @@ export default function PersonalizationForm({
         message,
       });
       toast.error(message);
+    } finally {
+      setCustomizationOpen(false);
     }
   });
 

@@ -160,6 +160,7 @@ export function ProcesSteps({
 
                     {/* Step's Documents */}
 
+                    {/* Chaque lien transporte le dossier source pour contextualiser une éventuelle lettre personnalisée. */}
                     {step.documents.map((document) => (
                       <Link
                         key={document.id}

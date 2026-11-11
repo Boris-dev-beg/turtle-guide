@@ -10,7 +10,7 @@ export const STATUT_LABEL: Record<string, string> = {
     "Aide à la préparation, à confirmer auprès de l'administration",
 };
 
-export function formtaPrice(price: number) {
+export function formatPrice(price: number) {
   return `${new Intl.NumberFormat("fr-FR").format(Number(price))} FCFA`;
 }
 

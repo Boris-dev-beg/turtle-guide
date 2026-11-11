@@ -50,6 +50,7 @@ export function DocumentCTAs({
         Acheter ce document
       </button>
 
+      {/* La personnalisation nécessite un dossier pour connaître le motif et les étapes. */}
       {document.customizable && folderId && (
         <button
           type="button"
@@ -69,6 +70,7 @@ export function DocumentCTAs({
 
       <PurchaseForm open={open} setOpen={setOpen} document={document} />
 
+      {/* Le formulaire reçoit les identifiants du document et du dossier, pas le contexte administratif lui-même. */}
       <PersonalizationForm
         docId={document.id}
         folderId={folderId ?? ""}
