@@ -1,12 +1,30 @@
 import { generatePDF } from "@/lib/pdf-generation/pdf";
-import { getSession } from "@/lib/session";
+import { requireSession } from "@/lib/session";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { getFolder } from "@/lib/folder.action";
 
 export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
+
+function normalizeBirthDate(value: unknown) {
+  if (typeof value !== "string") return value;
+
+  const monthFirst = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (monthFirst) {
+    const [, month, day, year] = monthFirst;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  const yearFirst = value.match(/^(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (yearFirst) {
+    const [, year, month, day] = yearFirst;
+    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+  }
+
+  return value;
+}
 
 const requestSchema = z.object({
   docId: z.string().min(1),
@@ -14,16 +32,21 @@ const requestSchema = z.object({
   data: z.object({
     firstName: z.string().trim().min(2).max(100),
     lastName: z.string().trim().min(2).max(100),
-    birthDate: z
-      .string()
-      .regex(/^\d{4}-\d{2}-\d{2}$/)
-      .refine((value) => {
-        const date = new Date(`${value}T00:00:00`);
-        return (
-          Number.isFinite(date.getTime()) &&
-          date.toISOString().slice(0, 10) === value
-        );
-      }),
+    birthDate: z.preprocess(
+      normalizeBirthDate,
+      z
+        .string()
+        .regex(/^\d{4}-\d{2}-\d{2}$/, "Format de date invalide.")
+        .refine((value) => {
+          const [year, month, day] = value.split("-").map(Number);
+          const date = new Date(Date.UTC(year, month - 1, day));
+          return (
+            date.getUTCFullYear() === year &&
+            date.getUTCMonth() === month - 1 &&
+            date.getUTCDate() === day
+          );
+        }, "Date de naissance invalide."),
+    ),
     birthPlace: z.string().trim().min(2).max(150),
     fatherName: z.string().trim().max(150).optional().default(""),
     motherName: z.string().trim().max(150).optional().default(""),
@@ -57,7 +80,7 @@ function getPurpose(answers: { question: string; answer: string }[]) {
 }
 
 export async function POST(req: NextRequest) {
-  const session = await getSession();
+  const session = await requireSession();
   if (!session) {
     return NextResponse.json({ error: "Session requise." }, { status: 401 });
   }
@@ -70,6 +93,8 @@ export async function POST(req: NextRequest) {
     )
       .flat()
       .find(Boolean);
+
+    console.log(parsed.error.issues);
     return NextResponse.json(
       {
         error:
@@ -81,29 +106,7 @@ export async function POST(req: NextRequest) {
   }
 
   const { docId, folderId, data } = parsed.data;
-  const folder = await prisma.folder.findFirst({
-    where: { id: folderId, userId: session.user.id },
-    include: {
-      procedure: true,
-      location: true,
-      answers: {
-        include: { option: { include: { question: true } } },
-        orderBy: { answeredAt: "asc" },
-      },
-      process: {
-        include: {
-          steps: {
-            include: {
-              administrativeBody: true,
-              documents: {
-                select: { id: true, name: true, customizable: true },
-              },
-            },
-          },
-        },
-      },
-    },
-  });
+  const folder = await getFolder(folderId, session.user.id);
 
   if (!folder) {
     return NextResponse.json(
