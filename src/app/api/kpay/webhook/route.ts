@@ -1,6 +1,7 @@
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 import { documentServices } from "@/services/documents.service";
+import { donationServices } from "@/services/donation.service";
 
 const kpayCallbackSchema = z.object({
   event: z.enum([
@@ -71,11 +72,13 @@ export async function POST(request: Request) {
   }
 
   try {
-    await documentServices.finalizeKpayPayment({
-      externalId: callback.externalId,
-      amount: callback.amount,
-      status: callback.status === "COMPLETED" ? "SUCCESS" : "FAILED",
-    });
+    const status = callback.status === "COMPLETED" ? "SUCCESS" : "FAILED";
+    const payment = await documentServices.findPurchaseTransactionByReference(callback.externalId);
+    if (payment) {
+      await documentServices.finalizeKpayPayment({ externalId: callback.externalId, amount: callback.amount, status });
+    } else {
+      await donationServices.finalizeKpayDonation({ externalId: callback.externalId, amount: callback.amount, status });
+    }
 
     return Response.json({ reply: "OK" });
   } catch (error) {

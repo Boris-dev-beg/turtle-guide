@@ -1,5 +1,6 @@
 import { stripe } from "@/lib/payment/stripe";
 import { documentServices } from "@/services/documents.service";
+import { donationServices } from "@/services/donation.service";
 import type Stripe from "stripe";
 
 /**
@@ -56,7 +57,13 @@ async function applyCheckoutEvent(
   session: Stripe.Checkout.Session,
 ) {
   const transactionId = session.metadata?.transactionId;
+  const donationId = session.metadata?.donationId;
   const purchaseId = session.metadata?.documentPurchaseId;
+  if (donationId && transactionId && session.amount_total !== null && session.currency) {
+    const status = eventType === "checkout.session.async_payment_succeeded" || (eventType === "checkout.session.completed" && session.payment_status === "paid") ? "SUCCESS" : eventType === "checkout.session.completed" ? "PENDING" : "FAILED";
+    await donationServices.finalizeDonationPayment({ transactionId, donationId, sessionId: session.id, amount: session.amount_total, currency: session.currency, status });
+    return;
+  }
   if (
     !transactionId ||
     !purchaseId ||
