@@ -82,9 +82,9 @@ export function FolderCard({ folder }: { folder: FolderListType }) {
     <Link href={`/folders/${folder.id}`}>
       <Card className="group relative rounded-sm border-2 border-border bg-card shadow-none transition-colors hover:border-brand-green-light/40">
         <CardContent className="p-4 sm:p-5">
-          <div className="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-5 md:flex-row md:items-center sm:justify-between">
             {/* Folder's Information */}
-            <div className="flex min-w-0 gap-4">
+            <div className="flex flex-col md:flex-row min-w-0 gap-4">
               <div className="hidden sm:flex size-12 shrink-0 items-center justify-center rounded-sm bg-brand-yellow-bg text-brand-ink">
                 <BriefcaseBusiness className="size-6" />
               </div>

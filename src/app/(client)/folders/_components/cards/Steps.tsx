@@ -17,9 +17,9 @@ export function ProcesSteps({
   folderLocationId,
   diagnosticComplete,
   onResumeDiagnostic,
-  folderId
+  folderId,
 }: {
-  folderId: string,
+  folderId: string;
   process?: {
     id: string;
     title: string;
@@ -160,10 +160,11 @@ export function ProcesSteps({
 
                     {/* Step's Documents */}
 
+                    {/* Chaque lien transporte le dossier source pour contextualiser une éventuelle lettre personnalisée. */}
                     {step.documents.map((document) => (
                       <Link
                         key={document.id}
-                        href={`/documents/${document.id}?from=${encodeURIComponent(`/folders/${folderId}`)}`}
+                        href={`/documents/${document.id}?folderId=${encodeURIComponent(folderId)}&from=${encodeURIComponent(`/folders/${folderId}`)}`}
                         className="flex items-start gap-3 rounded-lg border border-brand-green/30 bg-brand-green-soft p-3 transition-colors hover:border-brand-green"
                       >
                         <FileText className="mt-0.5 size-6 shrink-0 text-brand-green" />

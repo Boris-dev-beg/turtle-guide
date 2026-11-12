@@ -170,7 +170,9 @@ export const documentServices = {
         !payment.amount.equals(amount) ||
         !payment.documentPurchase.amount.equals(amount)
       ) {
-        throw new Error("Les données du paiement KPay ne correspondent pas à l'achat.");
+        throw new Error(
+          "Les données du paiement KPay ne correspondent pas à l'achat.",
+        );
       }
 
       if (payment.status === "SUCCESS") return payment;

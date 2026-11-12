@@ -5,7 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { formtaPrice, PAYMENT_METHODS } from "../Constantes/Globalconsts";
+import { formatPrice, PAYMENT_METHODS } from "../Constantes/Globalconsts";
 import { Lock } from "lucide-react";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -31,7 +31,7 @@ export default function PurchaseForm({
 
   const pending = form.formState.isSubmitting;
   const method = useWatch({ control: form.control, name: "method" });
-  const price = formtaPrice(document.price);
+  const price = formatPrice(document.price);
 
   const handlePay = form.handleSubmit(async (values) => {
     try {

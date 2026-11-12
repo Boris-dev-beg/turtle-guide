@@ -3,6 +3,7 @@ import OurEngagements from "./_components/Home/Engagements";
 import PopularProcedures from "./_components/Home/PopularProcedures"; 
 import Contact from "./_components/Home/Contact"; 
 import HowDoesItWork from "./_components/Home/HowDoesItWork"; 
+import MakeDonation from "./_components/Home/MakeDonation";
 
 export default function Home() { 
   return ( 
@@ -16,6 +17,8 @@ export default function Home() {
       <PopularProcedures /> 
       {/* Contact */} 
       <Contact /> 
+      {/* MMake a Donation */} 
+      <MakeDonation /> 
 
     </section> 
   ); 

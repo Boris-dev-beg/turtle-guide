@@ -5,17 +5,20 @@ import { prisma } from "@/lib/prisma";
 import { DocumentCTAs } from "./_components/DocumentCTAs";
 import { getSession } from "@/lib/session";
 import { findPurchase } from "@/lib/documents";
-import { formtaPrice } from "./_components/Constantes/Globalconsts";
+import { formatPrice } from "./_components/Constantes/Globalconsts";
 
 export default async function DocumentPage({
   params,
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ from?: string; payment?: string }>;
+  searchParams: Promise<{ from?: string; payment?: string; folderId?: string }>;
 }) {
   const { id } = await params;
-  const { from, payment } = await searchParams;
+  const { from, payment, folderId: folderIdParam } = await searchParams;
+  // ? Le fallback permet de garder les anciens liens qui ne contiennent que `from=/folders/:id`.
+  const folderId =
+    folderIdParam ?? from?.match(/^\/folders\/([^/]+)/)?.[1] ?? null;
 
   const doc = await prisma.document.findUnique({ where: { id } });
   if (!doc) notFound();
@@ -64,7 +67,7 @@ export default async function DocumentPage({
           <div className="rounded-lg border border-border bg-card p-4 lg:sticky lg:top-24">
             <p className="text-lg font-semibold text-brand-ink">{doc.name}</p>
             <p className="mt-3 text-2xl font-semibold text-brand-ink">
-              {formtaPrice(Number(doc.price))}
+              {formatPrice(Number(doc.price))}
             </p>
 
             <DocumentCTAs
@@ -74,6 +77,7 @@ export default async function DocumentPage({
                 price: Number(doc.price),
                 customizable: doc.customizable,
               }}
+              folderId={folderId}
               isAuthenticated={!!session}
               alreadyPurchased={alreadyPurchased}
             />
