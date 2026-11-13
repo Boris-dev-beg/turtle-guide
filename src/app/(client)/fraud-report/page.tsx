@@ -1,6 +1,5 @@
 import { ShieldAlert } from "lucide-react";
-import FraudReportForm from "./_components/FraudReportForm";
-import { useSteps } from "@/hooks/useSteps";
+import { FrautAlert } from "./_components/FraudAlert";
 
 export default async function FraudReportPage({
   searchParams,
@@ -27,7 +26,9 @@ export default async function FraudReportPage({
             </p>
           </div>
         </div>
+
         <FrautAlert stepId={stepId} />
+
         <p className="mt-4 text-sm leading-6 text-brand-ink-muted">
           Ne partagez pas de mots de passe, de coordonnées bancaires ni d’autres
           données personnelles dans votre signalement.
@@ -36,19 +37,3 @@ export default async function FraudReportPage({
     </main>
   );
 }
-
-const FrautAlert = ({ stepId }: { stepId: string | undefined }) => {
-  const steps = useSteps().AllSteps || [];
-
-  return (
-    <div className="rounded-sm border border-border bg-card p-5 sm:p-8">
-      {steps.length ? (
-        <FraudReportForm steps={steps} initialStepId={stepId} />
-      ) : (
-        <p className="text-base text-brand-ink-muted">
-          Aucune étape n’est disponible pour le moment.
-        </p>
-      )}
-    </div>
-  );
-};
