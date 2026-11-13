@@ -8,7 +8,6 @@ import type Stripe from "stripe";
  * les achats de documents dont la session correspond aux données enregistrées.
  */
 export async function POST(request: Request) {
-  // À compléter : ajouter STRIPE_WEBHOOK_SECRET (whsec_...) fourni par Stripe.
   const signingSecret = process.env.STRIPE_WEBHOOK_SECRET;
   if (!signingSecret) {
     console.error("Webhook Stripe désactivé : STRIPE_WEBHOOK_SECRET est absente.");

@@ -1,6 +1,6 @@
 "use client"; 
 
-import { getAllSteps } from "@/lib/step.action"; 
+import { getAllStep, getAllSteps } from "@/lib/step.action"; 
 import { useQuery } from "@tanstack/react-query"; 
 import { useState } from "react"; 
 
@@ -12,5 +12,10 @@ export function useSteps() {
     enabled: !!processId, 
   }); 
 
-  return { steps, isLoading, setProcessId }; 
+  const {data: AllSteps, isLoading: isAllStepsLoading} = useQuery({
+    queryKey: ["allSteps"], 
+    queryFn: () => getAllStep(), 
+  });
+
+  return { steps, isLoading, setProcessId, AllSteps, isAllStepsLoading }; 
 } 
