@@ -208,6 +208,14 @@ export function ProcesSteps({
                         ))}
                       </div>
                     )}
+
+                    <Link
+                      href={`/fraud-report?stepId=${encodeURIComponent(step.id)}`}
+                      className="mt-3 inline-flex min-h-12 items-center gap-2 rounded-sm border border-border px-3 text-sm font-medium text-brand-ink transition-colors hover:bg-muted"
+                    >
+                      <ShieldAlert className="size-4 text-brand-alert" aria-hidden="true" />
+                      Signaler une fraude liée à cette étape
+                    </Link>
                   </div>
                 </div>
               );
