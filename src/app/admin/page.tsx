@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
 import Navigation from "./_components/shared/Navigation";
+import Header from "./_components/layouts/Header";
 
 export default function page() {
   return (
-    <div>
-      <aside className="flex flex-col gap-3 w-50 max-w-100 min-w-0 bg-sidebar border-r border-r-sidebar-border fixed inset-y-0">
+    <div className="flex max-w-full w-screen">
+      <aside className="flex flex-col gap-3 w-50 max-w-100 min-w-0 bg-sidebar border-r border-r-sidebar-border inset-y-0">
         <div className="border-b-2 border-border p-3">
           {/* Logo */}
           <Link
@@ -35,10 +36,15 @@ export default function page() {
 
         {/* Navigation */}
         <div className="flex flex-col gap-4 p-5">
-          <h1 className="text-sm text-ink font-semibold border-l-2 border-accent pl-2">Navigation</h1>
+          <h1 className="text-sm text-ink font-semibold border-l-2 border-accent pl-2">
+            Navigation
+          </h1>
           <Navigation />
         </div>
       </aside>
+      <main className="flex w-full">
+        <Header />
+      </main>
     </div>
   );
 }
