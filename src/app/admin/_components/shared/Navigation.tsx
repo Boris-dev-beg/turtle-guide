@@ -1,20 +1,26 @@
 "use client";
 
+import { LayoutDashboard, ShieldAlert, LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 export default function Navigation() {
   const pathName = usePathname();
   return (
-    <nav
-      aria-label="Navigation Dashboard"
-      className="items-center gap-3 flex flex-col"
-    >
-      {[{ label: "Dashboard", href: "/admin" }].map((link, index) => (
+    <nav aria-label="Navigation Dashboard" className="flex flex-col gap-1 px-3">
+      {[
+        { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+        {
+          icon: ShieldAlert,
+          label: "Alertes de fraude",
+          href: "/admin/fraud-alerts",
+        },
+      ].map((link) => (
         <Link_
-          key={index}
+          key={link.href}
           href={link.href}
           label={link.label}
+          icon={link.icon}
           pathName={pathName}
         />
       ))}
@@ -25,24 +31,32 @@ export default function Navigation() {
 const Link_ = ({
   href,
   label,
+  icon: Icon,
   pathName,
 }: {
   href: string;
   label: string;
+  icon: LucideIcon;
   pathName: string;
 }) => {
   const isActive =
-    pathName === href || (href !== "/" && pathName.startsWith(href));
+    pathName === href || (href !== "/admin" && pathName.startsWith(`${href}/`));
 
   return (
     <Link
       href={href}
-      className={`relative flex min-h-12 items-center gap-0.5 px-2.5 py-1 text-sm font-medium whitespace-nowrap transition-colors duration-200 ${isActive ? "text-brand-green" : "text-brand-ink-muted hover:text-brand-ink"} group`}
+      aria-current={isActive ? "page" : undefined}
+      className={`group relative flex min-h-11 items-center gap-3 rounded-sm px-3 text-base font-medium transition-colors duration-200 ${
+        isActive
+          ? "bg-sidebar-accent text-sidebar-accent-foreground"
+          : "text-brand-ink-muted hover:bg-muted hover:text-brand-ink"
+      }`}
     >
+      <Icon className="size-6 shrink-0" strokeWidth={2} aria-hidden="true" />
       <span>{label}</span>
 
       {isActive && (
-        <span className="absolute inset-y-2 left-0 group-hover:w-2 w-1 bg-brand-green transition-all duration-300" />
+        <span className="absolute inset-y-0 left-0 w-1 bg-brand-green" />
       )}
     </Link>
   );
