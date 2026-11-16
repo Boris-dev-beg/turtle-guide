@@ -51,7 +51,7 @@ const Link_ = ({
       aria-label={label}
       aria-current={isActive ? "page" : undefined}
       title={label}
-      className={`group relative flex size-11 items-center justify-center rounded-sm transition-colors duration-200 ${
+      className={`group relative flex size-11 items-center justify-center rounded-r-md transition-colors duration-200 ${
         isActive
           ? "bg-sidebar-accent text-sidebar-accent-foreground"
           : "text-brand-ink-muted hover:bg-muted hover:text-brand-ink"

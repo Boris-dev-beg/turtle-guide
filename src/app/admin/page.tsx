@@ -1,13 +1,9 @@
-import Header from "./_components/layouts/Header";
-import SideBar from "./_components/layouts/SideBar";
+import Dashboard from "./_components/Sections/Dashboard";
 
 export default function page() {
   return (
-    <div className="flex max-w-full w-screen">
-      <SideBar />
-      <main className="flex w-full">
-        <Header />
-      </main>
-    </div>
+    <section className="p-4 flex flex-col w-full">
+      <Dashboard />
+    </section>
   );
 }
