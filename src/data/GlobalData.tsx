@@ -3,6 +3,8 @@ import {
   Baby,
   BriefcaseBusiness,
   CarFront,
+  ChartNoAxesColumn,
+  ChevronRight,
   FileText,
   Flower2,
   Folders,
@@ -13,11 +15,14 @@ import {
   Home,
   HomeIcon,
   IdCard,
+  LayoutDashboard,
   LockKeyhole,
   Scale,
   Shield,
+  ShieldAlert,
   Timer,
   UserCircle,
+  Users2,
 } from "lucide-react";
 
 // ! Hero
@@ -35,7 +40,8 @@ export const Hero_infos = {
 // ! How it work
 export const HowDoesItWork_infos = {
   title: "Comment ça fonctionne ?",
-  subtitle: "En quelques étapes, accédez à la démarche qui vous concerne et suivez son avancement.",
+  subtitle:
+    "En quelques étapes, accédez à la démarche qui vous concerne et suivez son avancement.",
   element: [
     {
       id: 1,
@@ -149,4 +155,32 @@ export const links = [
     href: "/about",
     label: "À propos",
   },
+];
+
+export const LinksDashboard = [
+  { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+  {
+    icon: ShieldAlert,
+    label: "Alertes de fraude",
+    href: "/admin/fraud-alerts",
+  },
+  {
+    icon: FileText,
+    label: "Gestion du contenu",
+    href: "/admin/content",
+    icon2: ChevronRight,
+  },
+  {
+    icon: Users2,
+    label: "Utilisateurs",
+    href: "/admin/users",
+    icon2: ChevronRight,
+  },
+  {
+    icon: ChartNoAxesColumn,
+    label: "Statistiques",
+    href: "/admin/stats",
+    icon2: ChevronRight,
+  },
+  { icon: LayoutDashboard, label: "Parametre", href: "/admin/settings" },
 ];

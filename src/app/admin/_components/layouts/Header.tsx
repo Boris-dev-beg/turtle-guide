@@ -114,7 +114,7 @@ export default function Header({
             <DropdownMenuSeparator />
             <button
               onClick={() => void logout()}
-              className="cursor-pointer btn-destructive btn p-2 rounded-sm"
+              className="cursor-pointer btn-destructive btn p-2 rounded-sm flex-nowrap"
             >
               <LogOut aria-hidden="true" />
               Se déconnecter

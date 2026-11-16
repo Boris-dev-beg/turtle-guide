@@ -1,6 +1,7 @@
 "use client";
 
-import { LayoutDashboard, ShieldAlert, LucideIcon } from "lucide-react";
+import { LinksDashboard } from "@/data/GlobalData";
+import { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,14 +12,7 @@ export default function ShortNavigation() {
       aria-label="Navigation Dashboard"
       className="flex flex-col items-center gap-2 px-2"
     >
-      {[
-        { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
-        {
-          icon: ShieldAlert,
-          label: "Alertes de fraude",
-          href: "/admin/fraud-alerts",
-        },
-      ].map((link) => (
+      {LinksDashboard.map((link) => (
         <Link_
           key={link.href}
           href={link.href}
