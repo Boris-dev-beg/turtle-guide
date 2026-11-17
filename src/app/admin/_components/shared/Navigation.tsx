@@ -15,6 +15,7 @@ export default function Navigation() {
           href={link.href}
           label={link.label}
           icon={link.icon}
+          icon2={link.icon2}
           pathName={pathName}
         />
       ))}
@@ -26,11 +27,13 @@ const Link_ = ({
   href,
   label,
   icon: Icon,
+  icon2: Icon2,
   pathName,
 }: {
   href: string;
   label: string;
   icon: LucideIcon;
+  icon2?: LucideIcon;
   pathName: string;
 }) => {
   const isActive =
@@ -47,7 +50,10 @@ const Link_ = ({
       }`}
     >
       <Icon className="size-6 shrink-0" strokeWidth={2} aria-hidden="true" />
-      <span>{label}</span>
+      <span className="flex-1 text-nowrap">{label}</span>
+      {Icon2 && (
+        <Icon2 className="size-6 shrink-0" strokeWidth={2} aria-hidden="true" />
+      )}
 
       {isActive && (
         <span className="absolute inset-y-0 left-0 w-1 bg-brand-green" />

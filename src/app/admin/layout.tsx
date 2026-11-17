@@ -10,7 +10,7 @@ export default async function layout({
   const session = await getSession();
 
   return (
-    <div className="flex max-w-full w-screen">
+    <div className="flex max-w-full w-screen  *:**:font-display">
       <SideBar />
       <main className="flex w-full flex-col">
         <Header

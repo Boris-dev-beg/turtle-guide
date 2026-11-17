@@ -43,7 +43,7 @@ export default function SideBar() {
     <aside
       aria-label="Barre latérale d'administration"
       className={`sticky top-0 flex h-screen shrink-0 flex-col overflow-hidden border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-sm transition-[width] duration-300 ease-in-out ${
-        isOpen ? "w-64" : "w-18"
+        isOpen ? "w-67" : "w-18"
       }`}
     >
       <div
@@ -79,7 +79,7 @@ export default function SideBar() {
           title={
             isOpen ? "Fermer la barre latérale" : "Ouvrir la barre latérale"
           }
-          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-brand-green transition-colors hover:bg-brand-green-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+          className="inline-flex size-10 shrink-0 items-center justify-center rounded-md text-brand-green transition-colors hover:bg-brand-green-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring cursor-pointer"
         >
           {isOpen ? (
             <SidebarClose className="size-6" strokeWidth={2.2} aria-hidden="true" />

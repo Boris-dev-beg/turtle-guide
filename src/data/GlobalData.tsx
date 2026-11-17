@@ -1,10 +1,12 @@
 import {
   AlertCircle,
+  AlertTriangle,
   Baby,
   BriefcaseBusiness,
   CarFront,
   ChartNoAxesColumn,
   ChevronRight,
+  Files,
   FileText,
   Flower2,
   Folders,
@@ -22,6 +24,7 @@ import {
   ShieldAlert,
   Timer,
   UserCircle,
+  Users,
   Users2,
 } from "lucide-react";
 
@@ -157,8 +160,10 @@ export const links = [
   },
 ];
 
+
+// ! DASHBOARD
 export const LinksDashboard = [
-  { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
+  { icon: LayoutDashboard, label: "Tableau de bord", href: "/admin" },
   {
     icon: ShieldAlert,
     label: "Alertes de fraude",
@@ -182,5 +187,27 @@ export const LinksDashboard = [
     href: "/admin/stats",
     icon2: ChevronRight,
   },
-  { icon: LayoutDashboard, label: "Parametre", href: "/admin/settings" },
+  { icon: LayoutDashboard, label: "Paramètre", href: "/admin/settings" },
 ];
+export const KYCDatas = [
+  {
+    icon: Users,
+    title: "Utilisateurs inscrits",
+    value: 12510,
+  },
+  {
+    icon: Folders,
+    title: "Dossiers créés",
+    value: 9312,
+  },
+  {
+    icon: Files,
+    title: "Documents achetés",
+    value: 3248,
+  },
+  {
+    icon: AlertTriangle,
+    title: "Alertes fraudes",
+    value: 12,
+  },
+]
