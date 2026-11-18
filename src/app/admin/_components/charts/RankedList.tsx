@@ -23,13 +23,13 @@ export default function RankedList({
 
   return (
     <Card className="min-w-0 gap-4 rounded-md p-4 shadow-none ring-border sm:p-5">
-      <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-brand-ink">
-        <Icon className="size-5 text-brand-green" aria-hidden="true" />
+      <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-brand-ink">
+        <Icon className="size-7 text-brand-green" aria-hidden="true" />
         {title}
       </h2>
 
       {items.length === 0 ? (
-        <p className="py-4 text-sm text-brand-ink-muted">{emptyMessage}</p>
+        <p className="py-4 text-lg text-brand-ink-muted">{emptyMessage}</p>
       ) : (
         <ol className="space-y-4">
           {items.map((item, index) => (
@@ -37,11 +37,11 @@ export default function RankedList({
               key={`${item.label}-${index}`}
               className={`grid items-center gap-2 sm:gap-3 ${showShare ? "grid-cols-[1.5rem_minmax(0,1fr)_minmax(4rem,0.8fr)_2.5rem]" : "grid-cols-[1.5rem_minmax(0,1fr)_minmax(4rem,0.8fr)_3.5rem]"}`}
             >
-              <span className="flex size-6 items-center justify-center rounded-full bg-brand-green-soft text-xs font-semibold text-brand-green-dark">
+              <span className="flex size-6 items-center justify-center rounded-full bg-brand-green-soft text-sm font-semibold text-brand-green-dark">
                 {index + 1}
               </span>
               <span
-                className="truncate text-sm font-medium text-brand-ink"
+                className="truncate text-lg font-medium text-brand-ink"
                 title={item.label}
               >
                 {item.label}
@@ -57,7 +57,7 @@ export default function RankedList({
                   }}
                 />
               </span>
-              <span className="text-right text-xs font-semibold tabular-nums text-brand-ink-muted">
+              <span className="text-right text-sm font-semibold tabular-nums text-brand-ink-muted">
                 {showShare
                   ? `${total ? Math.round((item.count / total) * 100) : 0} %`
                   : new Intl.NumberFormat("fr-FR").format(item.count)}
