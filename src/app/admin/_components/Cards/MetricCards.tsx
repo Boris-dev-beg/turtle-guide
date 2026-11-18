@@ -54,17 +54,17 @@ function MetricCard({ metric }: { metric: DashboardMetric }) {
   return (
     <Card className="min-w-0 gap-4 rounded-md p-4 shadow-none ring-border sm:p-5">
       <div className="flex items-center justify-between gap-3">
-        <p className="min-w-0 text-sm font-medium leading-5 text-brand-ink-muted">
+        <h1 className="min-w-0 text-xl font-semibold leading-5 text-brand-ink">
           {metric.label}
-        </p>
+        </h1>
         <span
           className={`flex size-11 shrink-0 items-center justify-center rounded-full ${presentation.iconStyle}`}
         >
-          <Icon className="size-5" aria-hidden="true" />
+          <Icon className="size-6" aria-hidden="true" />
         </span>
       </div>
       <div>
-        <p className="font-display text-3xl font-semibold tabular-nums text-brand-ink">
+        <p className="font-display text-4xl font-semibold tabular-nums text-brand-ink">
           {new Intl.NumberFormat("fr-FR").format(metric.value)}
         </p>
         <p
@@ -76,8 +76,8 @@ function MetricCard({ metric }: { metric: DashboardMetric }) {
                 : "text-rose-700"
           }`}
         >
-          <TrendIcon className="size-4 shrink-0" aria-hidden="true" />
-          <span>{trendLabel}</span>
+          <TrendIcon className="size-5 shrink-0" aria-hidden="true" />
+          <span className="text-sm">{trendLabel}</span>
         </p>
       </div>
     </Card>
