@@ -43,13 +43,13 @@ export default function CityDistribution({
 
   return (
     <Card className="min-w-0 gap-4 rounded-md p-4 shadow-none ring-border sm:p-5">
-      <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-brand-ink">
-        <MapPin className="size-5 text-brand-green" aria-hidden="true" />
+      <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-brand-ink">
+        <MapPin className="size-7 text-brand-green" aria-hidden="true" />
         Répartition par ville
       </h2>
 
       {items.length === 0 ? (
-        <p className="py-8 text-sm text-brand-ink-muted">
+        <p className="py-8 text-xl text-brand-ink-muted">
           Aucun dossier localisé sur cette période.
         </p>
       ) : (
@@ -79,10 +79,10 @@ export default function CityDistribution({
               </ResponsiveContainer>
             </ChartContainer>
             <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-              <span className="font-display text-2xl font-semibold tabular-nums text-brand-ink">
+              <span className="font-display text-3xl font-semibold tabular-nums text-brand-ink">
                 {formatCityCount(total)}
               </span>
-              <span className="text-xs text-brand-ink-muted">dossiers</span>
+              <span className="text-base text-brand-ink-muted">dossiers</span>
             </div>
           </div>
 
@@ -92,10 +92,10 @@ export default function CityDistribution({
               return (
                 <li
                   key={`${item.label}-${index}`}
-                  className="flex min-w-0 items-center gap-2 text-sm"
+                  className="flex min-w-0 items-center gap-2 text-lg text-brand-ink"
                 >
                   <span
-                    className={`size-2.5 shrink-0 rounded-full ${cityDotClasses[index % cityDotClasses.length]}`}
+                    className={`size-5 shrink-0 rounded-full ${cityDotClasses[index % cityDotClasses.length]}`}
                     aria-hidden="true"
                   />
                   <span
