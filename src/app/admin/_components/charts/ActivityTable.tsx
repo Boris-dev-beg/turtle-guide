@@ -88,7 +88,7 @@ export default function ActivityTable({
         const Icon = activityTypeIcons[kind];
         return (
           <span
-            className={`inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-xs font-medium ${activityTypeStyles[kind]}`}
+            className={`inline-flex items-center gap-1.5 rounded-sm px-2 py-1 font-medium ${activityTypeStyles[kind]}`}
           >
             <Icon className="size-3.5" aria-hidden="true" />
             {activityTypeLabels[kind]}
@@ -118,7 +118,7 @@ export default function ActivityTable({
       cell: (context) => (
         <time
           dateTime={context.getValue()}
-          className="whitespace-nowrap text-xs text-brand-ink-muted"
+          className="whitespace-nowrap text-brand-ink-muted"
         >
           {formatActivityDate(context.getValue())}
         </time>
@@ -140,17 +140,17 @@ export default function ActivityTable({
     <Card className="min-w-0 gap-4 rounded-md p-4 shadow-none ring-border sm:p-5">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="font-display text-lg font-semibold text-brand-ink">
+          <h2 className="font-display text-2xl font-semibold text-brand-ink">
             Activité récente
           </h2>
-          <p className="mt-1 text-xs text-brand-ink-muted">
+          <p className="mt-1 text-base text-brand-ink-muted">
             Dossiers créés, achats confirmés et alertes reçues
           </p>
         </div>
         <label className="relative block w-full sm:max-w-56">
           <span className="sr-only">Rechercher dans les activités</span>
           <Search
-            className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-ink-muted"
+            className="pointer-events-none absolute left-3 top-1/2 size-5 -translate-y-1/2 text-brand-ink-muted"
             aria-hidden="true"
           />
           <input
@@ -158,25 +158,25 @@ export default function ActivityTable({
             value={globalFilter}
             onChange={(event) => table.setGlobalFilter(event.target.value)}
             placeholder="Rechercher une activité"
-            className="h-9 w-full rounded-md border border-border bg-background pl-9 pr-3 text-sm outline-none focus:border-brand-green/50 focus:ring-2 focus:ring-brand-green/10"
+            className="h-10 w-full rounded-md border border-border bg-background pl-9 pr-3 text-base outline-none focus:border-brand-green/50 focus:ring-2 focus:ring-brand-green/10"
           />
         </label>
       </div>
 
       {items.length === 0 ? (
-        <p className="py-5 text-sm text-brand-ink-muted">
+        <p className="py-5 text-lg text-brand-ink-muted">
           Aucune activité enregistrée pour le moment.
         </p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="w-full min-w-152 border-collapse text-left text-sm">
+          <table className="w-full min-w-152 border-collapse text-left text-base">
             <thead>
               {table.getHeaderGroups().map((headerGroup) => (
                 <tr key={headerGroup.id} className="border-b border-border">
                   {headerGroup.headers.map((header) => (
                     <th
                       key={header.id}
-                      className="pb-3 pr-4 text-xs font-semibold uppercase text-brand-ink-muted last:pr-0"
+                      className="pb-3 pr-4 text-lg font-bold uppercase text-brand-ink last:pr-0"
                     >
                       {header.isPlaceholder ? null : header.column.getCanSort() ? (
                         <button
@@ -224,7 +224,7 @@ export default function ActivityTable({
 
       {items.length > 0 && (
         <div className="flex items-center justify-between gap-3 border-t border-border pt-3">
-          <p className="text-xs text-brand-ink-muted">
+          <p className="text-sm text-brand-ink-muted">
             {table.getFilteredRowModel().rows.length} activité(s)
           </p>
           <div className="flex items-center gap-2">
@@ -232,7 +232,7 @@ export default function ActivityTable({
               type="button"
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="btn btn-outline min-h-8 px-3 py-1 text-xs"
+              className="btn btn-outline min-h-8 px-3 py-1 text-base text-brand-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               Précédent
             </button>
@@ -240,7 +240,7 @@ export default function ActivityTable({
               type="button"
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="btn btn-outline min-h-8 px-3 py-1 text-xs"
+              className="btn btn-outline min-h-8 px-3 py-1 text-base text-brand-ink-muted disabled:cursor-not-allowed disabled:opacity-50"
             >
               Suivant
             </button>
