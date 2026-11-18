@@ -38,9 +38,9 @@ export default function ActivityChart({
   return (
     <Card className="min-w-0 gap-4 rounded-md p-4 shadow-none ring-border sm:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="flex items-center gap-2 font-display text-lg font-semibold text-brand-ink">
+        <h2 className="flex items-center gap-2 font-display text-2xl font-semibold text-brand-ink">
           <ActivityIcon
-            className="size-5 text-brand-green"
+            className="size-6 text-brand-green"
             aria-hidden="true"
           />
           Activité sur {periodDays} jours
@@ -87,14 +87,14 @@ export default function ActivityChart({
             />
             <XAxis
               dataKey="label"
-              tick={{ fill: "#5c6f7f", fontSize: 11 }}
+              tick={{ fill: "#5c6f7f", fontSize: 13 }}
               tickLine={false}
               axisLine={{ stroke: "#d8e1db" }}
               minTickGap={28}
             />
             <YAxis
               tickFormatter={formatAxisNumber}
-              tick={{ fill: "#5c6f7f", fontSize: 11 }}
+              tick={{ fill: "#5c6f7f", fontSize: 13 }}
               tickLine={false}
               axisLine={false}
               allowDecimals={false}
@@ -122,13 +122,13 @@ export default function ActivityChart({
         </ResponsiveContainer>
       </ChartContainer>
 
-      <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-brand-ink-muted">
+      <div className="flex flex-wrap gap-x-5 gap-y-2 text-base text-brand-ink-muted">
         <span className="inline-flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-brand-green" />
+          <span className="size-3 rounded-full bg-brand-green" />
           Utilisateurs
         </span>
         <span className="inline-flex items-center gap-2">
-          <span className="size-2.5 rounded-full bg-emerald-300" />
+          <span className="size-3 rounded-full bg-emerald-300" />
           Dossiers
         </span>
       </div>
