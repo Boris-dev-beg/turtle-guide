@@ -1,9 +1,9 @@
 import { CalendarDays, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import ActivityChart from "./ActivityChart";
-import ActivityTable from "./ActivityTable";
-import RankedList from "./RankedList";
-import CityDistribution from "./CityDistribution";
+import ActivityChart from "../charts/ActivityChart";
+import ActivityTable from "../charts/ActivityTable";
+import RankedList from "../charts/RankedList";
+import CityDistribution from "../charts/CityDistribution";
 import MetricCards from "../Cards/MetricCards";
 import { AdminDashboardData, DashboardPeriod } from "../../types/types";
 

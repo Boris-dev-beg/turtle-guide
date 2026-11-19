@@ -1,8 +1,8 @@
 import Dashboard from "./_components/Sections/Dashboard";
 import {
   getAdminDashboardData,
-  type DashboardPeriod,
 } from "@/services/admin-dashboard.service";
+import { DashboardPeriod } from "./types/types";
 
 /** Convertit le paramètre de période de l'URL en valeur autorisée par le service d'agrégation. */
 function parsePeriod(value?: string): DashboardPeriod {
