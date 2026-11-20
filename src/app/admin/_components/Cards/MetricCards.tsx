@@ -10,7 +10,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { DashboardMetric } from "../../types/types";
 
-const metricPresentation = {
+export const metricPresentationDashboard = {
   users: {
     icon: UsersRound,
     iconStyle: "bg-emerald-100 text-emerald-800",
@@ -35,7 +35,7 @@ const metricPresentation = {
 
 /** Affiche un indicateur principal avec son évolution par rapport à la période précédente. */
 function MetricCard({ metric }: { metric: DashboardMetric }) {
-  const presentation = metricPresentation[metric.key];
+  const presentation = metricPresentationDashboard[metric.key];
   const Icon = presentation.icon;
   const increaseIsPositive = metric.key !== "fraud";
   const isPositiveChange =

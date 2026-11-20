@@ -1,5 +1,9 @@
+import { metricPresentation } from "../_components/Cards/ContentCard";
+import { metricPresentationDashboard } from "../_components/Cards/MetricCards";
+
 export type DashboardPeriod = 30 | 60 | 90;
-export type DashboardMetricKey = "users" | "folders" | "purchases" | "fraud";
+export type DashboardMetricKey = keyof typeof metricPresentationDashboard;
+export type ContentMetricKey = keyof typeof metricPresentation;
 
 export type DashboardMetric = {
   key: DashboardMetricKey;
@@ -7,6 +11,14 @@ export type DashboardMetric = {
   value: number;
   periodChange: number;
   previousPeriodValue: number;
+};
+
+export type ContentMetric = {
+  key: ContentMetricKey;
+  label: string;
+  value: number;
+  subLabel: string;
+  href: string;
 };
 
 export type DashboardActivityPoint = {
