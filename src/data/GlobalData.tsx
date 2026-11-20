@@ -168,13 +168,13 @@ export const LinksDashboard = [
   {
     icon: FileText,
     label: "Gestion du contenu",
-    href: "/admin/content",
+    href: "/admin/manage-content",
     icon2: ChevronRight,
   },
   {
     icon: Users2,
     label: "Utilisateurs",
-    href: "/admin/users",
+    href: "/admin/manage-users",
     icon2: ChevronRight,
   },
   {

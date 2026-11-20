@@ -25,7 +25,7 @@ export default async function layout({
           name={session?.user.name || "Administrateur"}
           email={session?.user.email || ""}
         />
-        {children}
+        <section className="w-full p-4 sm:p-6">{children}</section>
       </main>
     </div>
   );
