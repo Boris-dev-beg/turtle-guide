@@ -1,8 +1,13 @@
 import SingUpForm from "./_components/form";
 import Link from "next/link";
 import SocialNetwork from "../login/_components/SocialNetwork";
+import { getSafeCallbackUrl } from "@/lib/auth/callback-url";
 
-export default function page() {
+/** Conserve une destination interne validée pendant l'inscription afin de reprendre le parcours demandé. */
+export default async function page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const rawCallback = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
+  const callbackUrl = rawCallback ? getSafeCallbackUrl(rawCallback, "/profile") : undefined;
   return (
     <div className="mx-auto flex w-full max-w-md flex-col rounded-sm border border-border bg-card p-5 sm:p-8">
       {/* Header */}
@@ -18,7 +23,7 @@ export default function page() {
         </div>
       </div>
 
-      <SingUpForm />
+      <SingUpForm callbackUrl={callbackUrl} />
 
       <div className="flex items-center gap-3 mt-4">
         <span className="h-0.5 flex-1 bg-border" />
@@ -29,12 +34,12 @@ export default function page() {
       </div>
 
       {/* Login with social network */}
-      <SocialNetwork mode="signup" />
+      <SocialNetwork mode="signup" callbackUrl={callbackUrl} />
 
       <p className="text-center text-muted-foreground">
         Vous avez déjà un compte ?{" "}
         <Link
-          href="/login"
+          href={callbackUrl ? `/login?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/login"}
           className="font-semibold text-primary hover:underline"
         >
           Se connecter

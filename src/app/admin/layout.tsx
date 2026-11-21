@@ -1,6 +1,9 @@
 import Header from "./_components/layouts/Header";
 import SideBar from "./_components/layouts/SideBar";
-import { getSession } from "@/lib/session";
+import {
+  AdminAuthorizationError,
+  requireAdmin,
+} from "@/lib/admin/require-admin";
 import { redirect } from "next/navigation";
 
 export default async function layout({
@@ -8,14 +11,21 @@ export default async function layout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getSession();
-  if (!session?.user) redirect("/login?callbackUrl=%2Fadmin%2Ffraud-alerts");
-
-  // const administrator = await prisma.administrator.findUnique({
-  //   where: { userId: session.user.id },
-  //   select: { id: true },
-  // });
-  // if (!administrator) notFound();
+  const { session } = await requireAdmin().catch((error: unknown) => {
+    if (
+      error instanceof AdminAuthorizationError &&
+      error.code === "UNAUTHENTICATED"
+    ) {
+      redirect("/login?callbackUrl=%2Fadmin");
+    }
+    if (
+      error instanceof AdminAuthorizationError &&
+      error.code === "NOT_ADMIN"
+    ) {
+      redirect("/");
+    }
+    throw error;
+  });
 
   return (
     <div className="flex max-w-full w-screen  *:**:font-display">

@@ -6,8 +6,10 @@ import { toast } from "sonner";
 
 export default function SocialNetwork({
   mode = "login",
+  callbackUrl,
 }: {
   mode?: "login" | "signup";
+  callbackUrl?: string;
 }) {
   const { signInWithSocial } = useAuth();
 
@@ -20,6 +22,7 @@ export default function SocialNetwork({
     signInWithSocial.mutate({
       provider: "google",
       requestSignUp: mode === "signup",
+      callbackUrl,
     });
   };
 

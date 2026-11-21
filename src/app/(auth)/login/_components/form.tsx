@@ -12,7 +12,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function LoginForm() {
+/** Valide la connexion et conserve la destination locale demandée, notamment une invitation admin. */
+export default function LoginForm({ callbackUrl = "/" }: { callbackUrl?: string }) {
   // ! States
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
@@ -32,7 +33,7 @@ export default function LoginForm() {
   const onSubmit = async (data: LoginFormType) => {
     toast.loading("Vérification de vos identifiants...", { id: "login" });
     try {
-      const result = await login.mutateAsync({ ...data, rememberMe });
+      const result = await login.mutateAsync({ ...data, rememberMe, callbackUrl });
 
       if (result.error) {
         if (result.error.status === 403) {
@@ -57,7 +58,7 @@ export default function LoginForm() {
       }
 
       toast.success("Connexion réussie.", { id: "login" });
-      router.push("/");
+      router.push(callbackUrl);
     } catch (error) {
       toast.error("Une erreur est survenue pendant la connexion.", {
         id: "login",

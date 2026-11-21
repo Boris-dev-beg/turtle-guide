@@ -27,6 +27,12 @@ enum AdminContentAction {
   DELETE
 }
 
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REVOKED
+}
+
 model User {
   id            String   @id
   name          String
@@ -58,7 +64,26 @@ model Administrator {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  sentInvitations AdminInvitation[] @relation("AdminInvitationInviter")
+
   @@map("administrators")
+}
+
+model AdminInvitation {
+  id         String           @id @default(cuid())
+  email      String
+  tokenHash  String           @unique
+  status     InvitationStatus @default(PENDING)
+  expiresAt  DateTime
+  createdAt  DateTime         @default(now())
+  acceptedAt DateTime?
+
+  invitedById String?
+  invitedBy   Administrator? @relation("AdminInvitationInviter", fields: [invitedById], references: [id], onDelete: SetNull)
+
+  @@index([email, status])
+  @@index([status, expiresAt])
+  @@map("admin_invitations")
 }
 
 model Category {

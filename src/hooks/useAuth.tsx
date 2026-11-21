@@ -9,6 +9,7 @@ import {
   signUp,
 } from "@/lib/auth/auth-client";
 import { useRouter } from "next/navigation";
+import { getSafeCallbackUrl } from "@/lib/auth/callback-url";
 
 export function useAuth() {
   const router = useRouter();
@@ -19,11 +20,13 @@ export function useAuth() {
       email: string;
       password: string;
       rememberMe?: boolean;
+      callbackUrl?: string;
     }) => {
       const result = await signIn.email({
         email: data.email,
         password: data.password,
         rememberMe: data.rememberMe,
+        callbackURL: getSafeCallbackUrl(data.callbackUrl),
       });
 
       return result;
@@ -35,16 +38,19 @@ export function useAuth() {
     mutationFn: async ({
       provider,
       requestSignUp = false,
+      callbackUrl,
     }: {
       provider: "google";
       requestSignUp?: boolean;
+      callbackUrl?: string;
     }) => {
+      const destination = getSafeCallbackUrl(callbackUrl);
       const result = await signIn.social({
         provider,
         requestSignUp,
-        callbackURL: requestSignUp ? "/login?oauth=login" : "/",
-        newUserCallbackURL: "/login?oauth=signup",
-        errorCallbackURL: "/login?authError=oauth",
+        callbackURL: callbackUrl ? destination : requestSignUp ? "/login?oauth=login" : "/",
+        newUserCallbackURL: callbackUrl ? destination : "/login?oauth=signup",
+        errorCallbackURL: `/login?authError=oauth${callbackUrl ? `&callbackUrl=${encodeURIComponent(destination)}` : ""}`,
       });
 
       if (result.error) {
@@ -56,11 +62,18 @@ export function useAuth() {
   });
 
   // ! Log Out
+  /** Déconnecte le compte et renvoie vers la page de connexion standard utilisée par les commandes existantes. */
   const logout = async () => {
+    return await logoutTo();
+  };
+
+  /** Déconnecte le compte et renvoie vers la connexion tout en conservant une destination locale approuvée. */
+  const logoutTo = async (callbackUrl?: string) => {
+    const destination = getSafeCallbackUrl(callbackUrl);
     return await signOut({
       fetchOptions: {
         onSuccess: () => {
-          router.push("/login");
+          router.push(`/login?callbackUrl=${encodeURIComponent(destination)}`);
         },
       },
     });
@@ -72,12 +85,13 @@ export function useAuth() {
       name: string;
       email: string;
       password: string;
+      callbackUrl?: string;
     }) => {
       const result = await signUp.email({
         email: data.email,
         password: data.password,
         name: data.name,
-        callbackURL: "/profile",
+        callbackURL: getSafeCallbackUrl(data.callbackUrl, "/profile"),
       });
 
       if (result.error) {
@@ -86,7 +100,9 @@ export function useAuth() {
 
       const verification = await sendVerificationEmail({
         email: data.email,
-        callbackURL: "/login?verified=success",
+        callbackURL: data.callbackUrl
+          ? getSafeCallbackUrl(data.callbackUrl)
+          : "/login?verified=success",
       });
 
       if (verification.error) {
@@ -98,10 +114,10 @@ export function useAuth() {
   });
 
   const resendVerificationEmail = useMutation({
-    mutationFn: async (email: string) => {
+    mutationFn: async ({ email, callbackUrl }: { email: string; callbackUrl?: string }) => {
       const result = await sendVerificationEmail({
         email,
-        callbackURL: "/login?verified=success",
+        callbackURL: getSafeCallbackUrl(callbackUrl, "/login?verified=success"),
       });
 
       if (result.error) {
@@ -173,6 +189,7 @@ export function useAuth() {
     login,
     signInWithSocial,
     logout,
+    logoutTo,
     signup,
     resendVerificationEmail,
     requestPasswordReset,

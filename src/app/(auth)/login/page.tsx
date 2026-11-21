@@ -2,8 +2,13 @@ import Link from "next/link";
 import LoginForm from "./_components/form";
 import SocialNetwork from "./_components/SocialNetwork";
 import AuthRedirectNotice from "./_components/AuthRedirectNotice";
+import { getSafeCallbackUrl } from "@/lib/auth/callback-url";
 
-export default function page() {
+/** Valide la destination de retour avant de la transmettre aux composants client du formulaire. */
+export default async function page({ searchParams }: { searchParams: Promise<Record<string, string | string[] | undefined>> }) {
+  const params = await searchParams;
+  const rawCallback = Array.isArray(params.callbackUrl) ? params.callbackUrl[0] : params.callbackUrl;
+  const callbackUrl = rawCallback ? getSafeCallbackUrl(rawCallback) : undefined;
   return (
     <div className="mx-auto flex w-full max-w-md flex-col gap-4 rounded-sm border border-border bg-card p-5 sm:p-8">
       <AuthRedirectNotice />
@@ -20,7 +25,7 @@ export default function page() {
         </div>
       </div>
 
-      <LoginForm />
+      <LoginForm callbackUrl={callbackUrl ?? "/"} />
 
       <div className="flex items-center gap-3">
         <span className="h-0.5 flex-1 bg-border" />
@@ -31,12 +36,12 @@ export default function page() {
       </div>
 
       {/* Login with social network */}
-      <SocialNetwork />
+      <SocialNetwork callbackUrl={callbackUrl} />
 
       <p className="text-center text-muted-foreground">
         Vous n&apos;avez pas encore de compte ?{" "}
         <Link
-          href="/signup"
+          href={callbackUrl ? `/signup?callbackUrl=${encodeURIComponent(callbackUrl)}` : "/signup"}
           className="font-semibold text-primary hover:underline"
         >
           Creer un compte

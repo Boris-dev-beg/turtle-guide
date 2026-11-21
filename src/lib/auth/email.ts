@@ -75,6 +75,33 @@ export async function sendSignupVerificationLink(email: string, url: string) {
     throw new Error("Impossible d'envoyer l'email"); 
   } 
 } 
+
+/** Envoie l'unique lien d'invitation admin par le transport SMTP déjà utilisé pour la vérification. */
+export async function sendAdminInvitationEmail(
+  email: string,
+  inviterName: string,
+  invitationUrl: string,
+  validityHours: number,
+) {
+  try {
+    return await transporter.sendMail({
+      to: email,
+      from: process.env.EMAIL_FROM!,
+      subject: "Invitation à administrer TurtleGuide",
+      text: [
+        `Bonjour,`,
+        `${inviterName} vous invite à rejoindre l'administration de TurtleGuide.`,
+        `Cette invitation donne un accès complet à l'administration et expire dans ${validityHours} heures.`,
+        `Pour l'accepter, ouvrez ce lien : ${invitationUrl}`,
+        `Si vous n'attendiez pas cette invitation, ignorez ce message.`,
+      ].join("\n\n"),
+    });
+  } catch (error) {
+    console.error("Erreur d'envoi de l'invitation administrateur :", error);
+    throw new Error("Impossible d'envoyer l'invitation administrateur.");
+  }
+}
+
 export async function sendPasswordResetOTP(email: string, otp: string) { 
   try { 
     const data = await transporter.sendMail({ 

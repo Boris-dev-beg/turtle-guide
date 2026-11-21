@@ -193,7 +193,7 @@ export const LinksDashboard = [
       { label: "Tous les utilisateurs", href: "/admin/manage-users?tab=users" },
       {
         label: "Administrateurs",
-        href: "/admin/manage-users?tab=administrators",
+        href: "/admin/manage-users/administrators",
       },
     ],
   },

@@ -19,7 +19,8 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function SingUpForm() {
+/** Crée un compte et conserve le retour demandé dans le lien de vérification et l'écran de connexion. */
+export default function SingUpForm({ callbackUrl }: { callbackUrl?: string }) {
   // ! State
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -34,13 +35,13 @@ export default function SingUpForm() {
   const onSubmit = async (data: SignUpType) => {
     toast.loading("Création de votre compte...", { id: "signup" });
     try {
-      await signup.mutateAsync(data);
+      await signup.mutateAsync({ ...data, callbackUrl });
 
       toast.success(
         "Votre compte est créé ou votre inscription est reprise. Vérifiez votre email pour continuer.",
         { id: "signup" },
       );
-      router.push("/login?signup=success");
+      router.push(`/login?signup=success${callbackUrl ? `&callbackUrl=${encodeURIComponent(callbackUrl)}` : ""}`);
     } catch (error) {
       toast.error(
         "Création impossible. Vérifiez les informations saisies et réessayez.",
