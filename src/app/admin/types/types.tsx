@@ -12,13 +12,28 @@ export type DashboardMetric = {
   periodChange: number;
   previousPeriodValue: number;
 };
-
-export type ContentMetric = {
+export type Metric = {
   key: ContentMetricKey;
   label: string;
   value: number;
   subLabel: string;
   href: string;
+};
+export type ContentMetric = {
+  metrics: Metric[];
+  RecentActivities: RecentContentActivity[];
+};
+
+export type AdminContentAction = "CREATE" | "UPDATE" | "DELETE";
+
+export type RecentContentActivity = {
+  id: string;
+  action: AdminContentAction;
+  entityType: string;
+  entityName: string;
+  summary: string | null;
+  actorName: string;
+  occurredAt: Date;
 };
 
 export type DashboardActivityPoint = {

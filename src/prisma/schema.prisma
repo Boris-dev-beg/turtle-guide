@@ -21,6 +21,12 @@ enum TransactionStatus {
   FAILED
 }
 
+enum AdminContentAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
 model User {
   id            String   @id
   name          String
@@ -31,6 +37,8 @@ model User {
   updatedAt     DateTime @updatedAt
 
   administrator Administrator?
+
+  adminContentActivities AdminContentActivity[]
 
   folders           Folder[]
   donations         Donation[]
@@ -54,11 +62,13 @@ model Administrator {
 }
 
 model Category {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   name        String
-  slug        String  @unique
+  slug        String   @unique
   description String
-  isActive    Boolean @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   procedures Procedure[]
 
@@ -66,12 +76,14 @@ model Category {
 }
 
 model Procedure {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
   image       String
   legalBasis  String
-  isActive    Boolean @default(true)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   categoryId String
   category   Category @relation(fields: [categoryId], references: [id])
@@ -84,9 +96,11 @@ model Procedure {
 }
 
 model Question {
-  id          String  @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   procedureId String
   procedure   Procedure @relation(fields: [procedureId], references: [id])
@@ -101,8 +115,10 @@ model Question {
 }
 
 model AnswerOption {
-  id    String @id @default(cuid())
-  label String
+  id        String   @id @default(cuid())
+  label     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   questionId String
   question   Question @relation(fields: [questionId], references: [id])
@@ -122,9 +138,11 @@ model AnswerOption {
 }
 
 model Process {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   answerOptions AnswerOption[]
   folders       Folder[]
@@ -191,9 +209,11 @@ model Progression {
 }
 
 model Step {
-  id          String @id @default(cuid())
+  id          String   @id @default(cuid())
   title       String
   description String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now()) @updatedAt
 
   processId String
   process   Process @relation(fields: [processId], references: [id])
@@ -209,14 +229,16 @@ model Step {
 }
 
 model Document {
-  id           String  @id @default(cuid())
+  id           String   @id @default(cuid())
   name         String
   price        Decimal
-  customizable Boolean @default(false)
+  customizable Boolean  @default(false)
   legalWarning String?
-  
-  contentUrl   String
-  sourceUrl    String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
+
+  contentUrl String
+  sourceUrl  String?
 
   purchases DocumentPurchase[]
   steps     Step[]
@@ -261,8 +283,10 @@ model Transaction {
 }
 
 model AdministrativeBody {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   administrativeUnits AdministrativeUnit[]
 
@@ -272,8 +296,10 @@ model AdministrativeBody {
 }
 
 model AdministrativeUnit {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   administrativeBodyId String
   administrativeBody   AdministrativeBody @relation(fields: [administrativeBodyId], references: [id])
@@ -287,8 +313,10 @@ model AdministrativeUnit {
 }
 
 model AreaServed {
-  id   String @id @default(cuid())
-  name String
+  id        String   @id @default(cuid())
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   locationId String
   location   Location @relation(fields: [locationId], references: [id])
@@ -332,12 +360,32 @@ model FraudAlert {
   title           String
   description     String
   publicationDate DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @default(now()) @updatedAt
 
   stepId String
   step   Step   @relation(fields: [stepId], references: [id], onDelete: Cascade)
 
   @@index([stepId])
   @@map("fraud_alerts")
+}
+
+model AdminContentActivity {
+  id         String             @id @default(cuid())
+  action     AdminContentAction
+  entityType String
+  entityId   String?
+  entityName String
+  summary    String?
+  actorName  String
+  occurredAt DateTime           @default(now())
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([occurredAt])
+  @@index([entityType, occurredAt])
+  @@map("admin_content_activities")
 }
 
 model Session {

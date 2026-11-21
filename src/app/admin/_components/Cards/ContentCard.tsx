@@ -1,5 +1,5 @@
 import { Card, CardDescription, CardFooter } from "@/components/ui/card";
-import { ContentMetric } from "../../types/types";
+import { Metric } from "../../types/types";
 import {
   FileText,
   Folder,
@@ -29,7 +29,7 @@ export const metricPresentation = {
 } as const;
 
 /** Affiche un indicateur principal avec son évolution par rapport à la période précédente. */
-export default function ContentCard({ metric }: { metric: ContentMetric }) {
+export default function ContentCard({ metric }: { metric: Metric }) {
   const presentation = metricPresentation[metric.key];
   const Icon = presentation.icon;
 

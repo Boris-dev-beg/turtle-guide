@@ -170,18 +170,43 @@ export const LinksDashboard = [
     label: "Gestion du contenu",
     href: "/admin/manage-content",
     icon2: ChevronRight,
+    children: [
+      { label: "Catégories", href: "/admin/manage-content?tab=categories" },
+      { label: "Procédures", href: "/admin/manage-content?tab=procedures" },
+      {
+        label: "Démarches et étapes",
+        href: "/admin/manage-content?tab=processes",
+      },
+      { label: "Documents", href: "/admin/manage-content?tab=documents" },
+      {
+        label: "Contrôle du contenu",
+        href: "/admin/manage-content?tab=quality",
+      },
+    ],
   },
   {
     icon: Users2,
     label: "Utilisateurs",
     href: "/admin/manage-users",
     icon2: ChevronRight,
+    children: [
+      { label: "Tous les utilisateurs", href: "/admin/manage-users?tab=users" },
+      {
+        label: "Administrateurs",
+        href: "/admin/manage-users?tab=administrators",
+      },
+    ],
   },
   {
     icon: ChartNoAxesColumn,
     label: "Statistiques",
     href: "/admin/stats",
     icon2: ChevronRight,
+    children: [
+      { label: "Vue d'ensemble", href: "/admin/stats?tab=overview" },
+      { label: "Activité", href: "/admin/stats?tab=activity" },
+      { label: "Transactions", href: "/admin/stats?tab=transactions" },
+    ],
   },
   { icon: LayoutDashboard, label: "Paramètre", href: "/admin/settings" },
 ];
