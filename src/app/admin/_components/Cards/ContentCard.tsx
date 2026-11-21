@@ -43,6 +43,7 @@ export default function ContentCard({ metric }: { metric: Metric }) {
           className={`flex size-11 shrink-0 items-center justify-center rounded-full ${presentation.iconStyle}`}
         >
           <Icon className="size-6" aria-hidden="true" />
+           <MoveRight />
         </span>
       </div>
       <CardDescription>

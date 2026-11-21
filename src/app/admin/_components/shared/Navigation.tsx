@@ -51,7 +51,8 @@ const Link_ = ({
     subItems?.some((item) =>
       isSubItemActive(item.href, pathName, queryString),
     ) ?? false;
-  const isExpanded = expanded || hasActiveChild;
+  const isExpanded =
+    expanded || hasActiveChild || (isActive && Boolean(subItems?.length));
 
   return (
     <div>

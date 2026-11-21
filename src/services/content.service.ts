@@ -37,7 +37,7 @@ export async function getcontentData(): Promise<ContentMetric> {
         label: "Catégories",
         value: totalCategories,
         subLabel: "Regroupement thématique de procédures",
-        href: "/admin/manage-content?tab=categories",
+        href: "/admin/manage-content/categories",
       },
       {
         key: "list",
