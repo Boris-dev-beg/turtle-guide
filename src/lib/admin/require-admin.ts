@@ -21,7 +21,7 @@ export async function requireAdmin() {
     select: { id: true, accessLevel: true },
   });
 
-  if (!administrator || administrator.accessLevel !== "all") {
+  if (!administrator || administrator.accessLevel !== "ADMIN") {
     throw new AdminAuthorizationError("NOT_ADMIN");
   }
 

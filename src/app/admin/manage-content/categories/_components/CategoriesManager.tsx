@@ -8,7 +8,7 @@ import CategoryFilters from "./CategoryFilters";
 import CategoryTable from "./CategoryTable";
 import CategoryFormDialog from "./CategoryFormDialog";
 import CategoryDeleteDialog from "./CategoryDeleteDialog";
-import { useCategoryList } from "../_hooks/useCategoryList";
+import { useCategoryList } from "../../../../../hooks/useCategoryList";
 import type { AdminCategoryRow, CategoryInput } from "../_types";
 
 /** Formate un compteur en français pour le résumé des résultats. */

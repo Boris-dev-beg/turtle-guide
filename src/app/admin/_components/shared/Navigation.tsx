@@ -127,7 +127,6 @@ const Link_ = ({
   );
 };
 
-/** Compare un sous-lien configuré avec le chemin et la query courants pour marquer le bon onglet. */
 function isSubItemActive(href: string, pathname: string, queryString: string) {
   const [childPath, childQuery = ""] = href.split("?");
   if (pathname !== childPath) return false;

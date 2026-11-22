@@ -5,7 +5,6 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import type { CategoryInput } from "../_types";
 
-/** Rend les champs éditables d'une catégorie et délègue leurs changements au dialogue parent. */
 export default function CategoryFields({
   values,
   onChange,
@@ -28,6 +27,7 @@ export default function CategoryFields({
           value={values.name}
           onChange={(event) => onChange("name", event.target.value)}
           placeholder="Ex. État civil"
+          className="rounded-md py-5"
         />
       </div>
       <div className="space-y-2">
@@ -41,7 +41,7 @@ export default function CategoryFields({
           value={values.slug}
           onChange={(event) => onChange("slug", event.target.value)}
           placeholder="etat-civil"
-          className="font-mono"
+          className="font-mono rounded-md py-5"
         />
         <p className="text-xs text-brand-ink-muted">
           Minuscules, chiffres et tirets; sans espace ni accent.
@@ -58,9 +58,10 @@ export default function CategoryFields({
           value={values.description}
           onChange={(event) => onChange("description", event.target.value)}
           placeholder="Décrivez les démarches regroupées dans cette catégorie."
+          className="rounded-md"
         />
       </div>
-      <label className="flex items-start gap-3 rounded-sm border border-border p-3">
+      <label className="flex items-start gap-3 rounded-md border border-border p-3">
         <input
           type="checkbox"
           checked={values.isActive}

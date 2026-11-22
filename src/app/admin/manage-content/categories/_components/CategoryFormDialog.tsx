@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -12,7 +12,6 @@ import {
 import CategoryFields from "./CategoryFields";
 import type { AdminCategoryRow, CategoryInput } from "../_types";
 
-/** Génère un slug initial depuis le nom de catégorie, sans remplacer un slug modifié manuellement. */
 function slugify(value: string) {
   return value
     .normalize("NFD")
@@ -23,7 +22,6 @@ function slugify(value: string) {
     .replace(/^-|-$/g, "");
 }
 
-/** Affiche le formulaire shadcn de création ou modification d'une catégorie. */
 export default function CategoryFormDialog({
   open,
   category,
@@ -51,7 +49,6 @@ export default function CategoryFormDialog({
   );
   const [slugEdited, setSlugEdited] = useState(Boolean(category));
 
-  /** Met à jour un champ et synchronise automatiquement le slug avant sa première édition manuelle. */
   const updateField = <K extends keyof CategoryInput>(
     key: K,
     value: CategoryInput[K],
@@ -66,20 +63,15 @@ export default function CategoryFormDialog({
     if (key === "slug") setSlugEdited(true);
   };
 
-  /** Empêche la soumission HTML standard et délègue les valeurs validées au hook CRUD. */
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    await onSubmit(values);
-  };
 
   return (
     <Dialog
       open={open}
       onOpenChange={(nextOpen) => !pending && onOpenChange(nextOpen)}
     >
-      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg">
+      <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg scrollbar-thin p-5!">
         <DialogHeader>
-          <DialogTitle className="font-display text-xl text-brand-ink">
+          <DialogTitle className="font-display text-2xl! text-brand-ink font-bold!">
             {category ? "Modifier la catégorie" : "Nouvelle catégorie"}
           </DialogTitle>
           <DialogDescription>
@@ -88,7 +80,10 @@ export default function CategoryFormDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={async () => await onSubmit(values)}
+          className="space-y-4"
+        >
           <CategoryFields values={values} onChange={updateField} />
 
           {error && (

@@ -4,7 +4,6 @@ import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import type { CategoryStatusFilter } from "../_types";
 
-/** Affiche les champs de recherche et de filtrage du tableau des catégories. */
 export default function CategoryFilters({
   query,
   status,
@@ -38,7 +37,7 @@ export default function CategoryFilters({
           onChange={(event) =>
             onStatusChange(event.target.value as CategoryStatusFilter)
           }
-          className="h-10 w-full appearance-none rounded-md border border-input bg-background px-3 pr-9 text-sm text-brand-ink outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
+          className="h-10 w-full appearance-none rounded-md border border-input bg-background px-3 pr-9 text-base text-brand-ink outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >
           <option value="all">Tous les statuts</option>
           <option value="active">Actives</option>

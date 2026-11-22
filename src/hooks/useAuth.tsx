@@ -62,12 +62,10 @@ export function useAuth() {
   });
 
   // ! Log Out
-  /** Déconnecte le compte et renvoie vers la page de connexion standard utilisée par les commandes existantes. */
   const logout = async () => {
     return await logoutTo();
   };
 
-  /** Déconnecte le compte et renvoie vers la connexion tout en conservant une destination locale approuvée. */
   const logoutTo = async (callbackUrl?: string) => {
     const destination = getSafeCallbackUrl(callbackUrl);
     return await signOut({

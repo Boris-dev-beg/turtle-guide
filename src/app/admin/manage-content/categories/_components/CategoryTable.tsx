@@ -4,12 +4,10 @@ import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { AdminCategoryRow, CategorySortKey } from "../_types";
 
-/** Formate un compteur en français. */
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
 
-/** Rend le tableau de catégories et expose les actions de tri, modification et suppression. */
 export default function CategoryTable({
   categories,
   sortKey,
@@ -103,9 +101,9 @@ export default function CategoryTable({
                     variant="ghost"
                     size="sm"
                     onClick={() => onEdit(category)}
-                    className="gap-1.5 text-brand-green hover:text-brand-green-dark"
+                    className="gap-1.5 text-base cursor-pointer text-brand-green hover:text-brand-green-dark"
                   >
-                    <Pencil className="size-4" aria-hidden="true" />
+                    <Pencil className="size-5" aria-hidden="true" />
                     Modifier
                   </Button>
                   <Button
@@ -114,9 +112,9 @@ export default function CategoryTable({
                     size="icon-sm"
                     aria-label={`Supprimer ${category.name}`}
                     onClick={() => onDelete(category)}
-                    className="text-brand-ink-muted hover:bg-brand-danger-bg hover:text-brand-danger"
+                    className="text-brand-ink-muted cursor-pointer hover:bg-brand-danger-bg hover:text-brand-danger"
                   >
-                    <Trash2 className="size-4" aria-hidden="true" />
+                    <Trash2 className="size-5" aria-hidden="true" />
                   </Button>
                 </div>
               </td>
@@ -126,7 +124,7 @@ export default function CategoryTable({
             <tr>
               <td
                 colSpan={6}
-                className="px-4 py-12 text-center text-sm text-brand-ink-muted"
+                className="px-4 py-12 text-center text-lg text-brand-ink-muted"
               >
                 Aucune catégorie ne correspond à ces filtres.
               </td>
@@ -138,7 +136,6 @@ export default function CategoryTable({
   );
 }
 
-/** Rend un en-tête triable et indique la colonne actuellement active. */
 function SortableHeader({
   columnKey,
   label,
@@ -168,7 +165,7 @@ function SortableHeader({
       >
         {label}
         <ArrowUpDown
-          className={`size-3.5 ${isSelected ? "text-brand-green" : "text-brand-ink-muted"}`}
+          className={`size-4 ${isSelected ? "text-brand-green" : "text-brand-ink-muted"}`}
           aria-hidden="true"
         />
       </button>

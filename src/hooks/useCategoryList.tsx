@@ -1,11 +1,7 @@
 "use client";
 
+import { AdminCategoryRow, CategorySortKey, CategoryStatusFilter } from "@/types/type";
 import { useMemo, useState } from "react";
-import type {
-  AdminCategoryRow,
-  CategorySortKey,
-  CategoryStatusFilter,
-} from "../_types";
 
 /** Gère recherche, statut et tri de la liste de catégories pour garder la vue de présentation compacte. */
 export function useCategoryList(categories: AdminCategoryRow[]) {
