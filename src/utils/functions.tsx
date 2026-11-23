@@ -4,8 +4,6 @@ export const maxDuration = 60;
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-// Les navigateurs affichent la date selon leur langue, mais le contrôle HTML
-// renvoie normalement YYYY-MM-DD. On accepte aussi les deux formats slash déjà observés.
 function normalizeBirthDate(value: unknown) {
   if (typeof value !== "string") return value;
 
@@ -24,8 +22,6 @@ function normalizeBirthDate(value: unknown) {
   return value;
 }
 
-// Contrat de POST /api/generate-pdf : seuls ces champs client sont acceptés.
-// Le contexte administratif (motif, procédure, ville) est relu en base, jamais fourni par le navigateur.
 export const requestSchema = z.object({
   docId: z.string().min(1),
   folderId: z.string().min(1),
@@ -53,8 +49,6 @@ export const requestSchema = z.object({
   }),
 });
 
-// Les textes insérés dans le HTML du PDF viennent en partie des réponses utilisateur.
-// L'échappement évite qu'ils soient interprétés comme du balisage.
 export function escapeHtml(value: string) {
   const entities: Record<string, string> = {
     "&": "&amp;",
@@ -66,7 +60,6 @@ export function escapeHtml(value: string) {
   return value.replace(/[&<>"']/g, (character) => entities[character]);
 }
 
-// La date déjà validée est affichée en français, avec le fuseau du Cameroun.
 export function formatDate(value: string) {
   return new Intl.DateTimeFormat("fr-FR", {
     day: "numeric",
@@ -76,7 +69,6 @@ export function formatDate(value: string) {
   }).format(new Date(`${value}T12:00:00`));
 }
 
-// Repère la réponse du diagnostic qui décrit la finalité de la demande, si elle existe.
 export function getPurpose(answers: { question: string; answer: string }[]) {
   return answers.find(({ question }) =>
     /usage|utilisation|motif|pour quel/i.test(question),

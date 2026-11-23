@@ -1,0 +1,130 @@
+"use client";
+
+import { useState } from "react";
+import { Card } from "@/components/ui/card";
+import { useAdminProcedures } from "@/hooks/useAdminProcedures";
+import { AdminProcedureRow, ProcedureInput } from "@/types/type";
+import { useProcedureList } from "@/hooks/useProcedureList";
+
+function formatCount(value: number) {
+  return new Intl.NumberFormat("fr-FR").format(value);
+}
+
+export default function ProceduresManager({
+  procedures,
+}: {
+  procedures: AdminProcedureRow[];
+}) {
+  const [editingProcedure, setEditingProcedure] =
+    useState<AdminProcedureRow | null>(null);
+  const [deletingProcedure, setDeletingProcedure] =
+    useState<AdminProcedureRow | null>(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [formKey, setFormKey] = useState(0);
+  const [formError, setFormError] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [notice, setNotice] = useState("");
+  const { createProcedure, updateProcedure, deleteProcedure, isPending } =
+    useAdminProcedures();
+  const {
+    query,
+    status,
+    sortKey,
+    sortDescending,
+    filteredProcedure,
+    setQuery,
+    setStatus,
+    toggleSort,
+  } = useProcedureList(procedures);
+
+  const openForm = (category: AdminProcedureRow | null) => {
+    setEditingProcedure(category);
+    setFormError("");
+    setFormKey((key) => key + 1);
+    setFormOpen(true);
+  };
+
+  const saveProcedure = async (input: ProcedureInput) => {
+    try {
+      const message = editingProcedure
+        ? await updateProcedure({ id: editingProcedure.id, input })
+        : await createProcedure(input);
+      setFormOpen(false);
+      setNotice(message);
+    } catch (error) {
+      setFormError(
+        error instanceof Error ? error.message : "L'enregistrement a échoué.",
+      );
+    }
+  };
+
+  const removeProcedure = async () => {
+    if (!deletingProcedure) return;
+    try {
+      setNotice(await deleteProcedure(deletingProcedure.id));
+      setDeletingProcedure(null);
+      setDeleteError("");
+    } catch (error) {
+      setDeleteError(
+        error instanceof Error ? error.message : "La suppression a échoué.",
+      );
+    }
+  };
+
+  return (
+    <div className="space-y-5">
+      {/* <CategoriesPageHeader
+        notice={notice}
+        onCreate={() => openForm(null)}
+        onDismissNotice={() => setNotice("")}
+      /> */}
+
+      <Card className="overflow-hidden rounded-md gap-0 shadow-none ring-border">
+        {/* <CategoryFilters
+          query={query}
+          status={status}
+          onQueryChange={setQuery}
+          onStatusChange={setStatus}
+        />
+        <CategoryTable
+          procedures={filteredProcedure}
+          sortKey={sortKey}
+          sortDescending={sortDescending}
+          onSort={toggleSort}
+          onEdit={openForm}
+          onDelete={(procedure) => {
+            setDeletingProcedure(procedure);
+            setDeleteError("");
+          }}
+        /> */}
+        <div className="border-t border-border px-4 py-3 text-sm text-brand-ink-muted">
+          {formatCount(filteredProcedure.length)} résultat
+          {filteredProcedure.length === 1 ? "" : "s"} sur{" "}
+          {formatCount(procedures.length)}
+        </div>
+      </Card>
+
+      {/* <CategoryFormDialog
+        key={formKey}
+        open={formOpen}
+        category={editingProcedure}
+        pending={isPending}
+        error={formError}
+        onOpenChange={setFormOpen}
+        onSubmit={saveCategory}
+      />
+      <CategoryDeleteDialog
+        category={deletingProcedure}
+        pending={isPending}
+        error={deleteError}
+        onOpenChange={(open) => {
+          if (!open) {
+            setDeletingProcedure(null);
+            setDeleteError("");
+          }
+        }}
+        onConfirm={removeCategory}
+      /> */}
+    </div>
+  );
+}

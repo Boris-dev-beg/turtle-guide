@@ -8,12 +8,10 @@ import {
 } from "@/services/categories.service";
 import type { CategoryInput } from "@/lib/schemas/category.schema";
 
-/** Retourne les catégories publiques actives en déléguant la lecture au service. */
 export async function getAll() {
   return categoriesServices.getAll();
 }
 
-/** Charge les catégories administratives et indique si la session a le rôle requis. */
 export async function getAdminCategories() {
   const user = await getAuthorizedUser();
   if (!user) return { authorized: false as const, categories: [] };
@@ -23,7 +21,6 @@ export async function getAdminCategories() {
   };
 }
 
-/** Appelle le service de création après authentification puis rafraîchit les routes concernées. */
 export async function createCategory(input: CategoryInput) {
   const user = await getAuthorizedUser();
   if (!user) return { success: false, message: "Accès administrateur requis." };
@@ -44,7 +41,6 @@ export async function createCategory(input: CategoryInput) {
   }
 }
 
-/** Appelle le service de modification après authentification puis rafraîchit les routes concernées. */
 export async function updateCategory(id: string, input: CategoryInput) {
   const user = await getAuthorizedUser();
   if (!user) return { success: false, message: "Accès administrateur requis." };
@@ -65,7 +61,6 @@ export async function updateCategory(id: string, input: CategoryInput) {
   }
 }
 
-/** Appelle le service de suppression protégée après authentification puis rafraîchit les routes. */
 export async function deleteCategory(id: string) {
   const user = await getAuthorizedUser();
   if (!user) return { success: false, message: "Accès administrateur requis." };
@@ -79,7 +74,6 @@ export async function deleteCategory(id: string) {
   }
 }
 
-/** Retourne l'utilisateur courant uniquement si sa session et son rôle administrateur sont valides. */
 async function getAuthorizedUser() {
   const session = await getSession();
   if (!session?.user) return null;
@@ -89,13 +83,11 @@ async function getAuthorizedUser() {
   return administrator ? session.user : null;
 }
 
-/** Rafraîchit les pages de contenu dont les listes ou compteurs peuvent avoir changé. */
 function revalidateCategoryRoutes() {
   revalidatePath("/admin/manage-content");
   revalidatePath("/admin/manage-content/categories");
 }
 
-/** Convertit une erreur métier du service en message destiné à l'interface d'administration. */
 function categoryErrorMessage(error: unknown) {
   if (error instanceof CategoryServiceError) return error.message;
   return "L'opération sur la catégorie a échoué. Réessayez.";

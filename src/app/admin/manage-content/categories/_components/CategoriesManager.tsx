@@ -9,7 +9,7 @@ import CategoryTable from "./CategoryTable";
 import CategoryFormDialog from "./CategoryFormDialog";
 import CategoryDeleteDialog from "./CategoryDeleteDialog";
 import { useCategoryList } from "../../../../../hooks/useCategoryList";
-import type { AdminCategoryRow, CategoryInput } from "../_types";
+import type { AdminCategoryRow, CategoryInput } from "@/types/type";
 
 /** Formate un compteur en français pour le résumé des résultats. */
 function formatCount(value: number) {

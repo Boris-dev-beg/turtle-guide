@@ -19,7 +19,6 @@ export class CategoryServiceError extends Error {
 }
 
 export const categoriesServices = {
-  /** Vérifie si l'utilisateur possède un enregistrement administrateur. */
   async getAdministrator(userId: string) {
     return prisma.administrator.findUnique({
       where: { userId },
@@ -27,7 +26,6 @@ export const categoriesServices = {
     });
   },
 
-  /** Retourne toutes les catégories avec leur nombre de procédures pour l'écran d'administration. */
   async getAllForAdmin() {
     return prisma.category.findMany({
       include: {
@@ -37,7 +35,6 @@ export const categoriesServices = {
     });
   },
 
-  /** Vérifie les règles métier d'une catégorie avant création ou modification. */
   validateInput(input: unknown): CategoryInput {
     const parsed = categorySchema.safeParse(input);
     if (!parsed.success) {
@@ -50,7 +47,6 @@ export const categoriesServices = {
     return parsed.data;
   },
 
-  /** Crée une catégorie et son événement d'audit au sein d'une transaction Prisma. */
   async create(input: CategoryInput, actor: { id: string; name: string }) {
     try {
       return await prisma.$transaction(async (transaction) => {
@@ -79,7 +75,6 @@ export const categoriesServices = {
     }
   },
 
-  /** Modifie une catégorie et enregistre son événement d'audit atomiquement. */
   async update(
     id: string,
     input: CategoryInput,
@@ -121,7 +116,6 @@ export const categoriesServices = {
     }
   },
 
-  /** Supprime une catégorie vide et conserve le nom dans son événement d'audit. */
   async delete(id: string, actor: { id: string; name: string }) {
     return prisma.$transaction(async (transaction) => {
       const category = await transaction.category.findUnique({

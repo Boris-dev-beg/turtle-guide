@@ -3,7 +3,6 @@ import { getAdminCategories } from "@/lib/categories";
 import SectionLayout from "@/app/admin/_components/shared/SectionLayout";
 import CategoriesManager from "./_components/CategoriesManager";
 
-/** Charge les catégories et refuse l'accès aux utilisateurs qui ne sont pas administrateurs. */
 export default async function CategoriesPage() {
   const result = await getAdminCategories();
   if (!result.authorized) {

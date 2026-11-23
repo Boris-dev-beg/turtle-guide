@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { AdminCategoryRow } from "../_types";
+import type { AdminCategoryRow } from "@/types/type";
 
 /** Demande confirmation avant suppression et affiche les erreurs métier renvoyées par le service. */
 export default function CategoryDeleteDialog({

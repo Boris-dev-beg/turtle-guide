@@ -2,7 +2,7 @@
 
 import { ArrowUpDown, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import type { AdminCategoryRow, CategorySortKey } from "../_types";
+import type { AdminCategoryRow, CategorySortKey } from "@/types/type";
 
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
