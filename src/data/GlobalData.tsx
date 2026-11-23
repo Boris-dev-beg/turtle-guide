@@ -172,7 +172,7 @@ export const LinksDashboard = [
     icon2: ChevronRight,
     children: [
       { label: "Catégories", href: "/admin/manage-content/categories" },
-      { label: "Procédures", href: "/admin/manage-content?tab=procedures" },
+      { label: "Procédures", href: "/admin/manage-content/procedures" },
       {
         label: "Démarches et étapes",
         href: "/admin/manage-content?tab=processes",

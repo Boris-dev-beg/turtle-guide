@@ -11,7 +11,7 @@ export type CategoryStatusFilter = "all" | "active" | "inactive";
 
 // ! Admin procedures
 export type { AdminProcedureRow, ProcedureInput };
-export type ProcedireSortKey = "title" | "legalBasis" | "questionCount" | "status";
+export type ProcedureSortKey = "title" | "legalBasis" | "questionCount" | "status";
 export type ProcedureStatusFilter = "all" | "active" | "inactive";
 
 export type user = {

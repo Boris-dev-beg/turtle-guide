@@ -22,8 +22,8 @@ export default async function page() {
        title="Procédures"
        subtitle=""
        action={
-         <span className="hidden items-center gap-2 text-sm text-brand-ink-muted sm:inline-flex">
-           <ListTree className="size-4" aria-hidden="true" />
+         <span className="hidden items-center gap-2 text-base text-brand-ink-muted sm:inline-flex">
+           <ListTree className="size-5" strokeWidth={2} aria-hidden="true" />
            {procedures.length} procédure{procedures.length === 1 ? "" : "s"}
          </span>
        }

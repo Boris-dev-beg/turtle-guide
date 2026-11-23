@@ -2,23 +2,25 @@
 
 import { ChevronDown, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import type { CategoryStatusFilter } from "../_types";
+import type { CategoryStatusFilter, ProcedureStatusFilter } from "@/types/type";
 
-export default function CategoryFilters({
+export default function DataFilters({
   query,
   status,
   onQueryChange,
   onStatusChange,
+  label,
 }: {
+  label: string;
   query: string;
-  status: CategoryStatusFilter;
+  status: CategoryStatusFilter | ProcedureStatusFilter;
   onQueryChange: (value: string) => void;
-  onStatusChange: (value: CategoryStatusFilter) => void;
+  onStatusChange: (value: CategoryStatusFilter | ProcedureStatusFilter) => void;
 }) {
   return (
     <div className="grid gap-3 border-b border-border bg-card p-4 md:grid-cols-[minmax(14rem,1fr)_12rem]">
       <label className="relative block">
-        <span className="sr-only">Rechercher une catégorie</span>
+        <span className="sr-only">{label}</span>
         <Search
           className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-ink-muted"
           aria-hidden="true"
@@ -26,7 +28,7 @@ export default function CategoryFilters({
         <Input
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
-          placeholder="Rechercher une catégorie"
+          placeholder={label}
           className="h-10 pl-9"
         />
       </label>
@@ -35,7 +37,11 @@ export default function CategoryFilters({
         <select
           value={status}
           onChange={(event) =>
-            onStatusChange(event.target.value as CategoryStatusFilter)
+            onStatusChange(
+              event.target.value as
+                | CategoryStatusFilter
+                | ProcedureStatusFilter,
+            )
           }
           className="h-10 w-full appearance-none rounded-md border border-input bg-background px-3 pr-9 text-base text-brand-ink outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50"
         >

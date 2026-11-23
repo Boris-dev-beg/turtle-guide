@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useAdminCategories } from "@/hooks/useAdminCategories";
-import CategoriesPageHeader from "./CategoriesPageHeader";
-import CategoryFilters from "./CategoryFilters";
-import CategoryTable from "./CategoryTable";
-import CategoryFormDialog from "./CategoryFormDialog";
-import CategoryDeleteDialog from "./CategoryDeleteDialog";
+import CategoryDeleteDialog from "../Dialogs/CategoryDeleteDialog";
 import { useCategoryList } from "../../../../../hooks/useCategoryList";
 import type { AdminCategoryRow, CategoryInput } from "@/types/type";
+import { SubSectionHeaders } from "../common/SubSectionHeaders";
+import DataFilters from "../common/DataFilters";
+import CategoryTable from "../tables/CategoryTable";
+import CategoryFormDialog from "../Dialogs/CategoryFormDialog";
 
 /** Formate un compteur en français pour le résumé des résultats. */
 function formatCount(value: number) {
@@ -83,18 +83,21 @@ export default function CategoriesManager({
 
   return (
     <div className="space-y-5">
-      <CategoriesPageHeader
+      <SubSectionHeaders
         notice={notice}
         onCreate={() => openForm(null)}
         onDismissNotice={() => setNotice("")}
+        label="catégorie"
+        subLabel="Gérez les regroupements thématiques des procédures."
       />
 
       <Card className="overflow-hidden rounded-md gap-0 shadow-none ring-border">
-        <CategoryFilters
+        <DataFilters
           query={query}
           status={status}
           onQueryChange={setQuery}
           onStatusChange={setStatus}
+          label="Rechercher une Catégorie"
         />
         <CategoryTable
           categories={filteredCategories}

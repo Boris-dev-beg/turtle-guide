@@ -1,7 +1,7 @@
 import { FolderTree } from "lucide-react";
 import { getAdminCategories } from "@/lib/categories";
 import SectionLayout from "@/app/admin/_components/shared/SectionLayout";
-import CategoriesManager from "./_components/CategoriesManager";
+import CategoriesManager from "../_components/sections/CategoriesManager";
 
 export default async function CategoriesPage() {
   const result = await getAdminCategories();

@@ -5,6 +5,10 @@ import { Card } from "@/components/ui/card";
 import { useAdminProcedures } from "@/hooks/useAdminProcedures";
 import { AdminProcedureRow, ProcedureInput } from "@/types/type";
 import { useProcedureList } from "@/hooks/useProcedureList";
+import { SubSectionHeaders } from "../common/SubSectionHeaders";
+import DataFilters from "../common/DataFilters";
+import ProcedureTable from "../tables/ProcedureTable";
+import ProcedureFormDialog from "../Dialogs/ProcedureFormDialog";
 
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
@@ -73,20 +77,23 @@ export default function ProceduresManager({
 
   return (
     <div className="space-y-5">
-      {/* <CategoriesPageHeader
+      <SubSectionHeaders
         notice={notice}
         onCreate={() => openForm(null)}
         onDismissNotice={() => setNotice("")}
-      /> */}
+        label="procédure"
+        subLabel=""
+      />
 
       <Card className="overflow-hidden rounded-md gap-0 shadow-none ring-border">
-        {/* <CategoryFilters
+        <DataFilters
           query={query}
           status={status}
           onQueryChange={setQuery}
           onStatusChange={setStatus}
+          label="Rechercher une Procédure"
         />
-        <CategoryTable
+        <ProcedureTable
           procedures={filteredProcedure}
           sortKey={sortKey}
           sortDescending={sortDescending}
@@ -96,7 +103,7 @@ export default function ProceduresManager({
             setDeletingProcedure(procedure);
             setDeleteError("");
           }}
-        /> */}
+        />
         <div className="border-t border-border px-4 py-3 text-sm text-brand-ink-muted">
           {formatCount(filteredProcedure.length)} résultat
           {filteredProcedure.length === 1 ? "" : "s"} sur{" "}
@@ -104,16 +111,16 @@ export default function ProceduresManager({
         </div>
       </Card>
 
-      {/* <CategoryFormDialog
+      <ProcedureFormDialog
         key={formKey}
         open={formOpen}
-        category={editingProcedure}
+        procedure={editingProcedure}
         pending={isPending}
         error={formError}
         onOpenChange={setFormOpen}
-        onSubmit={saveCategory}
+        onSubmit={saveProcedure}
       />
-      <CategoryDeleteDialog
+      {/* <CategoryDeleteDialog
         category={deletingProcedure}
         pending={isPending}
         error={deleteError}

@@ -9,58 +9,45 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import CategoryFields from "./CategoryFields";
-import type { AdminCategoryRow, CategoryInput } from "../_types";
+import type { AdminProcedureRow, ProcedureInput } from "@/types/type";
 
-function slugify(value: string) {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "");
-}
-
-export default function CategoryFormDialog({
+/** A coder concretement plutard */
+export default function ProcedureFormDialog({
   open,
-  category,
+  procedure,
   pending,
   error,
   onOpenChange,
   onSubmit,
 }: {
   open: boolean;
-  category: AdminCategoryRow | null;
+  procedure: AdminProcedureRow | null;
   pending: boolean;
   error: string;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (input: CategoryInput) => Promise<void>;
+  onSubmit: (input: ProcedureInput) => Promise<void>;
 }) {
-  const [values, setValues] = useState<CategoryInput>(() =>
-    category
+  const [values, setValues] = useState<ProcedureInput>(() =>
+    procedure
       ? {
-          name: category.name,
-          slug: category.slug,
-          description: category.description,
-          isActive: category.isActive,
+          title: procedure.title,
+          legalBasis: procedure.legalBasis,
+          description: procedure.description,
+          isActive: procedure.isActive,
+          image: procedure.image,
+          categoryId: procedure.categoryId
         }
-      : { name: "", slug: "", description: "", isActive: true },
+      : { title: "", legalBasis: "", description: "", isActive: true, image: "", categoryId: "" },
   );
-  const [slugEdited, setSlugEdited] = useState(Boolean(category));
 
-  const updateField = <K extends keyof CategoryInput>(
+  const updateField = <K extends keyof ProcedureInput>(
     key: K,
-    value: CategoryInput[K],
+    value: ProcedureInput[K],
   ) => {
     setValues((current) => ({
       ...current,
       [key]: value,
-      ...(key === "name" && !slugEdited
-        ? { slug: slugify(String(value)) }
-        : {}),
     }));
-    if (key === "slug") setSlugEdited(true);
   };
 
 
@@ -72,7 +59,7 @@ export default function CategoryFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-lg scrollbar-thin p-5!">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl! text-brand-ink font-bold!">
-            {category ? "Modifier la catégorie" : "Nouvelle catégorie"}
+            {procedure ? "Modifier la procedure" : "Nouvelle procedure"}
           </DialogTitle>
           <DialogDescription>
             Le nom et le slug sont visibles dans l&apos;espace public. Le slug
@@ -84,7 +71,7 @@ export default function CategoryFormDialog({
           onSubmit={async () => await onSubmit(values)}
           className="space-y-4"
         >
-          <CategoryFields values={values} onChange={updateField} />
+          {/* <CategoryFields values={values} onChange={updateField} /> */}
 
           {error && (
             <p role="alert" className="text-sm text-destructive">
@@ -108,7 +95,7 @@ export default function CategoryFormDialog({
             >
               {pending
                 ? "Enregistrement…"
-                : category
+                : procedure
                   ? "Enregistrer les modifications"
                   : "Créer la catégorie"}
             </Button>

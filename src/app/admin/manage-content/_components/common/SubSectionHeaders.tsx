@@ -4,14 +4,18 @@ import { ArrowLeft, Plus, X } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export default function CategoriesPageHeader({
+export function SubSectionHeaders({
   notice,
   onCreate,
   onDismissNotice,
+  label,
+  subLabel,
 }: {
   notice: string;
   onCreate: () => void;
   onDismissNotice: () => void;
+  label: string;
+  subLabel: string;
 }) {
   return (
     <>
@@ -28,21 +32,21 @@ export default function CategoriesPageHeader({
         </Link>
         <span aria-hidden="true">/</span>
         <span aria-current="page" className="font-medium text-brand-ink">
-          Catégories
+          {label}s
         </span>
       </nav>
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="mt-1 text-sm text-brand-ink-muted">
-            Gérez les regroupements thématiques des procédures.
-          </p>
+        <p className="mt-1 text-sm text-brand-ink-muted">
+         {subLabel}
+        </p>
         <Button
           type="button"
           onClick={onCreate}
           className="min-h-11 font-semibold gap-2 bg-brand-green text-white hover:bg-brand-green-dark"
         >
           <Plus className="size-5" aria-hidden="true" />
-          Nouvelle catégorie
+          Nouvelle {label}
         </Button>
       </div>
 
