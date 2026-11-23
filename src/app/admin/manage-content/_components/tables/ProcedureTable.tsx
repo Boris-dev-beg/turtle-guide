@@ -47,7 +47,7 @@ export default function ProcedureTable({
             ))}
             <th
               scope="col"
-              className="border-b border-r border-border px-3 py-3 text-left font-semibold sm:px-4"
+              className="border-b border-r border-border px-3 py-3 text-base text-left font-semibold sm:px-4"
             >
               Description
             </th>
@@ -75,21 +75,21 @@ export default function ProcedureTable({
               key={procedure.id}
               className="transition-colors hover:bg-muted/40"
             >
-              <td className="border-r border-border px-3 py-3 font-semibold text-brand-ink sm:px-4">
+              <td className="border-r border-border px-3 py-3 text-base font-semibold text-brand-ink sm:px-4 max-w-3xs">
                 {procedure.title}
               </td>
-              <td className="border-r border-border px-3 py-3 font-mono text-xs text-brand-ink-muted sm:px-4">
-                {procedure.legalBasis}
+              <td className="border-r border-border px-3 py-3 font-mono text-sm text-brand-ink-muted sm:px-4 max-w-2xs">
+                {procedure.legalBasis.split("—")[0]}
               </td>
-              <td className="max-w-96 border-r border-border px-3 py-3 text-brand-ink-muted sm:px-4">
-                <span className="line-clamp-2">{procedure.description}</span>
+              <td className="max-w-100 text-base border-r border-border px-3 py-3 text-brand-ink-muted sm:px-4">
+                <span className="line-clamp-3">{procedure.description}</span>
               </td>
-              <td className="border-r border-border px-3 py-3 text-center font-semibold tabular-nums text-brand-ink sm:px-4">
+              <td className="border-r border-border px-3 py-3 text-center text-base font-semibold tabular-nums text-brand-ink sm:px-4">
                 {formatCount(procedure._count.questions)}
               </td>
               <td className="border-r border-border px-3 py-3 sm:px-4">
                 <span
-                  className={`inline-flex rounded-sm px-2.5 py-1 text-xs font-semibold ${procedure.isActive ? "bg-emerald-100 text-emerald-800" : "bg-muted text-brand-ink-muted"}`}
+                  className={`inline-flex rounded-sm px-2.5 py-1 text-sm font-semibold ${procedure.isActive ? "bg-emerald-100 text-emerald-800" : "bg-muted text-brand-ink-muted"}`}
                 >
                   {procedure.isActive ? "Active" : "Inactive"}
                 </span>
@@ -161,7 +161,7 @@ function SortableHeader({
       <button
         type="button"
         onClick={() => onSort(columnKey)}
-        className="inline-flex items-center gap-1.5 font-semibold hover:text-brand-green"
+        className="inline-flex items-center gap-1.5 text-base font-semibold hover:text-brand-green"
       >
         {label}
         <ArrowUpDown

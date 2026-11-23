@@ -44,7 +44,7 @@ export async function getcontentData(): Promise<ContentMetric> {
         label: "Procédures",
         value: totalProceduces,
         subLabel: "Questionnaires de diagnostic",
-        href: "/admin/manage-content?tab=procedures",
+        href: "/admin/manage-content/procedures",
       },
       {
         key: "news",

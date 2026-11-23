@@ -41,8 +41,8 @@ export default function ProceduresManager({
     toggleSort,
   } = useProcedureList(procedures);
 
-  const openForm = (category: AdminProcedureRow | null) => {
-    setEditingProcedure(category);
+  const openForm = (procedure: AdminProcedureRow | null) => {
+    setEditingProcedure(procedure);
     setFormError("");
     setFormKey((key) => key + 1);
     setFormOpen(true);
@@ -121,7 +121,7 @@ export default function ProceduresManager({
         onSubmit={saveProcedure}
       />
       {/* <CategoryDeleteDialog
-        category={deletingProcedure}
+        procedure={deletingProcedure}
         pending={isPending}
         error={deleteError}
         onOpenChange={(open) => {

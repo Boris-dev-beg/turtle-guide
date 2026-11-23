@@ -37,7 +37,6 @@ const tabEntityTypes: Record<string, string[]> = {
   documents: ["document"],
 };
 
-/** Formate la date d'une entrée de journal dans le fuseau local français. */
 function formatActivityDate(date: Date) {
   return new Intl.DateTimeFormat("fr-FR", {
     dateStyle: "medium",
@@ -45,7 +44,6 @@ function formatActivityDate(date: Date) {
   }).format(date);
 }
 
-/** Affiche les indicateurs de contenu et le journal vérifiable des opérations administratives. */
 export default function ManageContent({
   data,
   selectedTab = "all",

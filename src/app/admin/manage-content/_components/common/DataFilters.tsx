@@ -20,7 +20,6 @@ export default function DataFilters({
   return (
     <div className="grid gap-3 border-b border-border bg-card p-4 md:grid-cols-[minmax(14rem,1fr)_12rem]">
       <label className="relative block">
-        <span className="sr-only">{label}</span>
         <Search
           className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-brand-ink-muted"
           aria-hidden="true"
@@ -29,11 +28,10 @@ export default function DataFilters({
           value={query}
           onChange={(event) => onQueryChange(event.target.value)}
           placeholder={label}
-          className="h-10 pl-9"
+          className="h-10 pl-9 text-sm!"
         />
       </label>
       <label className="relative block">
-        <span className="sr-only">Filtrer par statut</span>
         <select
           value={status}
           onChange={(event) =>

@@ -35,9 +35,16 @@ export default function ProcedureFormDialog({
           description: procedure.description,
           isActive: procedure.isActive,
           image: procedure.image,
-          categoryId: procedure.categoryId
+          categoryId: procedure.categoryId,
         }
-      : { title: "", legalBasis: "", description: "", isActive: true, image: "", categoryId: "" },
+      : {
+          title: "",
+          legalBasis: "",
+          description: "",
+          isActive: true,
+          image: "",
+          categoryId: "",
+        },
   );
 
   const updateField = <K extends keyof ProcedureInput>(
@@ -49,7 +56,6 @@ export default function ProcedureFormDialog({
       [key]: value,
     }));
   };
-
 
   return (
     <Dialog
@@ -97,7 +103,7 @@ export default function ProcedureFormDialog({
                 ? "Enregistrement…"
                 : procedure
                   ? "Enregistrer les modifications"
-                  : "Créer la catégorie"}
+                  : "Créer la procédure"}
             </Button>
           </div>
         </form>
