@@ -3,20 +3,18 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useAdminCategories } from "@/hooks/useAdminCategories";
-import CategoryDeleteDialog from "../Dialogs/CategoryDeleteDialog";
 import { useCategoryList } from "../../../../../hooks/useCategoryList";
 import type { AdminCategoryRow, CategoryInput } from "@/types/type";
 import { SubSectionHeaders } from "../common/SubSectionHeaders";
 import DataFilters from "../common/DataFilters";
 import CategoryTable from "../tables/CategoryTable";
 import CategoryFormDialog from "../Dialogs/CategoryFormDialog";
+import DeleteDialog from "../Dialogs/DeleteDialog";
 
-/** Formate un compteur en français pour le résumé des résultats. */
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
 }
 
-/** Coordonne filtres, tri, mutations et composants spécialisés de la gestion des catégories. */
 export default function CategoriesManager({
   categories,
 }: {
@@ -44,7 +42,6 @@ export default function CategoriesManager({
     toggleSort,
   } = useCategoryList(categories);
 
-  /** Ouvre le formulaire de création ou modification en le réinitialisant à chaque ouverture. */
   const openForm = (category: AdminCategoryRow | null) => {
     setEditingCategory(category);
     setFormError("");
@@ -52,7 +49,6 @@ export default function CategoriesManager({
     setFormOpen(true);
   };
 
-  /** Enregistre une catégorie via le hook et publie le résultat dans la page. */
   const saveCategory = async (input: CategoryInput) => {
     try {
       const message = editingCategory
@@ -67,7 +63,6 @@ export default function CategoriesManager({
     }
   };
 
-  /** Supprime l'élément confirmé via le hook et conserve les erreurs métier dans le dialogue. */
   const removeCategory = async () => {
     if (!deletingCategory) return;
     try {
@@ -126,8 +121,10 @@ export default function CategoriesManager({
         onOpenChange={setFormOpen}
         onSubmit={saveCategory}
       />
-      <CategoryDeleteDialog
-        category={deletingCategory}
+      <DeleteDialog
+        label="Catégorie"
+        element={deletingCategory}
+        name={deletingCategory?.name as string}
         pending={isPending}
         error={deleteError}
         onOpenChange={(open) => {

@@ -8,17 +8,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import type { AdminCategoryRow } from "@/types/type";
+import { AdminCategoryRow, AdminProcedureRow } from "@/types/type";
 
-/** Demande confirmation avant suppression et affiche les erreurs métier renvoyées par le service. */
-export default function CategoryDeleteDialog({
-  category,
+export default function DeleteDialog({
+  label,
+  name,
+  element,
   pending,
   error,
   onOpenChange,
   onConfirm,
 }: {
-  category: AdminCategoryRow | null;
+  element: (AdminCategoryRow | null) | (AdminProcedureRow | null);
+  label: string;
+  name: string;
   pending: boolean;
   error: string;
   onOpenChange: (open: boolean) => void;
@@ -26,17 +29,18 @@ export default function CategoryDeleteDialog({
 }) {
   return (
     <Dialog
-      open={Boolean(category)}
+      open={Boolean(element)}
       onOpenChange={(open) => !pending && onOpenChange(open)}
     >
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="font-display text-xl text-brand-ink">
-            Supprimer la catégorie ?
+            Supprimer la {label} ?
           </DialogTitle>
           <DialogDescription>
-            La catégorie « {category?.name} » sera supprimée. Les catégories qui
-            contiennent des procédures ne peuvent pas être supprimées.
+            La {label} « {name} » sera supprimée. Les {label}s qui contiennent
+            des {label === "categorie" ? "procédures" : "questions"} ne peuvent
+            pas être supprimées.
           </DialogDescription>
         </DialogHeader>
         {error && (

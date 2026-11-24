@@ -9,6 +9,7 @@ import { SubSectionHeaders } from "../common/SubSectionHeaders";
 import DataFilters from "../common/DataFilters";
 import ProcedureTable from "../tables/ProcedureTable";
 import ProcedureFormDialog from "../Dialogs/ProcedureFormDialog";
+import DeleteDialog from "../Dialogs/DeleteDialog";
 
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
@@ -120,8 +121,10 @@ export default function ProceduresManager({
         onOpenChange={setFormOpen}
         onSubmit={saveProcedure}
       />
-      {/* <CategoryDeleteDialog
-        procedure={deletingProcedure}
+      <DeleteDialog
+        name={deletingProcedure?.title as string}
+        label="procédure"
+        element={deletingProcedure}
         pending={isPending}
         error={deleteError}
         onOpenChange={(open) => {
@@ -130,8 +133,8 @@ export default function ProceduresManager({
             setDeleteError("");
           }
         }}
-        onConfirm={removeCategory}
-      /> */}
+        onConfirm={removeProcedure}
+      />
     </div>
   );
 }
