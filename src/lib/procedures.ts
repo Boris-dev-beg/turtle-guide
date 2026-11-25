@@ -1,8 +1,9 @@
 "use server"
 import { ProcedureServiceError, proceduresServices } from "@/services/procedure.service";
+import { categoriesServices } from "@/services/categories.service";
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
-import { ProcedureInput } from "./schemas/procedure.schema";
+import type { ProcedureInput } from "./schemas/procedure.schema";
+import { AdminAuthorizationError, requireAdmin } from "@/lib/admin/require-admin";
 
 export async function getAllProcedures() {
     return await proceduresServices.getAll()
@@ -18,10 +19,15 @@ export async function getByCategory(categoryName: string) {
 
 export async function getAdminProcedures() {
   const user = await getAuthorizedUser();
-  if (!user) return { authorized: false as const, procedures: [] };
+  if (!user) return { authorized: false as const, procedures: [], categories: [] };
+  const [procedures, categories] = await Promise.all([
+    proceduresServices.getAllForAdmin(),
+    categoriesServices.getAllForAdmin(),
+  ]);
   return {
     authorized: true as const,
-    procedures: await proceduresServices.getAllForAdmin(),
+    procedures,
+    categories: categories.map(({ id, name, isActive }) => ({ id, name, isActive })),
   };
 }
 
@@ -35,7 +41,7 @@ export async function createProcedure(input: ProcedureInput) {
       id: user.id,
       name: user.name,
     });
-    revalidateCategoryRoutes();
+    revalidateProcedureRoutes();
     return {
       success: true,
       message: `La procédure « ${created.title} » a été créée.`,
@@ -55,7 +61,7 @@ export async function updateProcedure(id: string, input: ProcedureInput) {
       id: user.id,
       name: user.name,
     });
-    revalidateCategoryRoutes();
+    revalidateProcedureRoutes();
     return {
       success: true,
       message: `La procédure « ${updated.title} » a été modifiée.`,
@@ -71,7 +77,7 @@ export async function deleteProcedure(id: string) {
 
   try {
     await proceduresServices.delete(id, { id: user.id, name: user.name });
-    revalidateCategoryRoutes();
+    revalidateProcedureRoutes();
     return { success: true, message: "La procédure a été supprimée." };
   } catch (error) {
     return { success: false, message: procedureErrorMessage(error) };
@@ -79,17 +85,19 @@ export async function deleteProcedure(id: string) {
 }
 
 async function getAuthorizedUser() {
-  const session = await getSession();
-  if (!session?.user) return null;
-  const administrator = await proceduresServices.getAdministrator(
-    session.user.id,
-  );
-  return administrator ? session.user : null;
+  try {
+    return (await requireAdmin()).session.user;
+  } catch (error) {
+    if (error instanceof AdminAuthorizationError) return null;
+    throw error;
+  }
 }
 
-function revalidateCategoryRoutes() {
+function revalidateProcedureRoutes() {
   revalidatePath("/admin/manage-content");
-  revalidatePath("/admin/manage-content/categories");
+  revalidatePath("/admin/manage-content/procedures");
+  revalidatePath("/categories", "layout");
+  revalidatePath("/categories/[slug]", "page");
 }
 
 function procedureErrorMessage(error: unknown) {

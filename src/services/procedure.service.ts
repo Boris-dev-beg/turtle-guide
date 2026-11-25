@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { procedureSchema } from "@/lib/schemas/procedure.schema";
-import { ProcedureInput } from "@/types/type";
+import type { ProcedureInput } from "@/types/type";
 
 export class ProcedureServiceError extends Error {
   constructor(
@@ -13,12 +13,6 @@ export class ProcedureServiceError extends Error {
 }
 
 export const proceduresServices = {
-  async getAdministrator(userId: string) {
-    return prisma.administrator.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-  },
   // ! Get All
   async getAll() {
     return await prisma.procedure.findMany({
@@ -51,8 +45,17 @@ export const proceduresServices = {
   },
 
   async create(input: ProcedureInput, actor: { id: string; name: string }) {
-    try {
-      return await prisma.$transaction(async (transaction) => {
+    return prisma.$transaction(async (transaction) => {
+        const category = await transaction.category.findUnique({
+          where: { id: input.categoryId },
+          select: { id: true },
+        });
+        if (!category) {
+          throw new ProcedureServiceError(
+            "La catégorie choisie n'existe plus.",
+            "INVALID_INPUT",
+          );
+        }
         const procedure = await transaction.procedure.create({ data: input });
         await transaction.adminContentActivity.create({
           data: {
@@ -66,10 +69,7 @@ export const proceduresServices = {
           },
         });
         return procedure;
-      });
-    } catch (error) {
-      throw error;
-    }
+    });
   },
 
   async update(
@@ -79,6 +79,17 @@ export const proceduresServices = {
   ) {
     try {
       return await prisma.$transaction(async (transaction) => {
+        const category = await transaction.category.findUnique({
+          where: { id: input.categoryId },
+          select: { id: true },
+        });
+        if (!category) {
+          throw new ProcedureServiceError(
+            "La catégorie choisie n'existe plus.",
+            "INVALID_INPUT",
+          );
+        }
+
         const procedure = await transaction.procedure.update({
           where: { id },
           data: input,
@@ -113,7 +124,7 @@ export const proceduresServices = {
         where: { id },
         select: {
           id: true,
-          name: true,
+          title: true,
           _count: { select: { questions: true } },
         },
       });
@@ -126,7 +137,7 @@ export const proceduresServices = {
       }
       if (procedure._count.questions > 0) {
         throw new ProcedureServiceError(
-          "Cette procédure contient des procédures. Déplacez-les avant de la supprimer.",
+          "Cette procédure contient des questions. Supprimez ou déplacez-les avant de supprimer la procédure.",
           "HAS_QUESTIONS",
         );
       }
@@ -137,8 +148,8 @@ export const proceduresServices = {
           action: "DELETE",
           entityType: "procedure",
           entityId: procedure.id,
-          entityName: procedure.name,
-          summary: "procédure supprimée",
+          entityName: procedure.title,
+          summary: "Procédure supprimée",
           actorId: actor.id,
           actorName: actor.name,
         },

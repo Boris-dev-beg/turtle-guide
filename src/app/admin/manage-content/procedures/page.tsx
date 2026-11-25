@@ -28,7 +28,7 @@ export default async function page() {
          </span>
        }
      >
-       <ProceduresManager procedures={procedures} />
+       <ProceduresManager procedures={procedures} categories={result.categories} />
      </SectionLayout>
    );
 }

@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { getSession } from "@/lib/session";
+import { AdminAuthorizationError, requireAdmin } from "@/lib/admin/require-admin";
 import {
   CategoryServiceError,
   categoriesServices,
@@ -75,17 +75,19 @@ export async function deleteCategory(id: string) {
 }
 
 async function getAuthorizedUser() {
-  const session = await getSession();
-  if (!session?.user) return null;
-  const administrator = await categoriesServices.getAdministrator(
-    session.user.id,
-  );
-  return administrator ? session.user : null;
+  try {
+    return (await requireAdmin()).session.user;
+  } catch (error) {
+    if (error instanceof AdminAuthorizationError) return null;
+    throw error;
+  }
 }
 
 function revalidateCategoryRoutes() {
   revalidatePath("/admin/manage-content");
   revalidatePath("/admin/manage-content/categories");
+  revalidatePath("/categories", "layout");
+  revalidatePath("/categories/[slug]", "page");
 }
 
 function categoryErrorMessage(error: unknown) {

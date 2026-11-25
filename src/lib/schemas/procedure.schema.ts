@@ -9,7 +9,8 @@ export const procedureSchema = z.object({
   image: z
     .string()
     .trim()
-    .min(2, "L'image est requise."),
+    .min(2, "L'image est requise.")
+    .max(500, "Le chemin de l'image ne peut pas dépasser 500 caractères."),
   categoryId: z
     .string()
     .trim()

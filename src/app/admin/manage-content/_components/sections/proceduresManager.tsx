@@ -10,6 +10,7 @@ import DataFilters from "../common/DataFilters";
 import ProcedureTable from "../tables/ProcedureTable";
 import ProcedureFormDialog from "../Dialogs/ProcedureFormDialog";
 import DeleteDialog from "../Dialogs/DeleteDialog";
+import type { ProcedureCategoryOption } from "../Dialogs/ProcedureFields";
 
 function formatCount(value: number) {
   return new Intl.NumberFormat("fr-FR").format(value);
@@ -17,8 +18,10 @@ function formatCount(value: number) {
 
 export default function ProceduresManager({
   procedures,
+  categories,
 }: {
   procedures: AdminProcedureRow[];
+  categories: ProcedureCategoryOption[];
 }) {
   const [editingProcedure, setEditingProcedure] =
     useState<AdminProcedureRow | null>(null);
@@ -29,7 +32,7 @@ export default function ProceduresManager({
   const [formError, setFormError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [notice, setNotice] = useState("");
-  const { createProcedure, updateProcedure, deleteProcedure, isPending } =
+  const { createProcedure, updateProcedure, deleteProcedure, isSaving, isDeleting } =
     useAdminProcedures();
   const {
     query,
@@ -50,6 +53,7 @@ export default function ProceduresManager({
   };
 
   const saveProcedure = async (input: ProcedureInput) => {
+    setFormError("");
     try {
       const message = editingProcedure
         ? await updateProcedure({ id: editingProcedure.id, input })
@@ -96,6 +100,7 @@ export default function ProceduresManager({
         />
         <ProcedureTable
           procedures={filteredProcedure}
+          emptyMessage={procedures.length === 0 ? "Aucune procédure n'est enregistrée." : "Aucune procédure ne correspond à ces filtres."}
           sortKey={sortKey}
           sortDescending={sortDescending}
           onSort={toggleSort}
@@ -116,7 +121,8 @@ export default function ProceduresManager({
         key={formKey}
         open={formOpen}
         procedure={editingProcedure}
-        pending={isPending}
+        categories={categories}
+        pending={isSaving}
         error={formError}
         onOpenChange={setFormOpen}
         onSubmit={saveProcedure}
@@ -125,7 +131,7 @@ export default function ProceduresManager({
         name={deletingProcedure?.title as string}
         label="procédure"
         element={deletingProcedure}
-        pending={isPending}
+        pending={isDeleting}
         error={deleteError}
         onOpenChange={(open) => {
           if (!open) {

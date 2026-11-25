@@ -40,9 +40,7 @@ export function useAdminProcedures() {
     createProcedure: createMutation.mutateAsync,
     updateProcedure: updateMutation.mutateAsync,
     deleteProcedure: deleteMutation.mutateAsync,
-    isPending:
-      createMutation.isPending ||
-      updateMutation.isPending ||
-      deleteMutation.isPending,
+    isSaving: createMutation.isPending || updateMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 }

@@ -3,17 +3,23 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { CategoryInput } from "@/types/type";
+import type { CategoryInput } from "@/lib/schemas/category.schema";
+import type { FieldErrors, UseFormRegister } from "react-hook-form";
 
 export default function CategoryFields({
-  values,
-  onChange,
+  register,
+  errors,
+  isActive,
+  onActiveChange,
+  onNameChange,
+  onSlugEdit,
 }: {
-  values: CategoryInput;
-  onChange: <K extends keyof CategoryInput>(
-    key: K,
-    value: CategoryInput[K],
-  ) => void;
+  register: UseFormRegister<CategoryInput>;
+  errors: FieldErrors<CategoryInput>;
+  isActive: boolean;
+  onActiveChange: (isActive: boolean) => void;
+  onNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+  onSlugEdit: () => void;
 }) {
   return (
     <>
@@ -21,61 +27,56 @@ export default function CategoryFields({
         <Label htmlFor="category-name">Nom</Label>
         <Input
           id="category-name"
-          required
-          minLength={2}
           maxLength={100}
-          value={values.name}
-          onChange={(event) => onChange("name", event.target.value)}
+          {...register("name", { onChange: onNameChange })}
+          aria-invalid={Boolean(errors.name)}
+          aria-describedby={errors.name ? "category-name-error" : undefined}
           placeholder="Ex. État civil"
           className="rounded-md py-5"
         />
+        {errors.name && <p id="category-name-error" className="text-sm text-destructive">{errors.name.message}</p>}
       </div>
+
       <div className="space-y-2">
         <Label htmlFor="category-slug">Identifiant (slug)</Label>
         <Input
           id="category-slug"
-          required
-          minLength={2}
           maxLength={100}
-          pattern="[a-z0-9]+(?:-[a-z0-9]+)*"
-          value={values.slug}
-          onChange={(event) => onChange("slug", event.target.value)}
+          {...register("slug", { onChange: onSlugEdit })}
+          aria-invalid={Boolean(errors.slug)}
+          aria-describedby={errors.slug ? "category-slug-error" : "category-slug-help"}
           placeholder="etat-civil"
-          className="font-mono rounded-md py-5"
+          className="rounded-md font-mono"
         />
-        <p className="text-xs text-brand-ink-muted">
-          Minuscules, chiffres et tirets; sans espace ni accent.
-        </p>
+        <p id="category-slug-help" className="text-xs text-brand-ink-muted">Minuscules, chiffres et tirets; sans espace ni accent.</p>
+        {errors.slug && <p id="category-slug-error" className="text-sm text-destructive">{errors.slug.message}</p>}
       </div>
+
       <div className="space-y-2">
         <Label htmlFor="category-description">Description</Label>
         <Textarea
           id="category-description"
-          required
-          minLength={5}
           maxLength={500}
           rows={4}
-          value={values.description}
-          onChange={(event) => onChange("description", event.target.value)}
+          {...register("description")}
+          aria-invalid={Boolean(errors.description)}
+          aria-describedby={errors.description ? "category-description-error" : undefined}
           placeholder="Décrivez les démarches regroupées dans cette catégorie."
           className="rounded-md"
         />
+        {errors.description && <p id="category-description-error" className="text-sm text-destructive">{errors.description.message}</p>}
       </div>
+
       <label className="flex items-start gap-3 rounded-md border border-border p-3">
         <input
           type="checkbox"
-          checked={values.isActive}
-          onChange={(event) => onChange("isActive", event.target.checked)}
+          checked={isActive}
+          onChange={(event) => onActiveChange(event.target.checked)}
           className="mt-0.5 size-4 accent-brand-green"
         />
         <span>
-          <span className="block text-sm font-medium text-brand-ink">
-            Catégorie active
-          </span>
-          <span className="mt-0.5 block text-xs text-brand-ink-muted">
-            Les catégories inactives ne sont pas proposées dans les parcours
-            publics.
-          </span>
+          <span className="block text-sm font-medium text-brand-ink">Catégorie active</span>
+          <span className="mt-0.5 block text-xs text-brand-ink-muted">Les catégories inactives ne sont pas proposées dans les parcours publics.</span>
         </span>
       </label>
     </>

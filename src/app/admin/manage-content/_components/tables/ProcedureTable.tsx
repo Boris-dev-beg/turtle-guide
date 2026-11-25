@@ -10,6 +10,7 @@ function formatCount(value: number) {
 
 export default function ProcedureTable({
   procedures,
+  emptyMessage,
   sortKey,
   sortDescending,
   onSort,
@@ -17,6 +18,7 @@ export default function ProcedureTable({
   onDelete,
 }: {
   procedures: AdminProcedureRow[];
+  emptyMessage: string;
   sortKey: ProcedureSortKey;
   sortDescending: boolean;
   onSort: (key: ProcedureSortKey) => void;
@@ -126,7 +128,7 @@ export default function ProcedureTable({
                 colSpan={6}
                 className="px-4 py-12 text-center text-lg text-brand-ink-muted"
               >
-                Aucune catégorie ne correspond à ces filtres.
+                {emptyMessage}
               </td>
             </tr>
           )}

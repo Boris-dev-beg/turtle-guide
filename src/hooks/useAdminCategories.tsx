@@ -45,9 +45,7 @@ export function useAdminCategories() {
     createCategory: createMutation.mutateAsync,
     updateCategory: updateMutation.mutateAsync,
     deleteCategory: deleteMutation.mutateAsync,
-    isPending:
-      createMutation.isPending ||
-      updateMutation.isPending ||
-      deleteMutation.isPending,
+    isSaving: createMutation.isPending || updateMutation.isPending,
+    isDeleting: deleteMutation.isPending,
   };
 }

@@ -10,6 +10,7 @@ function formatCount(value: number) {
 
 export default function CategoryTable({
   categories,
+  emptyMessage,
   sortKey,
   sortDescending,
   onSort,
@@ -17,6 +18,7 @@ export default function CategoryTable({
   onDelete,
 }: {
   categories: AdminCategoryRow[];
+  emptyMessage: string;
   sortKey: CategorySortKey;
   sortDescending: boolean;
   onSort: (key: CategorySortKey) => void;
@@ -126,7 +128,7 @@ export default function CategoryTable({
                 colSpan={6}
                 className="px-4 py-12 text-center text-lg text-brand-ink-muted"
               >
-                Aucune catégorie ne correspond à ces filtres.
+                {emptyMessage}
               </td>
             </tr>
           )}

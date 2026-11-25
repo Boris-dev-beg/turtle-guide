@@ -1,12 +1,12 @@
 "use client";
 
-import { AdminProcedureRow, ProcedireSortKey, ProcedureStatusFilter } from "@/types/type";
+import type { AdminProcedureRow, ProcedureSortKey, ProcedureStatusFilter } from "@/types/type";
 import { useMemo, useState } from "react";
 
 export function useProcedureList(procedures: AdminProcedureRow[]) {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState<ProcedureStatusFilter>("all");
-  const [sortKey, setSortKey] = useState<ProcedireSortKey>("title");
+  const [sortKey, setSortKey] = useState<ProcedureSortKey>("title");
   const [sortDescending, setSortDescending] = useState(false);
 
   const filteredProcedure = useMemo(() => {
@@ -14,7 +14,7 @@ export function useProcedureList(procedures: AdminProcedureRow[]) {
     return procedures
       .filter((procedure) => {
         const searchableText =
-          `${procedure.title} ${procedure.description}`.toLocaleLowerCase(
+          `${procedure.title} ${procedure.description} ${procedure.legalBasis}`.toLocaleLowerCase(
             "fr-FR",
           );
         const matchesStatus =
@@ -33,7 +33,7 @@ export function useProcedureList(procedures: AdminProcedureRow[]) {
       });
   }, [procedures, query, sortDescending, sortKey, status]);
 
-  const toggleSort = (key: ProcedireSortKey) => {
+  const toggleSort = (key: ProcedureSortKey) => {
     if (sortKey === key) setSortDescending((descending) => !descending);
     else {
       setSortKey(key);
@@ -53,7 +53,7 @@ export function useProcedureList(procedures: AdminProcedureRow[]) {
   };
 }
 
-function getSortValue(procedure: AdminProcedureRow, key: ProcedireSortKey) {
+function getSortValue(procedure: AdminProcedureRow, key: ProcedureSortKey) {
   if (key === "questionCount") return procedure._count.questions;
   if (key === "status") return Number(procedure.isActive);
   return procedure[key].toLocaleLowerCase("fr-FR");

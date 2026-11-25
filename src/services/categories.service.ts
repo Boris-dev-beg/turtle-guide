@@ -19,13 +19,6 @@ export class CategoryServiceError extends Error {
 }
 
 export const categoriesServices = {
-  async getAdministrator(userId: string) {
-    return prisma.administrator.findUnique({
-      where: { userId },
-      select: { id: true },
-    });
-  },
-
   async getAllForAdmin() {
     return prisma.category.findMany({
       include: {

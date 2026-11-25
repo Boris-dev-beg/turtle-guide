@@ -29,7 +29,7 @@ export default function CategoriesManager({
   const [formError, setFormError] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [notice, setNotice] = useState("");
-  const { createCategory, updateCategory, deleteCategory, isPending } =
+  const { createCategory, updateCategory, deleteCategory, isSaving, isDeleting } =
     useAdminCategories();
   const {
     query,
@@ -50,6 +50,7 @@ export default function CategoriesManager({
   };
 
   const saveCategory = async (input: CategoryInput) => {
+    setFormError("");
     try {
       const message = editingCategory
         ? await updateCategory({ id: editingCategory.id, input })
@@ -96,6 +97,7 @@ export default function CategoriesManager({
         />
         <CategoryTable
           categories={filteredCategories}
+          emptyMessage={categories.length === 0 ? "Aucune catégorie n'est enregistrée." : "Aucune catégorie ne correspond à ces filtres."}
           sortKey={sortKey}
           sortDescending={sortDescending}
           onSort={toggleSort}
@@ -116,7 +118,7 @@ export default function CategoriesManager({
         key={formKey}
         open={formOpen}
         category={editingCategory}
-        pending={isPending}
+        pending={isSaving}
         error={formError}
         onOpenChange={setFormOpen}
         onSubmit={saveCategory}
@@ -125,7 +127,7 @@ export default function CategoriesManager({
         label="Catégorie"
         element={deletingCategory}
         name={deletingCategory?.name as string}
-        pending={isPending}
+        pending={isDeleting}
         error={deleteError}
         onOpenChange={(open) => {
           if (!open) {
