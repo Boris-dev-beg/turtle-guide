@@ -14,12 +14,18 @@ export default function ProcedureFields({
   categories,
   isActive,
   onActiveChange,
+  imageUrl,
+  uploading,
+  onImageFile,
 }: {
   register: UseFormRegister<ProcedureInput>;
   errors: FieldErrors<ProcedureInput>;
   categories: ProcedureCategoryOption[];
   isActive: boolean;
   onActiveChange: (isActive: boolean) => void;
+  imageUrl: string;
+  uploading: boolean;
+  onImageFile: (file: File | null) => void;
 }) {
   return (
     <>
@@ -51,9 +57,23 @@ export default function ProcedureFields({
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="procedure-image">Chemin ou URL de l&apos;image</Label>
-        <Input id="procedure-image" maxLength={500} {...register("image")} aria-invalid={Boolean(errors.image)} aria-describedby={errors.image ? "procedure-image-error" : "procedure-image-help"} placeholder="/images/procedures/acte-naissance.jpg" />
-        <p id="procedure-image-help" className="text-xs text-brand-ink-muted">Indiquez un chemin d&apos;image déjà disponible dans le projet ou une URL.</p>
+        <Label htmlFor="procedure-image">Image de la procédure</Label>
+        <Input
+          id="procedure-image"
+          type="file"
+          accept="image/jpeg,image/png,image/webp,image/avif"
+          disabled={uploading}
+          aria-invalid={Boolean(errors.image)}
+          aria-describedby={errors.image ? "procedure-image-error" : "procedure-image-help"}
+          onChange={(event) => {
+            const file = event.target.files?.[0] ?? null;
+            event.target.value = "";
+            onImageFile(file);
+          }}
+        />
+        <p id="procedure-image-help" className="text-xs text-brand-ink-muted">JPG, PNG, WebP ou AVIF — 5 Mo maximum.</p>
+        {uploading && <p role="status" className="text-sm text-brand-ink-muted">Téléversement de l&apos;image…</p>}
+        {!uploading && imageUrl && <p role="status" className="break-all text-xs text-brand-ink-muted">Image prête : <a href={imageUrl} target="_blank" rel="noreferrer" className="underline underline-offset-2">voir l&apos;image</a></p>}
         {errors.image && <p id="procedure-image-error" className="text-sm text-destructive">{errors.image.message}</p>}
       </div>
 

@@ -40,6 +40,7 @@ export const Procedure_card = ({
           alt={title}
           width={800}
           height={450}
+          unoptimized
           className="h-full w-full object-cover"
         />
       </div>
