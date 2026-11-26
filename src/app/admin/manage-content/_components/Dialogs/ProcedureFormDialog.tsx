@@ -102,7 +102,7 @@ export default function ProcedureFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto p-5! scrollbar-thin sm:max-w-xl">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl! font-bold! text-brand-ink">{procedure ? "Modifier la procédure" : "Nouvelle procédure"}</DialogTitle>
-          <DialogDescription>Renseignez les informations affichées dans le parcours public. Les champs sont vérifiés avant enregistrement.</DialogDescription>
+          <DialogDescription>Une procédure est un questionnaire qui permet d&apos;identifier la bonne démarche.</DialogDescription>
         </DialogHeader>
 
         {categories.length === 0 ? (
@@ -129,6 +129,7 @@ export default function ProcedureFormDialog({
                 {uploading ? "Téléversement…" : pending ? "Enregistrement…" : procedure ? "Enregistrer les modifications" : "Créer la procédure"}
               </Button>
             </div>
+            {!procedure && <p className="text-xs text-brand-ink-muted">Après la création, vous pourrez écrire les questions de cette procédure.</p>}
           </form>
         )}
       </DialogContent>

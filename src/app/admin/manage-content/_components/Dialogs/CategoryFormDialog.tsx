@@ -46,7 +46,7 @@ export default function CategoryFormDialog({
       <DialogContent className="max-h-[90vh] overflow-y-auto p-5! scrollbar-thin sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-display text-2xl! font-bold! text-brand-ink">{category ? "Modifier la catégorie" : "Nouvelle catégorie"}</DialogTitle>
-          <DialogDescription>Le nom et le slug sont visibles dans l&apos;espace public. Le slug doit rester unique.</DialogDescription>
+          <DialogDescription>Une catégorie regroupe des procédures sur un même thème.</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-4">
@@ -66,6 +66,7 @@ export default function CategoryFormDialog({
               {pending ? "Enregistrement…" : category ? "Enregistrer les modifications" : "Créer la catégorie"}
             </Button>
           </div>
+          {!category && <p className="text-xs text-brand-ink-muted">Vous pourrez ajouter des procédures à cette catégorie après sa création.</p>}
         </form>
       </DialogContent>
     </Dialog>
